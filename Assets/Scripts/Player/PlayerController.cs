@@ -1,5 +1,7 @@
 using UnityEngine;
 
+namespace LegacyPlayer
+{
 [RequireComponent(typeof(CharacterController))]
 public class PlayerController : MonoBehaviour
 {
@@ -143,4 +145,5 @@ public class PlayerController : MonoBehaviour
             moveInput = Vector3.zero;
         }
     }
+}
 }

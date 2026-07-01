@@ -34,8 +34,7 @@ public class InputHandler : MonoBehaviour
     public bool PlacementDeletePressed { get; private set; }
     public bool BuildModeTogglePressed { get; private set; }
 
-    //Finds the active input handler or creates one when the scene has none.
-    //查找当前输入处理器；如果场景中没有，则创建一个默认实例。
+    // Finds the active input handler or creates one when the scene has none.
     public static InputHandler GetOrCreate()
     {
         if (Instance != null)
@@ -53,8 +52,7 @@ public class InputHandler : MonoBehaviour
         return inputObject.AddComponent<InputHandler>();
     }
 
-    //Registers the singleton instance and removes duplicate handlers.
-    //注册单例实例，并移除重复的输入处理器。
+    // Registers the singleton instance and removes duplicate handlers.
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -66,8 +64,7 @@ public class InputHandler : MonoBehaviour
         Instance = this;
     }
 
-    //Samples legacy Unity input once per frame and exposes stable input state.
-    //每帧采样 Unity 旧输入系统，并对外提供稳定的输入状态。
+    // Samples legacy Unity input once per frame and exposes stable input state.
     private void Update()
     {
         MoveInput = new Vector2(Input.GetAxis(horizontalAxis), Input.GetAxis(verticalAxis));
@@ -82,8 +79,7 @@ public class InputHandler : MonoBehaviour
         BuildModeTogglePressed = Input.GetKeyDown(buildModeToggleKey);
     }
 
-    //Clears the singleton reference when this handler is destroyed.
-    //当该输入处理器销毁时清空单例引用。
+    // Clears the singleton reference when this handler is destroyed.
     private void OnDestroy()
     {
         if (Instance == this)

@@ -2111,7 +2111,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b1f4e2b41ca20df4980f7be4a9e5af28, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerController
+  m_EditorClassIdentifier: Assembly-CSharp::LegacyPlayer.PlayerController
   moveSpeed: 4
   rotationSpeed: 12
   jumpHeight: 1.5
