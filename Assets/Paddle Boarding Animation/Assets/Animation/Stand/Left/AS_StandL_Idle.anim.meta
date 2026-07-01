@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: a9b0d1813d6854440bc555cd72d5ad56
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 7400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 373596
+  packageName: Paddle Boarding Animation
+  packageVersion: 1.0
+  assetPath: Assets/Paddle Boarding Animation/Assets/Animation/Stand/Left/AS_StandL_Idle.anim
+  uploadId: 901424

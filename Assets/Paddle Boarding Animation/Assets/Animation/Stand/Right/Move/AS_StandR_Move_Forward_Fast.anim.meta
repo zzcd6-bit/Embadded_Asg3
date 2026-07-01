@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 838944fb6df71264b8feafc7086a41e3
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 7400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 373596
+  packageName: Paddle Boarding Animation
+  packageVersion: 1.0
+  assetPath: Assets/Paddle Boarding Animation/Assets/Animation/Stand/Right/Move/AS_StandR_Move_Forward_Fast.anim
+  uploadId: 901424

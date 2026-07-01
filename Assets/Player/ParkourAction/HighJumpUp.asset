@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ff3bae912eaee143918d45eee9f65b0, type: 3}
+  m_Name: HighJumpUp
+  m_EditorClassIdentifier: Assembly-CSharp::NewActionSystem
+  animationName: HighJumpUp
+  minHeight: 0.7
+  maxHeight: 1.2
+  lookAtBarrier: 1
+  allowTargetMatching: 1
+  compareBodyPart: 3
+  compareStartTime: 0
+  compareEndTime: 0.29
+  WeightMask: {x: 0, y: 1, z: 1}

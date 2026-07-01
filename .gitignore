@@ -105,3 +105,27 @@ InitTestScene*.unity*
 
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
+
+# Project-local editor/generated files
+/.vscode/
+*.slnx
+
+# Large local art/source assets found in this workspace.
+# If any of these must be shared through git, use Git LFS instead of removing
+# the ignore rule.
+/[Aa]ssets/Model/
+/[Aa]ssets/Model.meta
+/[Aa]ssets/ToonScapes/
+/[Aa]ssets/ToonScapes.meta
+/[Aa]ssets/BK/
+/[Aa]ssets/BK.meta
+/[Aa]ssets/Stylized Far East/
+/[Aa]ssets/Stylized Far East.meta
+/[Aa]ssets/AncientBuildings/
+/[Aa]ssets/AncientBuildings.meta
+/[Aa]ssets/Generated/
+/[Aa]ssets/Generated.meta
+/[Aa]ssets/02.FBX
+/[Aa]ssets/02.FBX.meta
+/[Aa]ssets/古风游戏场景.fbx
+/[Aa]ssets/古风游戏场景.fbx.meta
