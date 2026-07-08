@@ -54,13 +54,21 @@ public class SimpleEnemy : MonoBehaviour
     [SerializeField] private float attackHitRadius = 1.2f;
     [SerializeField] private LayerMask playerLayer;
 
+    [Header("Hit Reaction")]
+    [SerializeField] private float knockbackDistance = 1.2f;
+    [SerializeField] private float knockbackDuration = 0.18f;
+
     [Header("Animation")]
     [SerializeField] private Animator animator;
     [SerializeField] private string speedParam = "Speed";
     [SerializeField] private string attackTrigger = "TrigAttack";
     [SerializeField] private string deadTrigger = "TrigDead";
 
+    [Header("Debug")]
+    [SerializeField] private bool enableLogs;
+
     private NavMeshAgent agent;
+    private EnemyHealth health;
     private EnemyState state;
     private EnemyPatrolNode currentNode;
     private Vector3 homePosition;
@@ -69,6 +77,7 @@ public class SimpleEnemy : MonoBehaviour
     private float attackTimer;
     private float repathTimer;
     private float lostTimer;
+    private Coroutine knockbackRoutine;
 
     private void Awake()
     {
@@ -76,6 +85,10 @@ public class SimpleEnemy : MonoBehaviour
 
         if (animator == null)
             animator = GetComponentInChildren<Animator>();
+
+        health = GetComponent<EnemyHealth>();
+        if (health == null)
+            health = GetComponentInChildren<EnemyHealth>();
 
         homePosition = transform.position;
         homeRotation = transform.rotation;
@@ -128,6 +141,7 @@ public class SimpleEnemy : MonoBehaviour
         else
             ResolvePlayer();
 
+        ApplyKnockback(attacker);
         EnterAttack();
     }
 
@@ -138,6 +152,8 @@ public class SimpleEnemy : MonoBehaviour
 
         state = EnemyState.Dead;
         StopLookRoutine();
+        StopKnockbackRoutine();
+        NotifyCombatActive(false);
 
         if (AgentReady())
         {
@@ -147,6 +163,8 @@ public class SimpleEnemy : MonoBehaviour
 
         if (animator != null && !string.IsNullOrEmpty(deadTrigger))
             animator.SetTrigger(deadTrigger);
+
+        Log("Died.");
     }
 
     private void ApplyInitialState()
@@ -187,8 +205,11 @@ public class SimpleEnemy : MonoBehaviour
 
     private void EnterAttack()
     {
+        bool wasAttack = state == EnemyState.Attack;
+
         StopLookRoutine();
         state = EnemyState.Attack;
+        NotifyCombatActive(true);
         agent.speed = chaseSpeed;
         agent.stoppingDistance = attackRange * 0.85f;
         attackTimer = 0f;
@@ -196,6 +217,9 @@ public class SimpleEnemy : MonoBehaviour
         lostTimer = 0f;
         if (AgentReady())
             agent.isStopped = false;
+
+        if (!wasAttack)
+            Log("Activated.");
     }
 
     private void UpdateAttack()
@@ -249,6 +273,7 @@ public class SimpleEnemy : MonoBehaviour
     private void LosePlayerAndReturnHome()
     {
         StopLookRoutine();
+        NotifyCombatActive(false);
         lookRoutine = StartCoroutine(LookAroundThenReturnHome());
     }
 
@@ -402,11 +427,21 @@ public class SimpleEnemy : MonoBehaviour
             if (playerLayer.value == 0 && !hits[i].CompareTag("Player"))
                 continue;
 
-            hits[i].gameObject.SendMessageUpwards(
-                "TakeDamage",
-                attackDamage,
-                SendMessageOptions.DontRequireReceiver
-            );
+            IDamageable damageable = hits[i].GetComponentInParent<IDamageable>();
+            if (damageable != null)
+            {
+                damageable.TakeDamage(new DamageInfo
+                {
+                    attacker = gameObject,
+                    target = hits[i].gameObject,
+                    damage = attackDamage,
+                    knockback = 0f,
+                    hitPoint = hits[i].ClosestPoint(center),
+                    hitDirection = (hits[i].transform.position - transform.position).normalized,
+                    sourceAction = null
+                });
+            }
+
             break;
         }
     }
@@ -486,6 +521,84 @@ public class SimpleEnemy : MonoBehaviour
 
         StopCoroutine(lookRoutine);
         lookRoutine = null;
+    }
+
+    private void ApplyKnockback(Transform attacker)
+    {
+        if (knockbackDistance <= 0f || knockbackDuration <= 0f)
+            return;
+
+        Vector3 direction;
+        if (attacker != null)
+        {
+            direction = transform.position - attacker.position;
+            direction.y = 0f;
+        }
+        else
+        {
+            direction = -transform.forward;
+        }
+
+        if (direction.sqrMagnitude < 0.001f)
+            direction = -transform.forward;
+
+        direction.Normalize();
+
+        StopKnockbackRoutine();
+        knockbackRoutine = StartCoroutine(KnockbackRoutine(direction));
+    }
+
+    private IEnumerator KnockbackRoutine(Vector3 direction)
+    {
+        StopAgent();
+
+        float elapsed = 0f;
+        while (elapsed < knockbackDuration && state != EnemyState.Dead)
+        {
+            float delta = Time.deltaTime;
+            float move = knockbackDistance / knockbackDuration * delta;
+
+            if (AgentReady())
+            {
+                agent.isStopped = true;
+                agent.Move(direction * move);
+            }
+            else
+            {
+                transform.position += direction * move;
+            }
+
+            elapsed += delta;
+            yield return null;
+        }
+
+        knockbackRoutine = null;
+
+        if (state == EnemyState.Attack && AgentReady())
+            agent.isStopped = false;
+    }
+
+    private void StopKnockbackRoutine()
+    {
+        if (knockbackRoutine == null)
+            return;
+
+        StopCoroutine(knockbackRoutine);
+        knockbackRoutine = null;
+    }
+
+    private void NotifyCombatActive(bool isActive)
+    {
+        if (health != null)
+            health.SetCombatActive(isActive);
+    }
+
+    private void Log(string message)
+    {
+        if (!enableLogs)
+            return;
+
+        Debug.Log($"[SimpleEnemy] {name}: {message}", this);
     }
 
     private void UpdateAnimatorSpeed()
