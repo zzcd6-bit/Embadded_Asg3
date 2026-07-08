@@ -13,7 +13,14 @@ public enum E_EventType
     E_Input_Vertical,
     #endregion
 
-    #region Player Input
+    #region New Player Input
+    E_Input_Jump,
+    E_Input_Dodge,
+    E_Input_Attack,
+    E_Input_LockOn,
+    #endregion
+
+    #region Old Player / Brush Compatibility
     E_Player_Jump,
     E_Player_NormalAttack,
     E_Player_ControlEnable,
@@ -38,5 +45,37 @@ public enum E_EventType
     E_Brush_GestureRecognized,
     E_Brush_Slash,
     E_Brush_FireTransfer,
+    #endregion
+
+    #region New Player Combat Events
+    E_Player_Damaged,
+    E_Player_Dead,
+    E_Player_PerfectDodge,
+    #endregion
+
+    #region Enemy
+    E_Enemy_Spawned,
+    E_Enemy_Dead,
+    E_Enemy_Damaged,
+    #endregion
+
+    #region Quest
+    E_Quest_Accepted,
+    E_Quest_Updated,
+    E_Quest_Completed,
+    E_Quest_Rewarded,
+    #endregion
+
+    #region Dialogue
+    E_Dialogue_Started,
+    E_Dialogue_Ended,
+    #endregion
+
+    #region UI
+    E_UI_ShowDamageNumber,
+    #endregion
+
+    #region Audio
+    E_Audio_PlaySFX,
     #endregion
 }

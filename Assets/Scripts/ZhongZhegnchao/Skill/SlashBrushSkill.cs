@@ -5,8 +5,6 @@ public class SlashBrushSkill : BrushSkillBase
 {
     [Header("Camera Mapping")]
     public Camera worldCamera;
-
-    [Tooltip("拖 BrushLineCamera 或 DisplayCamera。它负责把屏幕点转成 Viewport。")]
     public Camera strokeViewCamera;
 
     [Header("Slash Detection")]
@@ -28,7 +26,7 @@ public class SlashBrushSkill : BrushSkillBase
 
         if (worldCamera == null)
         {
-            Debug.LogWarning("SlashBrushSkill: WorldCamera is missing.");
+            UnityEngine.Debug.LogWarning("SlashBrushSkill: WorldCamera is missing.");
             return;
         }
 
@@ -37,7 +35,7 @@ public class SlashBrushSkill : BrushSkillBase
         if (screenPoints == null || screenPoints.Count < 2)
             return;
 
-        HashSet<IDamageable> hitTargets = new HashSet<IDamageable>();
+        Dictionary<IDamageable, DamageInfo> hitTargets = new Dictionary<IDamageable, DamageInfo>();
 
         for (int i = 0; i < sampleCount; i++)
         {
@@ -49,7 +47,7 @@ public class SlashBrushSkill : BrushSkillBase
             Ray ray = GetWorldRayFromStrokePoint(screenPoint);
 
             if (drawDebugRay)
-                Debug.DrawRay(ray.origin, ray.direction * rayDistance, Color.red, 1.5f);
+                UnityEngine.Debug.DrawRay(ray.origin, ray.direction * rayDistance, Color.red, 1.5f);
 
             RaycastHit[] hits = Physics.SphereCastAll(
                 ray,
@@ -66,17 +64,39 @@ public class SlashBrushSkill : BrushSkillBase
 
                 IDamageable damageable = hit.collider.GetComponentInParent<IDamageable>();
 
-                if (damageable != null)
-                    hitTargets.Add(damageable);
+                if (damageable == null)
+                    continue;
+
+                if (hitTargets.ContainsKey(damageable))
+                    continue;
+
+                UnityEngine.Component damageComponent = damageable as UnityEngine.Component;
+
+                GameObject targetObject = damageComponent != null
+                    ? damageComponent.gameObject
+                    : hit.collider.gameObject;
+
+                DamageInfo damageInfo = new DamageInfo
+                {
+                    attacker = gameObject,
+                    target = targetObject,
+                    damage = damage,
+                    knockback = 0f,
+                    hitPoint = hit.point,
+                    hitDirection = ray.direction,
+                    sourceAction = null
+                };
+
+                hitTargets.Add(damageable, damageInfo);
             }
         }
 
-        foreach (IDamageable target in hitTargets)
+        foreach (KeyValuePair<IDamageable, DamageInfo> pair in hitTargets)
         {
-            target.TakeDamage(damage);
+            pair.Key.TakeDamage(pair.Value);
         }
 
-        Debug.Log($"Slash executed. Damage target count: {hitTargets.Count}");
+        UnityEngine.Debug.Log($"Slash executed. Damage target count: {hitTargets.Count}");
     }
 
     private Ray GetWorldRayFromStrokePoint(Vector2 screenPoint)
