@@ -1,0 +1,659 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01c801d79f260c944ad8294f8bcf8bfd, type: 3}
+  m_Name: Player_Attack_02
+  m_EditorClassIdentifier: HotUpdate::ActionConfig
+  actionId: Player_Attack_02
+  animationClip: {fileID: 7400000, guid: 46af6fba2305e51408e37a2aa2f2d078, type: 2}
+  useClipLength: 1
+  length: 0.73333335
+  fadeDuration: 0.04
+  lockMovement: 1
+  returnToLocomotionOnEnd: 1
+  exitToLocomotionDelay: 0.08
+  returnToMoveWithRunStart: 1
+  enableCombo: 1
+  nextComboAction: {fileID: 11400000, guid: 7dd8f8eabc91e9f41b6122159420730c, type: 2}
+  comboInputStartTime: 0
+  comboInputEndTime: 0.73
+  comboCancelTime: 0.6
+  events:
+  - enabled: 1
+    eventName: "\u524D\u6447\u901F\u5EA6"
+    type: 3
+    startTime: 0
+    duration: 0.091491565
+    vfx:
+      prefab: {fileID: 0}
+      usePool: 1
+      poolName: 
+      bindPointName: 
+      attachToBindPoint: 0
+      localPosition: {x: 0, y: 0, z: 0}
+      localEulerAngles: {x: 0, y: 0, z: 0}
+      localScale: {x: 0, y: 0, z: 0}
+      destroyDelay: 0
+    hitBox:
+      shape: 0
+      localOffset: {x: 0, y: 0, z: 0}
+      localEulerAngles: {x: 0, y: 0, z: 0}
+      size: {x: 0, y: 0, z: 0}
+      radius: 0
+      capsuleHeight: 0
+      sectorAngle: 0
+      damage: 0
+      knockback: 0
+      targetLayer:
+        serializedVersion: 2
+        m_Bits: 0
+      hitOncePerTarget: 0
+      queryTriggerInteraction: 0
+      triggerHitStopOnHit: 1
+      hitStopOnHit:
+        stopDuration: 0.06
+        animationSpeedMultiplier: 0.05
+        affectSelf: 1
+        affectObjectsInRange: 0
+        affectedRadius: 3
+        affectedLayer:
+          serializedVersion: 2
+          m_Bits: 4294967295
+      spawnHitVFXOnHit: 1
+      hitVFX:
+        prefab: {fileID: 0}
+        usePool: 1
+        poolName: 
+        bindPointName: 
+        attachToBindPoint: 0
+        localPosition: {x: 0, y: 0, z: 0}
+        localEulerAngles: {x: 0, y: 0, z: 0}
+        localScale: {x: 1, y: 1, z: 1}
+        destroyDelay: 1.5
+    hitStop:
+      stopDuration: 0
+      animationSpeedMultiplier: 0
+      affectSelf: 0
+      affectObjectsInRange: 0
+      affectedRadius: 0
+      affectedLayer:
+        serializedVersion: 2
+        m_Bits: 0
+    speed:
+      animationSpeed: 0.9
+    movement:
+      distance: 1
+      localDirection: {x: 0, y: 0, z: 1}
+      horizontalOnly: 1
+      moveCurve:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 0
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 1
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+  - enabled: 1
+    eventName: "\u65B0\u4F4D\u79FB\u4E8B\u4EF6"
+    type: 4
+    startTime: 0
+    duration: 0.2455846
+    vfx:
+      prefab: {fileID: 0}
+      usePool: 1
+      poolName: 
+      bindPointName: 
+      attachToBindPoint: 0
+      localPosition: {x: 0, y: 0, z: 0}
+      localEulerAngles: {x: 0, y: 0, z: 0}
+      localScale: {x: 1, y: 1, z: 1}
+      destroyDelay: 2
+    hitBox:
+      shape: 0
+      localOffset: {x: 0, y: 1, z: 1}
+      localEulerAngles: {x: 0, y: 0, z: 0}
+      size: {x: 1, y: 1, z: 1}
+      radius: 1
+      capsuleHeight: 2
+      sectorAngle: 90
+      damage: 10
+      knockback: 3
+      targetLayer:
+        serializedVersion: 2
+        m_Bits: 4294967295
+      hitOncePerTarget: 1
+      queryTriggerInteraction: 2
+      triggerHitStopOnHit: 1
+      hitStopOnHit:
+        stopDuration: 0.06
+        animationSpeedMultiplier: 0.05
+        affectSelf: 1
+        affectObjectsInRange: 0
+        affectedRadius: 3
+        affectedLayer:
+          serializedVersion: 2
+          m_Bits: 4294967295
+      spawnHitVFXOnHit: 1
+      hitVFX:
+        prefab: {fileID: 0}
+        usePool: 1
+        poolName: 
+        bindPointName: 
+        attachToBindPoint: 0
+        localPosition: {x: 0, y: 0, z: 0}
+        localEulerAngles: {x: 0, y: 0, z: 0}
+        localScale: {x: 1, y: 1, z: 1}
+        destroyDelay: 1.5
+    hitStop:
+      stopDuration: 0.06
+      animationSpeedMultiplier: 0.05
+      affectSelf: 1
+      affectObjectsInRange: 0
+      affectedRadius: 3
+      affectedLayer:
+        serializedVersion: 2
+        m_Bits: 4294967295
+    speed:
+      animationSpeed: 1
+    movement:
+      distance: 1.75
+      localDirection: {x: 0, y: 0, z: 1}
+      horizontalOnly: 1
+      moveCurve:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 0
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 1
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+  - enabled: 1
+    eventName: "\u653B\u51FB\u5224\u5B9A"
+    type: 1
+    startTime: 0.086917415
+    duration: 0.18192823
+    vfx:
+      prefab: {fileID: 0}
+      usePool: 1
+      poolName: 
+      bindPointName: 
+      attachToBindPoint: 0
+      localPosition: {x: 0, y: 0, z: 0}
+      localEulerAngles: {x: 0, y: 0, z: 0}
+      localScale: {x: 0, y: 0, z: 0}
+      destroyDelay: 0
+    hitBox:
+      shape: 0
+      localOffset: {x: 0, y: 1, z: 0.9800513}
+      localEulerAngles: {x: 0, y: 0, z: 0}
+      size: {x: 2.5936165, y: 1.4, z: 1.0998228}
+      radius: 1
+      capsuleHeight: 2
+      sectorAngle: 90
+      damage: 10
+      knockback: 3
+      targetLayer:
+        serializedVersion: 2
+        m_Bits: 192
+      hitOncePerTarget: 1
+      queryTriggerInteraction: 2
+      triggerHitStopOnHit: 1
+      hitStopOnHit:
+        stopDuration: 0.055
+        animationSpeedMultiplier: 0.05
+        affectSelf: 1
+        affectObjectsInRange: 0
+        affectedRadius: 3
+        affectedLayer:
+          serializedVersion: 2
+          m_Bits: 128
+      spawnHitVFXOnHit: 0
+      hitVFX:
+        prefab: {fileID: 0}
+        usePool: 1
+        poolName: 
+        bindPointName: 
+        attachToBindPoint: 0
+        localPosition: {x: 0, y: 0, z: 0}
+        localEulerAngles: {x: 0, y: 0, z: 0}
+        localScale: {x: 1, y: 1, z: 1}
+        destroyDelay: 1.5
+    hitStop:
+      stopDuration: 0
+      animationSpeedMultiplier: 0
+      affectSelf: 0
+      affectObjectsInRange: 0
+      affectedRadius: 0
+      affectedLayer:
+        serializedVersion: 2
+        m_Bits: 0
+    speed:
+      animationSpeed: 0
+    movement:
+      distance: 1
+      localDirection: {x: 0, y: 0, z: 1}
+      horizontalOnly: 1
+      moveCurve:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 0
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 1
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+  - enabled: 1
+    eventName: "\u5200\u5149\u7279\u6548"
+    type: 0
+    startTime: 0.08779074
+    duration: 0
+    vfx:
+      prefab: {fileID: 8587560481101609250, guid: d69dee5c7420ac442aeb55829c5cb135, type: 3}
+      usePool: 1
+      poolName: BladeSlashEffect
+      bindPointName: 
+      attachToBindPoint: 0
+      localPosition: {x: -0.000000007450581, y: 1.0640738, z: 0.91246563}
+      localEulerAngles: {x: 0, y: 180, z: 0}
+      localScale: {x: 1, y: 1, z: 1}
+      destroyDelay: 1.2
+    hitBox:
+      shape: 0
+      localOffset: {x: 0, y: 0, z: 0}
+      localEulerAngles: {x: 0, y: 0, z: 0}
+      size: {x: 0, y: 0, z: 0}
+      radius: 0
+      capsuleHeight: 0
+      sectorAngle: 0
+      damage: 0
+      knockback: 0
+      targetLayer:
+        serializedVersion: 2
+        m_Bits: 0
+      hitOncePerTarget: 0
+      queryTriggerInteraction: 0
+      triggerHitStopOnHit: 1
+      hitStopOnHit:
+        stopDuration: 0.06
+        animationSpeedMultiplier: 0.05
+        affectSelf: 1
+        affectObjectsInRange: 0
+        affectedRadius: 3
+        affectedLayer:
+          serializedVersion: 2
+          m_Bits: 4294967295
+      spawnHitVFXOnHit: 1
+      hitVFX:
+        prefab: {fileID: 0}
+        usePool: 1
+        poolName: 
+        bindPointName: 
+        attachToBindPoint: 0
+        localPosition: {x: 0, y: 0, z: 0}
+        localEulerAngles: {x: 0, y: 0, z: 0}
+        localScale: {x: 1, y: 1, z: 1}
+        destroyDelay: 1.5
+    hitStop:
+      stopDuration: 0
+      animationSpeedMultiplier: 0
+      affectSelf: 0
+      affectObjectsInRange: 0
+      affectedRadius: 0
+      affectedLayer:
+        serializedVersion: 2
+        m_Bits: 0
+    speed:
+      animationSpeed: 0
+    movement:
+      distance: 1
+      localDirection: {x: 0, y: 0, z: 1}
+      horizontalOnly: 1
+      moveCurve:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 0
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 1
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+  - enabled: 1
+    eventName: "\u51FA\u5200\u52A0\u901F"
+    type: 3
+    startTime: 0.091491565
+    duration: 0.18015565
+    vfx:
+      prefab: {fileID: 0}
+      usePool: 1
+      poolName: 
+      bindPointName: 
+      attachToBindPoint: 0
+      localPosition: {x: 0, y: 0, z: 0}
+      localEulerAngles: {x: 0, y: 0, z: 0}
+      localScale: {x: 0, y: 0, z: 0}
+      destroyDelay: 0
+    hitBox:
+      shape: 0
+      localOffset: {x: 0, y: 0, z: 0}
+      localEulerAngles: {x: 0, y: 0, z: 0}
+      size: {x: 0, y: 0, z: 0}
+      radius: 0
+      capsuleHeight: 0
+      sectorAngle: 0
+      damage: 0
+      knockback: 0
+      targetLayer:
+        serializedVersion: 2
+        m_Bits: 0
+      hitOncePerTarget: 0
+      queryTriggerInteraction: 0
+      triggerHitStopOnHit: 1
+      hitStopOnHit:
+        stopDuration: 0.06
+        animationSpeedMultiplier: 0.05
+        affectSelf: 1
+        affectObjectsInRange: 0
+        affectedRadius: 3
+        affectedLayer:
+          serializedVersion: 2
+          m_Bits: 4294967295
+      spawnHitVFXOnHit: 1
+      hitVFX:
+        prefab: {fileID: 0}
+        usePool: 1
+        poolName: 
+        bindPointName: 
+        attachToBindPoint: 0
+        localPosition: {x: 0, y: 0, z: 0}
+        localEulerAngles: {x: 0, y: 0, z: 0}
+        localScale: {x: 1, y: 1, z: 1}
+        destroyDelay: 1.5
+    hitStop:
+      stopDuration: 0
+      animationSpeedMultiplier: 0
+      affectSelf: 0
+      affectObjectsInRange: 0
+      affectedRadius: 0
+      affectedLayer:
+        serializedVersion: 2
+        m_Bits: 0
+    speed:
+      animationSpeed: 1.2
+    movement:
+      distance: 1
+      localDirection: {x: 0, y: 0, z: 1}
+      horizontalOnly: 1
+      moveCurve:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 0
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 1
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+  - enabled: 1
+    eventName: "\u540E\u6447\u6062\u590D"
+    type: 3
+    startTime: 0.32306096
+    duration: 0.4102724
+    vfx:
+      prefab: {fileID: 0}
+      usePool: 1
+      poolName: 
+      bindPointName: 
+      attachToBindPoint: 0
+      localPosition: {x: 0, y: 0, z: 0}
+      localEulerAngles: {x: 0, y: 0, z: 0}
+      localScale: {x: 0, y: 0, z: 0}
+      destroyDelay: 0
+    hitBox:
+      shape: 0
+      localOffset: {x: 0, y: 0, z: 0}
+      localEulerAngles: {x: 0, y: 0, z: 0}
+      size: {x: 0, y: 0, z: 0}
+      radius: 0
+      capsuleHeight: 0
+      sectorAngle: 0
+      damage: 0
+      knockback: 0
+      targetLayer:
+        serializedVersion: 2
+        m_Bits: 0
+      hitOncePerTarget: 0
+      queryTriggerInteraction: 0
+      triggerHitStopOnHit: 1
+      hitStopOnHit:
+        stopDuration: 0.06
+        animationSpeedMultiplier: 0.05
+        affectSelf: 1
+        affectObjectsInRange: 0
+        affectedRadius: 3
+        affectedLayer:
+          serializedVersion: 2
+          m_Bits: 4294967295
+      spawnHitVFXOnHit: 1
+      hitVFX:
+        prefab: {fileID: 0}
+        usePool: 1
+        poolName: 
+        bindPointName: 
+        attachToBindPoint: 0
+        localPosition: {x: 0, y: 0, z: 0}
+        localEulerAngles: {x: 0, y: 0, z: 0}
+        localScale: {x: 1, y: 1, z: 1}
+        destroyDelay: 1.5
+    hitStop:
+      stopDuration: 0
+      animationSpeedMultiplier: 0
+      affectSelf: 0
+      affectObjectsInRange: 0
+      affectedRadius: 0
+      affectedLayer:
+        serializedVersion: 2
+        m_Bits: 0
+    speed:
+      animationSpeed: 1
+    movement:
+      distance: 1
+      localDirection: {x: 0, y: 0, z: 1}
+      horizontalOnly: 1
+      moveCurve:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 0
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 1
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+  - enabled: 1
+    eventName: "\u547D\u4E2D\u987F\u5E27"
+    type: 2
+    startTime: 0.42927605
+    duration: 0
+    vfx:
+      prefab: {fileID: 0}
+      usePool: 1
+      poolName: 
+      bindPointName: 
+      attachToBindPoint: 0
+      localPosition: {x: 0, y: 0, z: 0}
+      localEulerAngles: {x: 0, y: 0, z: 0}
+      localScale: {x: 0, y: 0, z: 0}
+      destroyDelay: 0
+    hitBox:
+      shape: 0
+      localOffset: {x: 0, y: 0, z: 0}
+      localEulerAngles: {x: 0, y: 0, z: 0}
+      size: {x: 0, y: 0, z: 0}
+      radius: 0
+      capsuleHeight: 0
+      sectorAngle: 0
+      damage: 0
+      knockback: 0
+      targetLayer:
+        serializedVersion: 2
+        m_Bits: 0
+      hitOncePerTarget: 0
+      queryTriggerInteraction: 0
+      triggerHitStopOnHit: 1
+      hitStopOnHit:
+        stopDuration: 0.06
+        animationSpeedMultiplier: 0.05
+        affectSelf: 1
+        affectObjectsInRange: 0
+        affectedRadius: 3
+        affectedLayer:
+          serializedVersion: 2
+          m_Bits: 4294967295
+      spawnHitVFXOnHit: 1
+      hitVFX:
+        prefab: {fileID: 0}
+        usePool: 1
+        poolName: 
+        bindPointName: 
+        attachToBindPoint: 0
+        localPosition: {x: 0, y: 0, z: 0}
+        localEulerAngles: {x: 0, y: 0, z: 0}
+        localScale: {x: 1, y: 1, z: 1}
+        destroyDelay: 1.5
+    hitStop:
+      stopDuration: 0.06
+      animationSpeedMultiplier: 0.05
+      affectSelf: 1
+      affectObjectsInRange: 0
+      affectedRadius: 3
+      affectedLayer:
+        serializedVersion: 2
+        m_Bits: 128
+    speed:
+      animationSpeed: 0
+    movement:
+      distance: 1
+      localDirection: {x: 0, y: 0, z: 1}
+      horizontalOnly: 1
+      moveCurve:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 0
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 1
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4

@@ -7,10 +7,21 @@ public class BrushModeController : MonoBehaviour
     public float brushTimeScale = 0.15f;
     public float transitionDuration = 0.35f;
 
+    [Header("New Player")]
+    [SerializeField] private ActionPlayerController newPlayerController;
+
     public bool IsBrushMode { get; private set; }
 
     private const float DefaultFixedDeltaTime = 0.02f;
     private Tween timeTween;
+
+    private void Awake()
+    {
+        if (newPlayerController == null)
+        {
+            newPlayerController = FindObjectOfType<ActionPlayerController>();
+        }
+    }
 
     private void OnEnable()
     {
@@ -42,6 +53,11 @@ public class BrushModeController : MonoBehaviour
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.None;
 
+        if (newPlayerController != null)
+        {
+            newPlayerController.SetGameplayControlEnabled(false);
+        }
+
         EventCenter.Instance.EventTrigger<bool>(E_EventType.E_Player_ControlEnable, false);
         EventCenter.Instance.EventTrigger<bool>(E_EventType.E_Player_CombatEnable, false);
         EventCenter.Instance.EventTrigger<bool>(E_EventType.E_Camera_InputEnable, false);
@@ -64,6 +80,11 @@ public class BrushModeController : MonoBehaviour
 
         ChangeTimeScale(1f, () =>
         {
+            if (newPlayerController != null)
+            {
+                newPlayerController.SetGameplayControlEnabled(true);
+            }
+
             EventCenter.Instance.EventTrigger<bool>(E_EventType.E_Player_ControlEnable, true);
             EventCenter.Instance.EventTrigger<bool>(E_EventType.E_Player_CombatEnable, true);
             EventCenter.Instance.EventTrigger<bool>(E_EventType.E_Camera_InputEnable, true);
