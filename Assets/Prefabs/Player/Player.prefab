@@ -158,9 +158,6 @@ GameObject:
   - component: {fileID: 7856182803000044564}
   - component: {fileID: 8043345172028202198}
   - component: {fileID: 3662745343256671668}
-  - component: {fileID: 8426425043501306403}
-  - component: {fileID: 5351065477071039605}
-  - component: {fileID: 3731987736989055874}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -269,92 +266,9 @@ MonoBehaviour:
       _Names: []
     _Clip: {fileID: 7400000, guid: 566a6f5da45535b4db9c6ec91349b001, type: 2}
     _NormalizedStartTime: NaN
-  dodge:
-    _FadeDuration: 0.3
-    _Speed: 1
-    _Events:
-      _NormalizedTimes:
-      - 0.49920258
-      _Callbacks: []
-      _Names: []
-    _Clip: {fileID: 7400000, guid: 9f6b1796b23264341ba5ef84ce758ac3, type: 2}
-    _NormalizedStartTime: NaN
   references:
     version: 2
     RefIds: []
---- !u!114 &8426425043501306403
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8711962937741669046}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34faf6ce970c24a489b02e33c457e6ce, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HotUpdate::PlayerAfterImageSpawner
-  meshRoot: {fileID: 4016404615006289008}
-  ghostMaterial: {fileID: 2100000, guid: 94d85bc620add53488c797206dc7a0a2, type: 2}
-  lifetime: 0.45
-  startAlpha: 0.55
-  includeInactiveRenderers: 0
-  ghostRootName: Player_AfterImage_Ghost
-  positionOffset: {x: 0, y: 0, z: 0}
-  debugLog: 0
---- !u!114 &5351065477071039605
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8711962937741669046}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: befc275da4a026f4eaf7f17cf9705cd3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HotUpdate::PlayerPerfectDodgeController
-  perfectDodgeWindow: 1
-  invincibleWindow: 1
-  defaultThreatDuration: 0.35
-  allowThreatToTriggerWhenAlreadyDodging: 1
-  perfectDodgeInvincibleExtension: 0.35
-  afterImageSpawner: {fileID: 8426425043501306403}
-  spawnAfterImageOnPerfectDodge: 1
-  useHitPause: 1
-  hitPauseTimeScale: 0.08
-  hitPauseDuration: 0.08
-  debugLog: 1
-  showPerfectDodgeDebugText: 1
-  debugTextDuration: 0.6
-  perfectDodgeDebugText: PERFECT DODGE!
-  threatDebugText: ATTACK THREAT!
-  postProcessFeedback: {fileID: 0}
-  usePostProcessFeedback: 1
---- !u!114 &3731987736989055874
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8711962937741669046}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c0be1d1ccbdf2524eade08e81c021986, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HotUpdate::PlayerPerfectDodgePostProcess
-  targetVolume: {fileID: 0}
-  createMissingOverrides: 1
-  effectDuration: 3
-  useVignette: 1
-  vignetteColor: {r: 0.25, g: 0.75, b: 1, a: 1}
-  vignettePeakIntensity: 0.45
-  vignetteSmoothness: 0.55
-  useChromaticAberration: 1
-  chromaticPeakIntensity: 0.55
-  useBloom: 1
-  bloomPeakIntensity: 2.2
-  debugLog: 0
 --- !u!1001 &4011621375534348566
 PrefabInstance:
   m_ObjectHideFlags: 0

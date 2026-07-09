@@ -11,7 +11,6 @@ public class PlayerAnimationController : MonoBehaviour
         RunLoop,
         RunStop,
         Jump,
-        Dodge,
         Action
     }
 
@@ -221,21 +220,6 @@ public class PlayerAnimationController : MonoBehaviour
         animancerDriver.PlayJump();
     }
 
-    public void PlayDodge()
-    {
-        if (animancerDriver == null)
-        {
-            return;
-        }
-
-        StopLocomotionCoroutine();
-
-        isActionPlaying = true;
-        currentState = PlayerAnimState.Dodge;
-
-        animancerDriver.PlayDodge();
-    }
-
     public void ReturnToLocomotion(bool hasMoveInput)
     {
         if (animancerDriver == null)
@@ -265,11 +249,6 @@ public class PlayerAnimationController : MonoBehaviour
     public bool CanStartCombatAction()
     {
         if (currentState == PlayerAnimState.Jump)
-        {
-            return false;
-        }
-
-        if (currentState == PlayerAnimState.Dodge)
         {
             return false;
         }

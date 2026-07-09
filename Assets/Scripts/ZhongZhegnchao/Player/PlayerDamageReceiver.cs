@@ -7,9 +7,6 @@ public class PlayerDamageReceiver : MonoBehaviour, IDamageable
     [SerializeField] private int maxHp = 100;
     [SerializeField] private int currentHp = 100;
 
-    [Header("Perfect Dodge")]
-    [SerializeField] private PlayerPerfectDodgeController perfectDodgeController;
-
     [Header("Debug")]
     [SerializeField] private bool debugLog = true;
 
@@ -32,21 +29,7 @@ public class PlayerDamageReceiver : MonoBehaviour, IDamageable
 
     private void Awake()
     {
-        CacheReferences();
         ResetHp();
-    }
-
-    private void CacheReferences()
-    {
-        if (perfectDodgeController == null)
-        {
-            perfectDodgeController = GetComponent<PlayerPerfectDodgeController>();
-        }
-
-        if (perfectDodgeController == null)
-        {
-            perfectDodgeController = GetComponentInChildren<PlayerPerfectDodgeController>();
-        }
     }
 
     public void TakeDamage(DamageInfo damageInfo)
@@ -56,39 +39,20 @@ public class PlayerDamageReceiver : MonoBehaviour, IDamageable
             return;
         }
 
-        if (perfectDodgeController != null)
-        {
-            if (perfectDodgeController.TryPerfectDodge(damageInfo))
-            {
-                // 完美闪避成功：不扣血，不发受伤事件。
-                return;
-            }
-
-            if (perfectDodgeController.CanIgnoreDamageByInvincibleWindow())
-            {
-                if (debugLog)
-                {
-                    Debug.Log("[PlayerDamageReceiver] Damage ignored by invincible window.", this);
-                }
-
-                // 普通闪避无敌：不扣血，不发受伤事件。
-                return;
-            }
-        }
-
         ApplyDamage(damageInfo);
     }
 
     private void ApplyDamage(DamageInfo damageInfo)
     {
-        int damage = Mathf.Max(0, damageInfo.damage);
+        DamageInfo calculatedDamage = DamageCalculator.Calculate(damageInfo);
+        int damage = Mathf.Max(0, calculatedDamage.finalDamage);
 
         currentHp -= damage;
         currentHp = Mathf.Max(0, currentHp);
 
         bool willDie = currentHp <= 0;
 
-        TriggerPlayerDamagedEvent(damageInfo, damage, willDie);
+        TriggerPlayerDamagedEvent(calculatedDamage, damage, willDie);
 
         if (debugLog)
         {
@@ -105,7 +69,7 @@ public class PlayerDamageReceiver : MonoBehaviour, IDamageable
 
         if (willDie)
         {
-            OnDead(damageInfo);
+            OnDead(calculatedDamage);
         }
     }
 

@@ -2,9 +2,34 @@ using UnityEngine;
 
 public abstract class BrushSkillBase : MonoBehaviour
 {
-    [Header("Gesture Match")]
-    public string[] gestureNames;
+    [Header("Skill Match")]
     public float minScore = 0.65f;
+
+    [Header("Cast Context")]
+    public BrushCastContextBuilder castContextBuilder;
+
+    [Header("Caster")]
+    public GameObject caster;
+
+    protected abstract BrushSkillType SkillType { get; }
+
+    protected virtual void Awake()
+    {
+        if (castContextBuilder == null)
+        {
+            castContextBuilder = GetComponent<BrushCastContextBuilder>();
+        }
+
+        if (castContextBuilder == null)
+        {
+            castContextBuilder = GetComponentInChildren<BrushCastContextBuilder>();
+        }
+
+        if (caster == null)
+        {
+            caster = gameObject;
+        }
+    }
 
     protected virtual void OnEnable()
     {
@@ -30,25 +55,21 @@ public abstract class BrushSkillBase : MonoBehaviour
         if (result.score < minScore)
             return;
 
-        if (!IsMatchedGesture(result.gestureName))
+        if (result.skillType != SkillType)
             return;
 
-        Execute(result);
-    }
+        BrushCastContext context = null;
 
-    protected bool IsMatchedGesture(string gestureName)
-    {
-        if (gestureNames == null || gestureNames.Length == 0)
-            return false;
-
-        for (int i = 0; i < gestureNames.Length; i++)
+        if (castContextBuilder != null)
         {
-            if (gestureNames[i] == gestureName)
-                return true;
+            context = castContextBuilder.Build(result, caster);
         }
 
-        return false;
+        Execute(result, context);
     }
 
-    protected abstract void Execute(BrushGestureResult result);
+    protected abstract void Execute(
+        BrushGestureResult result,
+        BrushCastContext context
+    );
 }

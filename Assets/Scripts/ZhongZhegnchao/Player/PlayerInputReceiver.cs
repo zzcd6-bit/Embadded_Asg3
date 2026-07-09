@@ -9,7 +9,6 @@ public class PlayerInputReceiver : MonoBehaviour
     public event Action LockOnPressed;
 
     private bool jumpPressed;
-    private bool dodgePressed;
 
     private EventCenter cachedEventCenter;
     private InputMgr cachedInputMgr;
@@ -34,12 +33,6 @@ public class PlayerInputReceiver : MonoBehaviour
         cachedInputMgr.ChangeKeyboardInfo(
             E_EventType.E_Input_Jump,
             KeyCode.Space,
-            InputInfo.E_InputType.Down
-        );
-
-        cachedInputMgr.ChangeKeyboardInfo(
-            E_EventType.E_Input_Dodge,
-            KeyCode.LeftShift,
             InputInfo.E_InputType.Down
         );
 
@@ -73,11 +66,6 @@ public class PlayerInputReceiver : MonoBehaviour
         );
 
         cachedEventCenter.AddEventListener(
-            E_EventType.E_Input_Dodge,
-            OnDodgeInput
-        );
-
-        cachedEventCenter.AddEventListener(
             E_EventType.E_Input_Attack,
             OnAttackInput
         );
@@ -105,11 +93,6 @@ public class PlayerInputReceiver : MonoBehaviour
             cachedEventCenter.RemoveEventListener(
                 E_EventType.E_Input_Jump,
                 OnJumpInput
-            );
-
-            cachedEventCenter.RemoveEventListener(
-                E_EventType.E_Input_Dodge,
-                OnDodgeInput
             );
 
             cachedEventCenter.RemoveEventListener(
@@ -145,11 +128,6 @@ public class PlayerInputReceiver : MonoBehaviour
         jumpPressed = true;
     }
 
-    private void OnDodgeInput()
-    {
-        dodgePressed = true;
-    }
-
     private void OnAttackInput()
     {
         AttackPressed?.Invoke();
@@ -168,17 +146,6 @@ public class PlayerInputReceiver : MonoBehaviour
         }
 
         jumpPressed = false;
-        return true;
-    }
-
-    public bool ConsumeDodgePressed()
-    {
-        if (!dodgePressed)
-        {
-            return false;
-        }
-
-        dodgePressed = false;
         return true;
     }
 }

@@ -16,26 +16,12 @@ public class PlayerLocomotion : MonoBehaviour
     [SerializeField] private float jumpHeight = 1.2f;
     [SerializeField] private float minJumpAirTime = 0.12f;
 
-    [Header("Dodge")]
-    [SerializeField] private float dodgeDistance = 3f;
-    [SerializeField] private float dodgeDuration = 0.36f;
-    [SerializeField] private float dodgeCooldown = 1f;
-    [SerializeField] private float dodgeAnimationReturnDelay = 0.36f;
-
-    [Header("Dodge / Combat Rule")]
-    [SerializeField] private bool dodgeCanInterruptCombatAction = true;
-    [SerializeField] private bool allowDodgeWhenMoveLockedByCombatAction = true;
     [SerializeField] private bool skipReturnToLocomotionWhenActionPlaying = true;
 
     [Header("External Facing")]
     [SerializeField] private float defaultExternalFaceLockTime = 0.15f;
 
     public bool CanMove { get; set; } = true;
-
-    public bool IsDodging
-    {
-        get { return isDodging; }
-    }
 
     public bool IsJumping
     {
@@ -47,7 +33,6 @@ public class PlayerLocomotion : MonoBehaviour
     private PlayerAnimationController animationController;
 
     [Header("References")]
-    [SerializeField] private PlayerPerfectDodgeController perfectDodgeController;
     [SerializeField] private ActionPlayer actionPlayer;
 
     private Transform mainCameraTransform;
@@ -62,12 +47,6 @@ public class PlayerLocomotion : MonoBehaviour
     private bool isJumping;
     private bool hasLeftGround;
     private float jumpTimer;
-
-    private bool isDodging;
-    private float dodgeTimer;
-    private float dodgeAnimationTimer;
-    private float lastDodgeTime = -999f;
-    private Vector3 dodgeDirection;
 
     private float externalFaceLockTimer;
 
@@ -94,16 +73,6 @@ public class PlayerLocomotion : MonoBehaviour
 
     private void CacheReferences()
     {
-        if (perfectDodgeController == null)
-        {
-            perfectDodgeController = GetComponent<PlayerPerfectDodgeController>();
-        }
-
-        if (perfectDodgeController == null)
-        {
-            perfectDodgeController = GetComponentInChildren<PlayerPerfectDodgeController>();
-        }
-
         if (actionPlayer == null)
         {
             actionPlayer = GetComponent<ActionPlayer>();
@@ -142,14 +111,7 @@ public class PlayerLocomotion : MonoBehaviour
 
         ApplyGravity(isGroundedBeforeMove);
 
-        if (isDodging)
-        {
-            UpdateDodge();
-        }
-        else
-        {
-            UpdateNormalMove(input);
-        }
+        UpdateNormalMove(input);
 
         UpdateJumpGroundState();
     }
@@ -173,27 +135,16 @@ public class PlayerLocomotion : MonoBehaviour
     {
         if (inputReceiver.ConsumeJumpPressed())
         {
-            // Jump 仍然需要 CanMove，避免攻击锁移动时跳跃。
             if (CanMove)
             {
                 TryJump(isGrounded);
             }
-        }
-
-        if (inputReceiver.ConsumeDodgePressed())
-        {
-            TryDodge(input, isGrounded);
         }
     }
 
     private void TryJump(bool isGrounded)
     {
         if (!isGrounded)
-        {
-            return;
-        }
-
-        if (isDodging)
         {
             return;
         }
@@ -255,118 +206,6 @@ public class PlayerLocomotion : MonoBehaviour
         animationController?.ReturnToLocomotion(hasMoveInput);
     }
 
-    private void TryDodge(Vector2 input, bool isGrounded)
-    {
-        if (!isGrounded)
-        {
-            return;
-        }
-
-        if (isDodging || isJumping)
-        {
-            return;
-        }
-
-        if (Time.time - lastDodgeTime < dodgeCooldown)
-        {
-            return;
-        }
-
-        bool combatActionPlaying = IsCombatActionPlaying();
-
-        // 如果 CanMove=false，但是当前是攻击动作，可以允许 Dodge 取消攻击。
-        if (!CanMove)
-        {
-            bool canDodgeByCancelAction =
-                allowDodgeWhenMoveLockedByCombatAction &&
-                combatActionPlaying;
-
-            if (!canDodgeByCancelAction)
-            {
-                return;
-            }
-        }
-
-        Vector3 moveDirection = GetCameraRelativeMoveDirection(input);
-
-        if (moveDirection.sqrMagnitude <= 0.0001f)
-        {
-            moveDirection = transform.forward;
-        }
-
-        dodgeDirection = moveDirection.normalized;
-        lastMoveDirection = dodgeDirection;
-
-        externalFaceLockTimer = 0f;
-        RotateToMoveDirection(dodgeDirection);
-
-        // 关键：
-        // 如果攻击中允许 Dodge 取消攻击，这里要先清理 ActionPlayer 状态。
-        if (dodgeCanInterruptCombatAction && combatActionPlaying)
-        {
-            InterruptCombatAction();
-        }
-
-        isDodging = true;
-        dodgeTimer = 0f;
-        dodgeAnimationTimer = 0f;
-        lastDodgeTime = Time.time;
-
-        currentMoveAmount = 0f;
-
-        perfectDodgeController?.BeginDodgeWindow();
-
-        animationController?.PlayDodge();
-    }
-
-    private void UpdateDodge()
-    {
-        dodgeTimer += Time.deltaTime;
-        dodgeAnimationTimer += Time.deltaTime;
-
-        if (dodgeTimer <= dodgeDuration)
-        {
-            float dodgeSpeed = dodgeDistance / dodgeDuration;
-
-            Vector3 dodgeMove =
-                dodgeDirection * dodgeSpeed +
-                Vector3.up * verticalVelocity;
-
-            characterController.Move(dodgeMove * Time.deltaTime);
-        }
-        else
-        {
-            Vector3 fallMove = Vector3.up * verticalVelocity;
-            characterController.Move(fallMove * Time.deltaTime);
-        }
-
-        if (dodgeAnimationTimer >= dodgeAnimationReturnDelay)
-        {
-            FinishDodge();
-        }
-    }
-
-    private void FinishDodge()
-    {
-        if (!isDodging)
-        {
-            return;
-        }
-
-        isDodging = false;
-
-        // 关键：
-        // 如果 Dodge 结束这一刻，攻击动作已经开始播放，
-        // 就不要强制 ReturnToLocomotion，否则会覆盖攻击动作。
-        if (skipReturnToLocomotionWhenActionPlaying && IsCombatActionPlaying())
-        {
-            return;
-        }
-
-        bool hasMoveInput = inputReceiver.MoveInput.magnitude > 0.1f;
-        animationController?.ReturnToLocomotion(hasMoveInput);
-    }
-
     private void UpdateNormalMove(Vector2 input)
     {
         if (!CanMove)
@@ -415,7 +254,7 @@ public class PlayerLocomotion : MonoBehaviour
             RotateToMoveDirection(moveDirection);
         }
 
-        if (!isJumping && !isDodging)
+        if (!isJumping)
         {
             animationController?.SetLocomotion(currentMoveAmount, hasMoveInput);
         }
@@ -424,16 +263,6 @@ public class PlayerLocomotion : MonoBehaviour
     private bool IsCombatActionPlaying()
     {
         return actionPlayer != null && actionPlayer.IsActionPlaying;
-    }
-
-    private void InterruptCombatAction()
-    {
-        if (actionPlayer == null)
-        {
-            return;
-        }
-
-        actionPlayer.InterruptAction();
     }
 
     private void UpdateCameraReference()

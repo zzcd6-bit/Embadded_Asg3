@@ -19,6 +19,7 @@ public class ActionPlayer : MonoBehaviour, IHitStopReceiver
     private CharacterController characterController;
 
     [SerializeField] private PlayerLocomotion locomotion;
+    [SerializeField] private PlayerElementInfusion elementInfusion;
 
     private bool lockedMovementByAction;
 
@@ -97,6 +98,11 @@ public class ActionPlayer : MonoBehaviour, IHitStopReceiver
         {
             characterController = GetComponent<CharacterController>();
         }
+
+        if (elementInfusion == null)
+        {
+            elementInfusion = GetComponent<PlayerElementInfusion>();
+        }   
     }
 
     private void Update()
@@ -678,12 +684,40 @@ public class ActionPlayer : MonoBehaviour, IHitStopReceiver
                 knockback = data.knockback,
                 hitPoint = hitCollider.ClosestPoint(transform.position),
                 hitDirection = (hitCollider.transform.position - transform.position).normalized,
-                sourceAction = currentAction
+                sourceAction = currentAction,
+
+                element = ElementType.Physical,
+                canApplyElementStatus = false,
+
+                skillMultiplier = 1f,
+                damageBonus = 0f,
+                reactionMultiplier = 1f,
+                canCrit = true
             };
+
+            if (elementInfusion != null)
+            {
+                elementInfusion.ApplyToDamageInfo(ref damageInfo);
+            }
 
             if (damageable != null)
             {
                 damageable.TakeDamage(damageInfo);
+
+                if (elementInfusion != null && damageInfo.canApplyElementStatus)
+                {
+                    Component damageComponent = damageable as Component;
+
+                    GameObject targetObject = damageComponent != null
+                        ? damageComponent.gameObject
+                        : hitCollider.gameObject;
+
+                    elementInfusion.ApplyElementStatusToTarget(
+                        targetObject,
+                        gameObject
+                    );
+                }
+
                 TriggerHitFeedback(data, damageInfo);
             }
             else if (logHitWithoutDamageable)

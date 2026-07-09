@@ -2,21 +2,41 @@ using UnityEngine;
 
 public class EnemyWhitebox : MonoBehaviour, IDamageable
 {
-    public int hp = 3;
+    [Header("HP")]
+    public int maxHp = 100;
+    public int currentHp = 100;
+
+    [Header("Debug")]
+    public bool debugLog = true;
+
+    private void Awake()
+    {
+        currentHp = maxHp;
+    }
 
     public void TakeDamage(DamageInfo damageInfo)
     {
-        int damage = Mathf.Max(0, damageInfo.damage);
+        DamageInfo calculatedDamage = DamageCalculator.Calculate(damageInfo);
 
-        hp -= damage;
+        int damage = Mathf.Max(0, calculatedDamage.finalDamage);
 
-        Debug.Log($"{gameObject.name} took {damage} damage. HP = {hp}");
+        currentHp -= damage;
+        currentHp = Mathf.Max(0, currentHp);
 
-        transform.localScale *= 0.9f;
-
-        if (hp <= 0)
+        if (debugLog)
         {
-            Destroy(gameObject);
+            Debug.Log(
+                $"[EnemyDamageReceiver] Damage={damage}, " +
+                $"Element={calculatedDamage.element}, " +
+                $"Crit={calculatedDamage.isCritical}, " +
+                $"HP={currentHp}/{maxHp}",
+                this
+            );
+        }
+
+        if (currentHp <= 0)
+        {
+            Debug.Log("[EnemyDamageReceiver] Enemy Dead.", this);
         }
     }
 }

@@ -3,9 +3,10 @@ using UnityEngine;
 
 public class SlashBrushSkill : BrushSkillBase
 {
-    [Header("Camera Mapping")]
-    public Camera worldCamera;
-    public Camera strokeViewCamera;
+    protected override BrushSkillType SkillType
+    {
+        get { return BrushSkillType.Slash; }
+    }
 
     [Header("Slash Detection")]
     public LayerMask targetLayer;
@@ -19,14 +20,31 @@ public class SlashBrushSkill : BrushSkillBase
     [Header("Debug")]
     public bool drawDebugRay = true;
 
-    protected override void Execute(BrushGestureResult result)
+    protected override void Execute(BrushGestureResult result, BrushCastContext context)
     {
-        if (worldCamera == null)
-            worldCamera = Camera.main;
-
-        if (worldCamera == null)
+        if (context != null)
         {
-            UnityEngine.Debug.LogWarning("SlashBrushSkill: WorldCamera is missing.");
+            Debug.Log(
+                $"[SlashBrushSkill] Context created. " +
+                $"HasTarget: {context.hasTarget}, " +
+                $"HasGround: {context.hasGroundPoint}, " +
+                $"CenterPoint: {context.centerScreenPoint}"
+            );
+        }
+        else
+        {
+            Debug.LogWarning("[SlashBrushSkill] Cast context is null.");
+        }
+
+        if (castContextBuilder == null)
+        {
+            Debug.LogWarning("[SlashBrushSkill] CastContextBuilder is missing.");
+            return;
+        }
+
+        if (context == null)
+        {
+            Debug.LogWarning("[SlashBrushSkill] BrushCastContext is null.");
             return;
         }
 
@@ -44,7 +62,7 @@ public class SlashBrushSkill : BrushSkillBase
 
             Vector2 screenPoint = screenPoints[index];
 
-            Ray ray = GetWorldRayFromStrokePoint(screenPoint);
+            Ray ray = castContextBuilder.GetWorldRayFromStrokePoint(screenPoint);
 
             if (drawDebugRay)
                 UnityEngine.Debug.DrawRay(ray.origin, ray.direction * rayDistance, Color.red, 1.5f);
@@ -78,13 +96,21 @@ public class SlashBrushSkill : BrushSkillBase
 
                 DamageInfo damageInfo = new DamageInfo
                 {
-                    attacker = gameObject,
+                    attacker = context.caster != null ? context.caster : gameObject,
                     target = targetObject,
                     damage = damage,
                     knockback = 0f,
                     hitPoint = hit.point,
                     hitDirection = ray.direction,
-                    sourceAction = null
+                    sourceAction = null,
+
+                    element = ElementType.Physical,
+                    canApplyElementStatus = false,
+
+                    skillMultiplier = 0.8f,
+                    damageBonus = 0f,
+                    reactionMultiplier = 1f,
+                    canCrit = true
                 };
 
                 hitTargets.Add(damageable, damageInfo);
@@ -97,31 +123,5 @@ public class SlashBrushSkill : BrushSkillBase
         }
 
         UnityEngine.Debug.Log($"Slash executed. Damage target count: {hitTargets.Count}");
-    }
-
-    private Ray GetWorldRayFromStrokePoint(Vector2 screenPoint)
-    {
-        Vector3 viewportPoint;
-
-        if (strokeViewCamera != null)
-        {
-            viewportPoint = strokeViewCamera.ScreenToViewportPoint(
-                new Vector3(screenPoint.x, screenPoint.y, 0f)
-            );
-        }
-        else
-        {
-            viewportPoint = new Vector3(
-                screenPoint.x / Screen.width,
-                screenPoint.y / Screen.height,
-                0f
-            );
-        }
-
-        viewportPoint.x = Mathf.Clamp01(viewportPoint.x);
-        viewportPoint.y = Mathf.Clamp01(viewportPoint.y);
-        viewportPoint.z = 0f;
-
-        return worldCamera.ViewportPointToRay(viewportPoint);
     }
 }

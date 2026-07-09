@@ -6,7 +6,6 @@ public class PlayerCombatInputHandler : MonoBehaviour
     private CombatActionManager combatActionManager;
     private PlayerAnimationController animationController;
     private PlayerLockOnController lockOnController;
-    private PlayerLocomotion playerLocomotion;
 
     private string normalAttackActionId;
 
@@ -29,16 +28,9 @@ public class PlayerCombatInputHandler : MonoBehaviour
         animationController = animController;
         lockOnController = playerLockOnController;
 
-        CacheReferences();
-
         initialized = true;
 
         BindInput();
-    }
-
-    private void Awake()
-    {
-        CacheReferences();
     }
 
     private void OnEnable()
@@ -52,19 +44,6 @@ public class PlayerCombatInputHandler : MonoBehaviour
     private void OnDisable()
     {
         UnbindInput();
-    }
-
-    private void CacheReferences()
-    {
-        if (playerLocomotion == null)
-        {
-            playerLocomotion = GetComponent<PlayerLocomotion>();
-        }
-
-        if (playerLocomotion == null)
-        {
-            playerLocomotion = GetComponentInChildren<PlayerLocomotion>();
-        }
     }
 
     private void BindInput()
@@ -100,13 +79,6 @@ public class PlayerCombatInputHandler : MonoBehaviour
 
     private void OnAttackPressed()
     {
-        CacheReferences();
-
-        // Dodge ÆÚ¼ä²»ÔÊÐí¹¥»÷£¬±ÜÃâ Dodge ºÍ Attack ÇÀ¶¯»­ / ÇÀ×´Ì¬¡£
-        if (playerLocomotion != null && playerLocomotion.IsDodging)
-        {
-            return;
-        }
 
         if (animationController != null && !animationController.CanStartCombatAction())
         {

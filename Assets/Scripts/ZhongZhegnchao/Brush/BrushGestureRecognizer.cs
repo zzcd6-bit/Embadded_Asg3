@@ -6,7 +6,11 @@ public class BrushGestureRecognizer : MonoBehaviour
 {
     [Header("Recognition")]
     public float minScore = 0.65f;
+
+    [Header("Runtime Templates")]
     public bool useRuntimeSlashTemplate = true;
+    public bool useRuntimeFireTemplate = true;
+    public bool useRuntimeBridgeTemplate = true;
 
     [Header("Brush Mode")]
     public bool exitBrushModeOnRecognized = true;
@@ -20,12 +24,17 @@ public class BrushGestureRecognizer : MonoBehaviour
             AddRuntimeSlashTemplate();
         }
 
-        // 如果你之后有 XML 手势模板，也可以继续用 Resources 加载
-        // TextAsset[] gesturesXml = Resources.LoadAll<TextAsset>("GestureSet/10-stylus-MEDIUM/");
-        // foreach (TextAsset gestureXml in gesturesXml)
-        // {
-        //     trainingSet.Add(GestureIO.ReadGestureFromXML(gestureXml.text));
-        // }
+        if (useRuntimeFireTemplate)
+        {
+            AddRuntimeFireTemplate();
+        }
+
+        if (useRuntimeBridgeTemplate)
+        {
+            AddRuntimeBridgeTemplate();
+        }
+
+        Debug.Log($"[BrushGestureRecognizer] Training templates loaded: {trainingSet.Count}");
     }
 
     private void OnEnable()
@@ -42,6 +51,24 @@ public class BrushGestureRecognizer : MonoBehaviour
             E_EventType.E_Brush_StrokeFinished,
             OnStrokeFinished
         );
+    }
+
+    private BrushSkillType GetSkillTypeFromGestureName(string gestureName)
+    {
+        switch (gestureName)
+        {
+            case "Slash":
+                return BrushSkillType.Slash;
+
+            case "Fire":
+                return BrushSkillType.Fire;
+
+            case "Bridge":
+                return BrushSkillType.Bridge;
+
+            default:
+                return BrushSkillType.None;
+        }
     }
 
     private void OnStrokeFinished(BrushStrokeData strokeData)
@@ -63,13 +90,18 @@ public class BrushGestureRecognizer : MonoBehaviour
         Gesture candidate = new Gesture(candidatePoints);
         Result result = PointCloudRecognizer.Classify(candidate, trainingSet.ToArray());
 
-        Debug.Log($"Gesture Result: {result.GestureClass}, Score: {result.Score}");
+        BrushSkillType skillType = GetSkillTypeFromGestureName(result.GestureClass);
+
+        Debug.Log(
+            $"Gesture Result: {result.GestureClass}, Skill: {skillType}, Score: {result.Score}"
+        );
 
         if (result.Score < minScore)
             return;
 
         BrushGestureResult brushResult = new BrushGestureResult(
             result.GestureClass,
+            skillType,
             result.Score,
             strokeData
         );
@@ -120,5 +152,72 @@ public class BrushGestureRecognizer : MonoBehaviour
         );
 
         trainingSet.Add(slashGesture);
+    }
+
+    private void AddRuntimeFireTemplate()
+    {
+        List<Point> firePoints = new List<Point>();
+
+        // Fire 符号：一笔画火焰形状
+        // 大概形状：
+        //   /\  /\
+        //  /  \/  \
+        // /        \
+        AddLine(firePoints, new Vector2(0f, 100f), new Vector2(40f, 0f), 8);
+        AddLine(firePoints, new Vector2(40f, 0f), new Vector2(70f, 70f), 8);
+        AddLine(firePoints, new Vector2(70f, 70f), new Vector2(100f, 10f), 8);
+        AddLine(firePoints, new Vector2(100f, 10f), new Vector2(140f, 100f), 8);
+
+        Gesture fireGesture = new Gesture(
+            firePoints.ToArray(),
+            "Fire"
+        );
+
+        trainingSet.Add(fireGesture);
+    }
+
+
+    private void AddRuntimeBridgeTemplate()
+    {
+        List<Point> bridgePoints = new List<Point>();
+
+        // Bridge 符号：一笔画拱桥形状
+        // 大概形状：
+        //   __
+        // /    \
+        for (int i = 0; i < 32; i++)
+        {
+            float t = i / 31f;
+
+            float x = Mathf.Lerp(0f, 160f, t);
+
+            // 用 sin 做一个拱形
+            float y = Mathf.Sin(t * Mathf.PI) * -80f;
+
+            bridgePoints.Add(new Point(x, y, 0));
+        }
+
+        Gesture bridgeGesture = new Gesture(
+            bridgePoints.ToArray(),
+            "Bridge"
+        );
+
+        trainingSet.Add(bridgeGesture);
+    }
+
+    private void AddLine(List<Point> points, Vector2 from, Vector2 to, int count)
+    {
+        if (points == null)
+            return;
+
+        count = Mathf.Max(2, count);
+
+        for (int i = 0; i < count; i++)
+        {
+            float t = i / (float)(count - 1);
+            Vector2 p = Vector2.Lerp(from, to, t);
+
+            points.Add(new Point(p.x, p.y, 0));
+        }
     }
 }
