@@ -5032,7 +5032,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   placementController: {fileID: 2146300301}
   gridVisual: {fileID: 2146300403}
-  slot1Item: {fileID: 11400000, guid: 56ad8ed871474a5dba8d52eb5d941f28, type: 2}
+  buildObjects:
+  - index: 1
+    item: {fileID: 11400000, guid: 56ad8ed871474a5dba8d52eb5d941f28, type: 2}
   exitBuildModeAfterPlacement: 1
 --- !u!4 &2146300202
 Transform:
@@ -5182,11 +5184,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridPlacementSystem: {fileID: 2146300401}
   targetCamera: {fileID: 1964026415}
+  centerTarget: {fileID: 0}
   radiusInCells: 12
   surfaceOffset: 0.035
   navMeshSampleDistance: 0.45
   lineWidth: 0.025
   lineColor: {r: 0.2, g: 0.95, b: 0.85, a: 0.42}
+  occupiedCellColor: {r: 1, g: 0.12, b: 0.08, a: 0.5}
 --- !u!4 &2146300402
 Transform:
   m_ObjectHideFlags: 0

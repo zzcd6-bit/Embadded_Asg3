@@ -67,6 +67,12 @@ public class GridPlacementSystem : MonoBehaviour
         return data;
     }
 
+    public bool IsCellUnavailable(Vector2Int cell)
+    {
+        return cells.TryGetValue(cell, out CellData data)
+            && (data.isOccupied || data.isBlocked);
+    }
+
     //Calculates every cell covered by a footprint at the pivot cell.
     //根据 pivot cell 计算该占地区域覆盖的所有格子。
     public IReadOnlyList<Vector2Int> GetOccupiedCells(Vector2Int pivotCell, Vector2Int size, int rotationSteps)

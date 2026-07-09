@@ -40,7 +40,7 @@ public class GameEntry : MonoBehaviour
         );
         // Ye build placement input bridge: register rune placement test controls in the existing InputMgr.
         InputMgr.Instance.ChangeKeyboardInfo(
-            E_EventType.E_Build_StartItem1,
+            E_EventType.E_Build_TestStartItem1,
             KeyCode.Alpha1,
             InputInfo.E_InputType.Down
         );

@@ -1,19 +1,20 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class BuildModeController : MonoBehaviour
 {
-    private const string DefaultSlot1ResourcePath = "BuildingData/Items/Slot1Bridge";
-
     public static BuildModeController Instance { get; private set; }
 
     [SerializeField] private PlacementController placementController;
     [SerializeField] private NavMeshPlacementGridVisual gridVisual;
-    [SerializeField] private BuildableItemData slot1Item;
+    [SerializeField] private List<BuildObjectEntry> buildObjects = new();
     [SerializeField] private bool exitBuildModeAfterPlacement = true;
 
     private bool wasPlacing;
 
     public bool IsBuildMode { get; private set; }
+    public IReadOnlyList<BuildObjectEntry> BuildObjects => buildObjects;
 
     private void Awake()
     {
@@ -33,12 +34,12 @@ public class BuildModeController : MonoBehaviour
     // Ye build placement input bridge: test hotkey for rune-to-placement flow.
     private void OnEnable()
     {
-        EventCenter.Instance.AddEventListener(E_EventType.E_Build_StartItem1, StartSlot1Placement);
+        EventCenter.Instance.AddEventListener(E_EventType.E_Build_TestStartItem1, StartTestSlot1Placement);
     }
 
     private void OnDisable()
     {
-        EventCenter.Instance.RemoveEventListener(E_EventType.E_Build_StartItem1, StartSlot1Placement);
+        EventCenter.Instance.RemoveEventListener(E_EventType.E_Build_TestStartItem1, StartTestSlot1Placement);
     }
 
     private void Start()
@@ -81,28 +82,37 @@ public class BuildModeController : MonoBehaviour
         wasPlacing = placementController.IsPlacing;
     }
 
-    private void StartSlot1Placement()
+    public bool TryBuildObject(int index)
     {
-        BuildableItemData item = GetSlot1Item();
+        BuildableItemData item = GetBuildObject(index);
         if (item == null)
         {
-            Debug.LogWarning("[Ye Build] Pressed 1, but slot 1 item data was not found.");
-            return;
+            Debug.LogWarning($"[Ye Build] Build object index {index} was not found.");
+            return false;
         }
 
-        // Ye build placement input bridge: confirms the test rune/number-key item request.
-        Debug.Log($"[Ye Build] Pressed 1: confirmed item 1 placement request ({item.DisplayName}).");
+        Debug.Log($"[Ye Build] Confirmed build object {index} placement request ({item.DisplayName}).");
         StartPlacement(item);
+        return placementController != null && placementController.IsPlacing;
     }
 
-    private BuildableItemData GetSlot1Item()
+    private void StartTestSlot1Placement()
     {
-        if (slot1Item == null)
+        TryBuildObject(1);
+    }
+
+    private BuildableItemData GetBuildObject(int index)
+    {
+        for (int i = 0; i < buildObjects.Count; i++)
         {
-            slot1Item = Resources.Load<BuildableItemData>(DefaultSlot1ResourcePath);
+            BuildObjectEntry entry = buildObjects[i];
+            if (entry.Index == index)
+            {
+                return entry.Item;
+            }
         }
 
-        return slot1Item;
+        return null;
     }
 
     public void SetBuildMode(bool enabled)
@@ -137,5 +147,15 @@ public class BuildModeController : MonoBehaviour
                 placementController.CancelPlacement();
             }
         }
+    }
+
+    [Serializable]
+    public class BuildObjectEntry
+    {
+        [SerializeField] private int index = 1;
+        [SerializeField] private BuildableItemData item;
+
+        public int Index => index;
+        public BuildableItemData Item => item;
     }
 }

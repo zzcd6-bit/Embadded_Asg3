@@ -6,16 +6,21 @@ public class NavMeshPlacementGridVisual : MonoBehaviour
 {
     [SerializeField] private GridPlacementSystem gridPlacementSystem;
     [SerializeField] private Camera targetCamera;
+    [SerializeField] private Transform centerTarget;
     [SerializeField] private int radiusInCells = 12;
     [SerializeField] private float surfaceOffset = 0.035f;
     [SerializeField] private float navMeshSampleDistance = 0.45f;
     [SerializeField] private float lineWidth = 0.025f;
     [SerializeField] private Color lineColor = new(0.2f, 0.95f, 0.85f, 0.42f);
+    [SerializeField] private Color occupiedCellColor = new(1f, 0.12f, 0.08f, 0.5f);
 
     private readonly List<LineRenderer> linePool = new();
+    private readonly List<MeshRenderer> occupiedCellPool = new();
     private Material generatedLineMaterial;
+    private Material generatedOccupiedCellMaterial;
     private bool isVisible;
     private int usedLineCount;
+    private int usedOccupiedCellCount;
 
     private Camera ActiveCamera
     {
@@ -37,6 +42,7 @@ public class NavMeshPlacementGridVisual : MonoBehaviour
             gridPlacementSystem = GetComponent<GridPlacementSystem>();
         }
 
+        ResolveCenterTarget();
         SetVisible(false);
     }
 
@@ -67,6 +73,7 @@ public class NavMeshPlacementGridVisual : MonoBehaviour
         int radius = Mathf.Max(1, radiusInCells);
 
         usedLineCount = 0;
+        usedOccupiedCellCount = 0;
 
         for (int x = centerCell.x - radius; x < centerCell.x + radius; x++)
         {
@@ -84,14 +91,42 @@ public class NavMeshPlacementGridVisual : MonoBehaviour
             }
         }
 
+        for (int x = centerCell.x - radius; x <= centerCell.x + radius; x++)
+        {
+            for (int y = centerCell.y - radius; y <= centerCell.y + radius; y++)
+            {
+                DrawOccupiedCell(new Vector2Int(x, y));
+            }
+        }
+
         for (int i = usedLineCount; i < linePool.Count; i++)
         {
             linePool[i].gameObject.SetActive(false);
+        }
+
+        for (int i = usedOccupiedCellCount; i < occupiedCellPool.Count; i++)
+        {
+            occupiedCellPool[i].gameObject.SetActive(false);
         }
     }
 
     private Vector3 GetGridCenter()
     {
+        if (centerTarget == null)
+        {
+            ResolveCenterTarget();
+        }
+
+        if (centerTarget != null)
+        {
+            if (TrySampleNavMesh(centerTarget.position, out Vector3 playerNavMeshPoint))
+            {
+                return playerNavMeshPoint;
+            }
+
+            return centerTarget.position;
+        }
+
         Camera camera = ActiveCamera;
         if (camera == null)
         {
@@ -113,6 +148,35 @@ public class NavMeshPlacementGridVisual : MonoBehaviour
         return transform.position;
     }
 
+    private void ResolveCenterTarget()
+    {
+        ActionPlayerController actionPlayer = FindAnyObjectByType<ActionPlayerController>();
+        if (actionPlayer != null)
+        {
+            centerTarget = actionPlayer.transform;
+            return;
+        }
+
+        if (PlayerController.instance != null)
+        {
+            centerTarget = PlayerController.instance.transform;
+            return;
+        }
+
+        PlayerController legacyPlayer = FindAnyObjectByType<PlayerController>();
+        if (legacyPlayer != null)
+        {
+            centerTarget = legacyPlayer.transform;
+            return;
+        }
+
+        GameObject taggedPlayer = GameObject.FindWithTag("Player");
+        if (taggedPlayer != null)
+        {
+            centerTarget = taggedPlayer.transform;
+        }
+    }
+
     private void DrawSegment(Vector2Int fromCell, Vector2Int toCell)
     {
         if (!TrySampleNavMesh(gridPlacementSystem.CellToWorld(fromCell), out Vector3 from)
@@ -127,6 +191,27 @@ public class NavMeshPlacementGridVisual : MonoBehaviour
         LineRenderer line = GetLine();
         line.SetPosition(0, from);
         line.SetPosition(1, to);
+    }
+
+    private void DrawOccupiedCell(Vector2Int cell)
+    {
+        if (!gridPlacementSystem.IsCellUnavailable(cell))
+        {
+            return;
+        }
+
+        if (!TrySampleNavMesh(gridPlacementSystem.CellToWorld(cell), out Vector3 position))
+        {
+            return;
+        }
+
+        position.y += surfaceOffset + 0.006f;
+
+        MeshRenderer cellRenderer = GetOccupiedCell();
+        Transform cellTransform = cellRenderer.transform;
+        cellTransform.position = position;
+        cellTransform.rotation = Quaternion.Euler(90f, 0f, 0f);
+        cellTransform.localScale = Vector3.one * gridPlacementSystem.CellSize * 0.92f;
     }
 
     private bool TrySampleNavMesh(Vector3 position, out Vector3 navMeshPosition)
@@ -174,6 +259,38 @@ public class NavMeshPlacementGridVisual : MonoBehaviour
         return line;
     }
 
+    private MeshRenderer GetOccupiedCell()
+    {
+        if (usedOccupiedCellCount >= occupiedCellPool.Count)
+        {
+            occupiedCellPool.Add(CreateOccupiedCell());
+        }
+
+        MeshRenderer cell = occupiedCellPool[usedOccupiedCellCount];
+        usedOccupiedCellCount++;
+        cell.gameObject.SetActive(true);
+        return cell;
+    }
+
+    private MeshRenderer CreateOccupiedCell()
+    {
+        GameObject cellObject = GameObject.CreatePrimitive(PrimitiveType.Quad);
+        cellObject.name = "Occupied Grid Cell";
+        cellObject.transform.SetParent(transform, false);
+
+        Collider collider = cellObject.GetComponent<Collider>();
+        if (collider != null)
+        {
+            Destroy(collider);
+        }
+
+        MeshRenderer renderer = cellObject.GetComponent<MeshRenderer>();
+        renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        renderer.receiveShadows = false;
+        renderer.sharedMaterial = GetOccupiedCellMaterial();
+        return renderer;
+    }
+
     private Material GetLineMaterial()
     {
         if (generatedLineMaterial != null)
@@ -197,12 +314,75 @@ public class NavMeshPlacementGridVisual : MonoBehaviour
             generatedLineMaterial.SetFloat("_Surface", 1f);
         }
 
+        if (generatedLineMaterial.HasProperty("_Blend"))
+        {
+            generatedLineMaterial.SetFloat("_Blend", 0f);
+        }
+
+        if (generatedLineMaterial.HasProperty("_SrcBlend"))
+        {
+            generatedLineMaterial.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.SrcAlpha);
+        }
+
+        if (generatedLineMaterial.HasProperty("_DstBlend"))
+        {
+            generatedLineMaterial.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+        }
+
         if (generatedLineMaterial.HasProperty("_ZWrite"))
         {
             generatedLineMaterial.SetFloat("_ZWrite", 0f);
         }
 
+        generatedLineMaterial.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
         return generatedLineMaterial;
+    }
+
+    private Material GetOccupiedCellMaterial()
+    {
+        if (generatedOccupiedCellMaterial != null)
+        {
+            return generatedOccupiedCellMaterial;
+        }
+
+        Shader shader = Shader.Find("Universal Render Pipeline/Unlit");
+        shader ??= Shader.Find("Sprites/Default");
+        shader ??= Shader.Find("Unlit/Color");
+
+        generatedOccupiedCellMaterial = new Material(shader)
+        {
+            name = "Generated Occupied Grid Cell Material",
+            color = occupiedCellColor,
+            renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent
+        };
+
+        if (generatedOccupiedCellMaterial.HasProperty("_Surface"))
+        {
+            generatedOccupiedCellMaterial.SetFloat("_Surface", 1f);
+        }
+
+        if (generatedOccupiedCellMaterial.HasProperty("_Blend"))
+        {
+            generatedOccupiedCellMaterial.SetFloat("_Blend", 0f);
+        }
+
+        if (generatedOccupiedCellMaterial.HasProperty("_SrcBlend"))
+        {
+            generatedOccupiedCellMaterial.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.SrcAlpha);
+        }
+
+        if (generatedOccupiedCellMaterial.HasProperty("_DstBlend"))
+        {
+            generatedOccupiedCellMaterial.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+        }
+
+        if (generatedOccupiedCellMaterial.HasProperty("_ZWrite"))
+        {
+            generatedOccupiedCellMaterial.SetFloat("_ZWrite", 0f);
+        }
+
+        generatedOccupiedCellMaterial.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+        return generatedOccupiedCellMaterial;
     }
 
     private void HideAllLines()
@@ -212,6 +392,12 @@ public class NavMeshPlacementGridVisual : MonoBehaviour
             linePool[i].gameObject.SetActive(false);
         }
 
+        for (int i = 0; i < occupiedCellPool.Count; i++)
+        {
+            occupiedCellPool[i].gameObject.SetActive(false);
+        }
+
         usedLineCount = 0;
+        usedOccupiedCellCount = 0;
     }
 }

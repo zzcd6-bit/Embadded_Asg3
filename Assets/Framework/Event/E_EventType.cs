@@ -40,7 +40,7 @@ public enum E_EventType
 
     #region Ye Build Placement Input Bridge
     // Ye build placement input bridge: events routed through InputMgr so build mode can coexist with ZhongZhengchao input.
-    E_Build_StartItem1,
+    E_Build_TestStartItem1,
     E_Build_PlacementConfirm,
     E_Build_PlacementCancel,
     E_Build_PlacementRotate,
