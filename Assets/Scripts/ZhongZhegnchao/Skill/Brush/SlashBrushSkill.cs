@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 public class SlashBrushSkill : BrushSkillBase
 {
@@ -8,20 +9,26 @@ public class SlashBrushSkill : BrushSkillBase
         get { return BrushSkillType.Slash; }
     }
 
-    [Header("Slash Detection")]
-    public LayerMask targetLayer;
-    public float rayDistance = 200f;
-    public float sphereRadius = 1.5f;
-    public int sampleCount = 12;
-
-    [Header("Damage")]
-    public int damage = 1;
+    [Header("Config")]
+    public BrushSkillConfig config;
 
     [Header("Debug")]
     public bool drawDebugRay = true;
 
     protected override void Execute(BrushGestureResult result, BrushCastContext context)
     {
+        if (config == null)
+        {
+            Debug.LogWarning("[SlashBrushSkill] Config is missing.");
+            return;
+        }
+
+        if (config.skillType != BrushSkillType.Slash)
+        {
+            Debug.LogWarning("[SlashBrushSkill] Wrong config skill type.");
+            return;
+        }
+
         if (context != null)
         {
             Debug.Log(
@@ -55,9 +62,11 @@ public class SlashBrushSkill : BrushSkillBase
 
         Dictionary<IDamageable, DamageInfo> hitTargets = new Dictionary<IDamageable, DamageInfo>();
 
-        for (int i = 0; i < sampleCount; i++)
+        for (int i = 0; i < config.slashSampleCount; i++)
         {
-            float t = sampleCount <= 1 ? 0.5f : i / (float)(sampleCount - 1);
+            float t = config.slashSampleCount <= 1
+                ? 0.5f
+                : i / (float)(config.slashSampleCount - 1);
             int index = Mathf.RoundToInt(t * (screenPoints.Count - 1));
 
             Vector2 screenPoint = screenPoints[index];
@@ -65,13 +74,13 @@ public class SlashBrushSkill : BrushSkillBase
             Ray ray = castContextBuilder.GetWorldRayFromStrokePoint(screenPoint);
 
             if (drawDebugRay)
-                UnityEngine.Debug.DrawRay(ray.origin, ray.direction * rayDistance, Color.red, 1.5f);
+                UnityEngine.Debug.DrawRay(ray.origin, ray.direction * config.rayDistance, Color.red, 1.5f);
 
             RaycastHit[] hits = Physics.SphereCastAll(
                 ray,
-                sphereRadius,
-                rayDistance,
-                targetLayer,
+                config.slashSphereRadius,
+                config.rayDistance,
+                config.targetLayer,
                 QueryTriggerInteraction.Collide
             );
 
@@ -98,19 +107,22 @@ public class SlashBrushSkill : BrushSkillBase
                 {
                     attacker = context.caster != null ? context.caster : gameObject,
                     target = targetObject,
-                    damage = damage,
-                    knockback = 0f,
+
+                    damage = config.baseDamage,
+                    knockback = config.knockback,
+
                     hitPoint = hit.point,
                     hitDirection = ray.direction,
                     sourceAction = null,
 
-                    element = ElementType.Physical,
-                    canApplyElementStatus = false,
+                    element = config.element,
+                    canApplyElementStatus = config.canApplyElementStatus,
 
-                    skillMultiplier = 0.8f,
-                    damageBonus = 0f,
-                    reactionMultiplier = 1f,
-                    canCrit = true
+                    skillMultiplier = config.skillMultiplier,
+                    damageBonus = config.damageBonus,
+                    reactionMultiplier = config.reactionMultiplier,
+                    reactionType = ElementReactionType.None,
+                    canCrit = config.canCrit
                 };
 
                 hitTargets.Add(damageable, damageInfo);

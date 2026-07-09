@@ -94,6 +94,18 @@ public class PlayerElementInfusion : MonoBehaviour
         if (targetObject == null)
             return;
 
+        EnemyWhitebox enemy = targetObject.GetComponent<EnemyWhitebox>();
+
+        if (enemy == null)
+        {
+            enemy = targetObject.GetComponentInParent<EnemyWhitebox>();
+        }
+
+        if (enemy != null && enemy.IsDead)
+        {
+            return;
+        }
+
         if (currentElement != ElementType.Fire)
             return;
 

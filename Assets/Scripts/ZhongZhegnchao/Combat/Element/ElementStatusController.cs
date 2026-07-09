@@ -70,6 +70,61 @@ public class ElementStatusController : MonoBehaviour
         }
     }
 
+    public DamageInfo ProcessIncomingElement(DamageInfo damageInfo)
+    {
+        if (damageInfo.element == ElementType.None ||
+            damageInfo.element == ElementType.Physical)
+        {
+            return damageInfo;
+        }
+
+        if (hasFireStatus)
+        {
+            ElementReactionType reactionType;
+            float reactionMultiplier;
+            bool shouldClearFire;
+
+            bool reacted = ElementReactionCalculator.TryReactWithFire(
+                damageInfo.element,
+                out reactionType,
+                out reactionMultiplier,
+                out shouldClearFire
+            );
+
+            if (reacted)
+            {
+                damageInfo.reactionType = reactionType;
+                damageInfo.reactionMultiplier *= reactionMultiplier;
+
+                if (debugLog)
+                {
+                    Debug.Log(
+                        $"[ElementStatusController] Reaction triggered: {reactionType}, " +
+                        $"multiplier={reactionMultiplier}",
+                        this
+                    );
+                }
+
+                if (shouldClearFire)
+                {
+                    StopBurning();
+                    ClearFireStatus();
+                }
+            }
+        }
+
+        return damageInfo;
+    }
+
+    private void StopBurning()
+    {
+        if (burningCoroutine != null)
+        {
+            StopCoroutine(burningCoroutine);
+            burningCoroutine = null;
+        }
+    }
+
     private IEnumerator BurningRoutine(
         GameObject attacker,
         float duration,
@@ -133,5 +188,11 @@ public class ElementStatusController : MonoBehaviour
         {
             Debug.Log($"[ElementStatusController] Fire status cleared on {gameObject.name}.", this);
         }
+    }
+
+    public void StopAllElementStatus()
+    {
+        StopBurning();
+        ClearFireStatus();
     }
 }

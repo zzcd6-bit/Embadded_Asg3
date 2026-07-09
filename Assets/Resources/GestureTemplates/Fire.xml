@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<Gesture Name="Fire">
+	<Stroke>
+		<Point X="0" Y="100" T="0" Pressure="0" />
+		<Point X="10" Y="75" T="0" Pressure="0" />
+		<Point X="20" Y="50" T="0" Pressure="0" />
+		<Point X="30" Y="25" T="0" Pressure="0" />
+		<Point X="40" Y="0" T="0" Pressure="0" />
+
+		<Point X="50" Y="23" T="0" Pressure="0" />
+		<Point X="60" Y="47" T="0" Pressure="0" />
+		<Point X="70" Y="70" T="0" Pressure="0" />
+
+		<Point X="80" Y="50" T="0" Pressure="0" />
+		<Point X="90" Y="30" T="0" Pressure="0" />
+		<Point X="100" Y="10" T="0" Pressure="0" />
+
+		<Point X="110" Y="33" T="0" Pressure="0" />
+		<Point X="120" Y="55" T="0" Pressure="0" />
+		<Point X="130" Y="78" T="0" Pressure="0" />
+		<Point X="140" Y="100" T="0" Pressure="0" />
+	</Stroke>
+</Gesture>

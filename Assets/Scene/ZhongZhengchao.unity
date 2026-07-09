@@ -554,13 +554,7 @@ MonoBehaviour:
   minScore: 0.65
   castContextBuilder: {fileID: 248848585}
   caster: {fileID: 219517335}
-  targetLayer:
-    serializedVersion: 2
-    m_Bits: 128
-  rayDistance: 100
-  sphereRadius: 0.8
-  sampleCount: 8
-  damage: 10
+  config: {fileID: 11400000, guid: ae83d61708a7fb946855e61997676743, type: 2}
   drawDebugRay: 1
 --- !u!114 &248848584
 MonoBehaviour:
@@ -575,6 +569,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BrushGestureRecognizer
   minScore: 0.65
+  loadXmlTemplatesFromResources: 1
+  resourcesGestureFolder: GestureTemplates
+  loadCustomXmlTemplates: 1
+  customGestureFolderName: GestureTemplates
+  useRuntimeTemplatesIfXmlEmpty: 1
   useRuntimeSlashTemplate: 1
   useRuntimeFireTemplate: 1
   useRuntimeBridgeTemplate: 1
@@ -617,28 +616,7 @@ MonoBehaviour:
   minScore: 0.65
   castContextBuilder: {fileID: 248848585}
   caster: {fileID: 219517335}
-  targetLayer:
-    serializedVersion: 2
-    m_Bits: 128
-  rayDistance: 200
-  fallbackDistance: 12
-  damageRadius: 3
-  damage: 10
-  knockback: 0
-  fireVfxPrefab: {fileID: 6680293055192840344, guid: 9ddcc1e295d844344a44264c3919dede, type: 3}
-  vfxLifetime: 2
-  vfxOffset: {x: 0, y: 0, z: 0}
-  applyBurning: 1
-  burningDuration: 5
-  burningTickInterval: 1
-  burningTickDamage: 3
-  applyFireInfusionToPlayer: 1
-  fireInfusionDuration: 8
-  fireAttackDamageMultiplier: 1.5
-  fireAttackApplyBurning: 1
-  fireAttackBurningDuration: 5
-  fireAttackBurningTickInterval: 1
-  fireAttackBurningTickDamage: 1
+  config: {fileID: 11400000, guid: bba5128e535c36e40a514a8e82d5e048, type: 2}
   drawDebug: 1
 --- !u!1 &292878643
 GameObject:
@@ -816,6 +794,16 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 980df2c51a7c2664683bfb1dd0f97090, type: 3}
   m_PrefabInstance: {fileID: 449528675}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &676281412 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6680293055192840344, guid: 9ddcc1e295d844344a44264c3919dede, type: 3}
+  m_PrefabInstance: {fileID: 1115681103}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &676281415 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4959900148492203442, guid: 9ddcc1e295d844344a44264c3919dede, type: 3}
+  m_PrefabInstance: {fileID: 1115681103}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &718873958
 GameObject:
   m_ObjectHideFlags: 0
@@ -831,6 +819,7 @@ GameObject:
   - component: {fileID: 718873963}
   - component: {fileID: 718873964}
   - component: {fileID: 718873965}
+  - component: {fileID: 718873966}
   m_Layer: 7
   m_Name: Enemy
   m_TagString: Enemy
@@ -928,7 +917,8 @@ Transform:
   m_LocalPosition: {x: -0.41, y: 0.56, z: 2.55}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 676281415}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &718873963
@@ -943,8 +933,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a11f3e3355b61564dbf2032541a0d38e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyWhitebox
-  maxHp: 100
-  currentHp: 100
+  maxHp: 1000
+  currentHp: 1000
   debugLog: 1
 --- !u!114 &718873964
 MonoBehaviour:
@@ -989,6 +979,20 @@ MonoBehaviour:
   iceResistance: 0
   thunderResistance: 0
   earthResistance: 0
+--- !u!114 &718873966
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 718873958}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fcfa22038bd43e8468cbea30e6209769, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ElementVfxController
+  fireVfxObject: {fileID: 676281412}
+  defaultFireVfxDuration: 5
 --- !u!1 &760347730
 GameObject:
   m_ObjectHideFlags: 0
@@ -1162,6 +1166,71 @@ Transform:
   m_Children: []
   m_Father: {fileID: 248848579}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1115681103
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 718873962}
+    m_Modifications:
+    - target: {fileID: 4959900148492203442, guid: 9ddcc1e295d844344a44264c3919dede, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4959900148492203442, guid: 9ddcc1e295d844344a44264c3919dede, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.88
+      objectReference: {fileID: 0}
+    - target: {fileID: 4959900148492203442, guid: 9ddcc1e295d844344a44264c3919dede, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4959900148492203442, guid: 9ddcc1e295d844344a44264c3919dede, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 4959900148492203442, guid: 9ddcc1e295d844344a44264c3919dede, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 4959900148492203442, guid: 9ddcc1e295d844344a44264c3919dede, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4959900148492203442, guid: 9ddcc1e295d844344a44264c3919dede, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4959900148492203442, guid: 9ddcc1e295d844344a44264c3919dede, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 4959900148492203442, guid: 9ddcc1e295d844344a44264c3919dede, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4959900148492203442, guid: 9ddcc1e295d844344a44264c3919dede, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6680293055192840344, guid: 9ddcc1e295d844344a44264c3919dede, type: 3}
+      propertyPath: m_Name
+      value: FireVFX
+      objectReference: {fileID: 0}
+    - target: {fileID: 6680293055192840344, guid: 9ddcc1e295d844344a44264c3919dede, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9066075540774805361, guid: 9ddcc1e295d844344a44264c3919dede, type: 3}
+      propertyPath: looping
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 9ddcc1e295d844344a44264c3919dede, type: 3}
 --- !u!1 &1152969511
 GameObject:
   m_ObjectHideFlags: 0
@@ -1608,13 +1677,7 @@ MonoBehaviour:
   minScore: 0.65
   castContextBuilder: {fileID: 0}
   caster: {fileID: 0}
-  targetLayer:
-    serializedVersion: 2
-    m_Bits: 0
-  rayDistance: 200
-  sphereRadius: 1.5
-  sampleCount: 12
-  damage: 1
+  config: {fileID: 0}
   drawDebugRay: 1
 --- !u!114 &1566920734
 MonoBehaviour:
@@ -1631,28 +1694,7 @@ MonoBehaviour:
   minScore: 0.65
   castContextBuilder: {fileID: 0}
   caster: {fileID: 0}
-  targetLayer:
-    serializedVersion: 2
-    m_Bits: 0
-  rayDistance: 200
-  fallbackDistance: 12
-  damageRadius: 3
-  damage: 3
-  knockback: 0
-  fireVfxPrefab: {fileID: 0}
-  vfxLifetime: 2
-  vfxOffset: {x: 0, y: 0, z: 0}
-  applyBurning: 1
-  burningDuration: 5
-  burningTickInterval: 1
-  burningTickDamage: 1
-  applyFireInfusionToPlayer: 1
-  fireInfusionDuration: 8
-  fireAttackDamageMultiplier: 1.5
-  fireAttackApplyBurning: 1
-  fireAttackBurningDuration: 5
-  fireAttackBurningTickInterval: 1
-  fireAttackBurningTickDamage: 1
+  config: {fileID: 0}
   drawDebug: 1
 --- !u!1 &1594269730
 GameObject:

@@ -1,13 +1,23 @@
 using System.Collections.Generic;
 using UnityEngine;
 using PDollarGestureRecognizer;
+using System.IO;
 
 public class BrushGestureRecognizer : MonoBehaviour
 {
     [Header("Recognition")]
     public float minScore = 0.65f;
 
-    [Header("Runtime Templates")]
+    [Header("XML Templates")]
+    public bool loadXmlTemplatesFromResources = true;
+    public string resourcesGestureFolder = "GestureTemplates";
+
+    [Header("Custom XML Templates")]
+    public bool loadCustomXmlTemplates = true;
+    public string customGestureFolderName = "GestureTemplates";
+
+    [Header("Runtime Fallback Templates")]
+    public bool useRuntimeTemplatesIfXmlEmpty = true;
     public bool useRuntimeSlashTemplate = true;
     public bool useRuntimeFireTemplate = true;
     public bool useRuntimeBridgeTemplate = true;
@@ -18,6 +28,129 @@ public class BrushGestureRecognizer : MonoBehaviour
     private readonly List<Gesture> trainingSet = new List<Gesture>();
 
     private void Awake()
+    {
+        trainingSet.Clear();
+
+        if (loadXmlTemplatesFromResources)
+        {
+            LoadXmlTemplatesFromResources();
+        }
+
+        if (loadCustomXmlTemplates)
+        {
+            LoadCustomXmlTemplatesFromPersistentPath();
+        }
+
+        if (useRuntimeTemplatesIfXmlEmpty && trainingSet.Count == 0)
+        {
+            LoadRuntimeFallbackTemplates();
+        }
+
+        Debug.Log($"[BrushGestureRecognizer] Training templates loaded: {trainingSet.Count}");
+    }
+
+    private void LoadXmlTemplatesFromResources()
+    {
+        TextAsset[] gestureXmls = Resources.LoadAll<TextAsset>(resourcesGestureFolder);
+
+        if (gestureXmls == null || gestureXmls.Length == 0)
+        {
+            Debug.LogWarning(
+                $"[BrushGestureRecognizer] No XML templates found in Resources/{resourcesGestureFolder}."
+            );
+            return;
+        }
+
+        for (int i = 0; i < gestureXmls.Length; i++)
+        {
+            TextAsset gestureXml = gestureXmls[i];
+
+            if (gestureXml == null)
+                continue;
+
+            TryAddGestureFromXmlText(gestureXml.text, gestureXml.name);
+        }
+    }
+
+    private void LoadCustomXmlTemplatesFromPersistentPath()
+    {
+        string folderPath = Path.Combine(
+            Application.persistentDataPath,
+            customGestureFolderName
+        );
+
+        if (!Directory.Exists(folderPath))
+        {
+            Directory.CreateDirectory(folderPath);
+
+            Debug.Log(
+                $"[BrushGestureRecognizer] Custom gesture folder created: {folderPath}"
+            );
+
+            return;
+        }
+
+        string[] filePaths = Directory.GetFiles(folderPath, "*.xml");
+
+        for (int i = 0; i < filePaths.Length; i++)
+        {
+            string filePath = filePaths[i];
+
+            try
+            {
+                Gesture gesture = GestureIO.ReadGestureFromFile(filePath);
+
+                if (gesture != null)
+                {
+                    trainingSet.Add(gesture);
+
+                    Debug.Log(
+                        $"[BrushGestureRecognizer] Loaded custom gesture XML: {Path.GetFileName(filePath)}"
+                    );
+                }
+            }
+            catch (System.Exception exception)
+            {
+                Debug.LogWarning(
+                    $"[BrushGestureRecognizer] Failed to load custom gesture XML: {filePath}\n{exception.Message}"
+                );
+            }
+        }
+    }
+
+    private void TryAddGestureFromXmlText(string xmlText, string sourceName)
+    {
+        if (string.IsNullOrEmpty(xmlText))
+            return;
+
+        try
+        {
+            Gesture gesture = GestureIO.ReadGestureFromXML(xmlText);
+
+            if (gesture == null)
+            {
+                Debug.LogWarning(
+                    $"[BrushGestureRecognizer] XML gesture is null: {sourceName}"
+                );
+
+                return;
+            }
+
+            trainingSet.Add(gesture);
+
+            Debug.Log(
+                $"[BrushGestureRecognizer] Loaded XML gesture: {gesture.Name} from {sourceName}"
+            );
+        }
+        catch (System.Exception exception)
+        {
+            Debug.LogWarning(
+                $"[BrushGestureRecognizer] Failed to load XML gesture: {sourceName}\n{exception.Message}"
+            );
+        }
+    }
+
+    private void LoadRuntimeFallbackTemplates()
     {
         if (useRuntimeSlashTemplate)
         {
@@ -34,7 +167,7 @@ public class BrushGestureRecognizer : MonoBehaviour
             AddRuntimeBridgeTemplate();
         }
 
-        Debug.Log($"[BrushGestureRecognizer] Training templates loaded: {trainingSet.Count}");
+        Debug.Log("[BrushGestureRecognizer] Runtime fallback templates loaded.");
     }
 
     private void OnEnable()
@@ -55,15 +188,20 @@ public class BrushGestureRecognizer : MonoBehaviour
 
     private BrushSkillType GetSkillTypeFromGestureName(string gestureName)
     {
-        switch (gestureName)
+        if (string.IsNullOrEmpty(gestureName))
+            return BrushSkillType.None;
+
+        string normalizedName = gestureName.Trim().ToLower();
+
+        switch (normalizedName)
         {
-            case "Slash":
+            case "slash":
                 return BrushSkillType.Slash;
 
-            case "Fire":
+            case "fire":
                 return BrushSkillType.Fire;
 
-            case "Bridge":
+            case "bridge":
                 return BrushSkillType.Bridge;
 
             default:

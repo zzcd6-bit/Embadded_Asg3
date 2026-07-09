@@ -7,42 +7,26 @@ public class FireBrushSkill : BrushSkillBase
     {
         get { return BrushSkillType.Fire; }
     }
-
-    [Header("Fire Cast")]
-    public LayerMask targetLayer;
-    public float rayDistance = 200f;
-    public float fallbackDistance = 12f;
-    public float damageRadius = 3f;
-
-    [Header("Damage")]
-    public int damage = 3;
-    public float knockback = 0f;
-
-    [Header("Visual Effect")]
-    public GameObject fireVfxPrefab;
-    public float vfxLifetime = 2f;
-    public Vector3 vfxOffset = Vector3.zero;
-
-    [Header("Burning Debuff")]
-    public bool applyBurning = true;
-    public float burningDuration = 5f;
-    public float burningTickInterval = 1f;
-    public int burningTickDamage = 1;
-
-    [Header("Player Fire Infusion")]
-    public bool applyFireInfusionToPlayer = true;
-    public float fireInfusionDuration = 8f;
-    public float fireAttackDamageMultiplier = 1.5f;
-    public bool fireAttackApplyBurning = true;
-    public float fireAttackBurningDuration = 5f;
-    public float fireAttackBurningTickInterval = 1f;
-    public int fireAttackBurningTickDamage = 1;
+    [Header("Config")]
+    public BrushSkillConfig config;
 
     [Header("Debug")]
     public bool drawDebug = true;
 
     protected override void Execute(BrushGestureResult result, BrushCastContext context)
     {
+        if (config == null)
+        {
+            Debug.LogWarning("[FireBrushSkill] Config is missing.");
+            return;
+        }
+
+        if (config.skillType != BrushSkillType.Fire)
+        {
+            Debug.LogWarning("[FireBrushSkill] Wrong config skill type.");
+            return;
+        }
+
         if (context == null)
         {
             Debug.LogWarning("[FireBrushSkill] BrushCastContext is null.");
@@ -51,13 +35,11 @@ public class FireBrushSkill : BrushSkillBase
 
         Vector3 castPoint = GetCastPoint(context);
 
-        SpawnFireVfx(castPoint);
-
         if (drawDebug)
         {
             Debug.DrawRay(
                 context.centerRay.origin,
-                context.centerRay.direction * rayDistance,
+                context.centerRay.direction * config.rayDistance,
                 Color.red,
                 1.5f
             );
@@ -67,27 +49,6 @@ public class FireBrushSkill : BrushSkillBase
 
         ApplyFireDamage(castPoint, context);
         ApplyFireInfusionToPlayer(context);
-    }
-
-    private void SpawnFireVfx(Vector3 castPoint)
-    {
-        if (fireVfxPrefab == null)
-        {
-            return;
-        }
-
-        Vector3 spawnPosition = castPoint + vfxOffset;
-
-        GameObject vfx = Instantiate(
-            fireVfxPrefab,
-            spawnPosition,
-            Quaternion.identity
-        );
-
-        if (vfxLifetime > 0f)
-        {
-            Destroy(vfx, vfxLifetime);
-        }
     }
 
     private Vector3 GetCastPoint(BrushCastContext context)
@@ -102,15 +63,15 @@ public class FireBrushSkill : BrushSkillBase
             return context.groundPoint;
         }
 
-        return context.centerRay.origin + context.centerRay.direction * fallbackDistance;
+        return context.centerRay.origin + context.centerRay.direction * config.fallbackDistance;
     }
 
     private void ApplyFireDamage(Vector3 castPoint, BrushCastContext context)
     {
         Collider[] colliders = Physics.OverlapSphere(
             castPoint,
-            damageRadius,
-            targetLayer,
+            config.fireDamageRadius,
+            config.targetLayer,
             QueryTriggerInteraction.Collide
         );
 
@@ -152,24 +113,28 @@ public class FireBrushSkill : BrushSkillBase
             {
                 attacker = context.caster != null ? context.caster : gameObject,
                 target = targetObject,
-                damage = damage,
-                knockback = knockback,
+
+                damage = config.baseDamage,
+                knockback = config.knockback,
+
                 hitPoint = targetObject.transform.position,
                 hitDirection = hitDirection,
                 sourceAction = null,
 
-                element = ElementType.Fire,
-                canApplyElementStatus = true,
+                element = config.element,
+                canApplyElementStatus = config.canApplyElementStatus,
 
-                skillMultiplier = 1.2f,
-                damageBonus = 0f,
-                reactionMultiplier = 1f,
-                canCrit = false
+                skillMultiplier = config.skillMultiplier,
+                damageBonus = config.damageBonus,
+                reactionMultiplier = config.reactionMultiplier,
+                reactionType = ElementReactionType.None,
+                canCrit = config.canCrit
             };
 
             damageable.TakeDamage(damageInfo);
 
             ApplyBurningToTarget(targetObject);
+            ActivateFireVfxOnTarget(targetObject);
 
             damagedTargets.Add(damageable);
         }
@@ -177,9 +142,35 @@ public class FireBrushSkill : BrushSkillBase
         Debug.Log($"[FireBrushSkill] Fire damage target count: {damagedTargets.Count}");
     }
 
+    private void ActivateFireVfxOnTarget(GameObject targetObject)
+    {
+        if (targetObject == null)
+            return;
+
+        ElementVfxController vfxController =
+            targetObject.GetComponent<ElementVfxController>();
+
+        if (vfxController == null)
+        {
+            vfxController = targetObject.GetComponentInParent<ElementVfxController>();
+        }
+
+        if (vfxController == null)
+        {
+            vfxController = targetObject.GetComponentInChildren<ElementVfxController>();
+        }
+
+        if (vfxController == null)
+        {
+            return;
+        }
+
+        vfxController.ActivateFireVfx(config.burningDuration);
+    }
+
     private void ApplyBurningToTarget(GameObject targetObject)
     {
-        if (!applyBurning)
+        if (config == null || !config.applyBurning)
             return;
 
         if (targetObject == null)
@@ -200,15 +191,15 @@ public class FireBrushSkill : BrushSkillBase
 
         statusController.ApplyBurning(
             gameObject,
-            burningDuration,
-            burningTickInterval,
-            burningTickDamage
+            config.burningDuration,
+            config.burningTickInterval,
+            config.burningTickDamage
         );
     }
 
     private void ApplyFireInfusionToPlayer(BrushCastContext context)
     {
-        if (!applyFireInfusionToPlayer)
+        if (config == null || !config.applyInfusionToPlayer)
             return;
 
         PlayerElementInfusion infusion = null;
@@ -245,12 +236,12 @@ public class FireBrushSkill : BrushSkillBase
         }
 
         infusion.ApplyFireInfusion(
-            fireInfusionDuration,
-            fireAttackDamageMultiplier,
-            fireAttackApplyBurning,
-            fireAttackBurningDuration,
-            fireAttackBurningTickInterval,
-            fireAttackBurningTickDamage
+            config.infusionDuration,
+            config.infusionDamageMultiplier,
+            config.infusionApplyBurningOnHit,
+            config.infusionBurningDuration,
+            config.infusionBurningTickInterval,
+            config.infusionBurningTickDamage
         );
     }
 

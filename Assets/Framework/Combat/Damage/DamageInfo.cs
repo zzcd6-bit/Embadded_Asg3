@@ -22,6 +22,7 @@ public struct DamageInfo
     public float skillMultiplier;
     public float damageBonus;
     public float reactionMultiplier;
+    public ElementReactionType reactionType;
 
     // Critical
     public bool canCrit;
