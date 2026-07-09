@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BuildableItemData
   displayName: Slot 1 Bridge
   icon: {fileID: 0}
-  description: Test item started by key 1. Replace this asset for rune placement mapping.
-  buildingPrefab: {fileID: 172598, guid: 3506f2dad3b6b534285315e3dd5353ae, type: 3}
-  size: {x: 1, y: 1}
+  description: Test item started by key 1. Replace this asset for rune placement
+    mapping.
+  buildingPrefab: {fileID: 3648350582486492644, guid: be12e42085f265745a4104d7a1347289, type: 3}
+  size: {x: 4, y: 8}
   cost: 0

@@ -72,7 +72,16 @@ public class BuildModeController : MonoBehaviour
 
     private void StartSlot1Placement()
     {
-        StartPlacement(GetSlot1Item());
+        BuildableItemData item = GetSlot1Item();
+        if (item == null)
+        {
+            Debug.LogWarning("[Ye Build] Pressed 1, but slot 1 item data was not found.");
+            return;
+        }
+
+        // Ye build placement input bridge: confirms the test rune/number-key item request.
+        Debug.Log($"[Ye Build] Pressed 1: confirmed item 1 placement request ({item.DisplayName}).");
+        StartPlacement(item);
     }
 
     private BuildableItemData GetSlot1Item()
