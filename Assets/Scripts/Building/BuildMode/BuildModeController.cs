@@ -7,6 +7,7 @@ public class BuildModeController : MonoBehaviour
     public static BuildModeController Instance { get; private set; }
 
     [SerializeField] private PlacementController placementController;
+    [SerializeField] private NavMeshPlacementGridVisual gridVisual;
     [SerializeField] private BuildableItemData slot1Item;
     [SerializeField] private bool exitBuildModeAfterPlacement = true;
 
@@ -21,6 +22,11 @@ public class BuildModeController : MonoBehaviour
         if (placementController == null)
         {
             placementController = FindAnyObjectByType<PlacementController>();
+        }
+
+        if (gridVisual == null)
+        {
+            gridVisual = FindAnyObjectByType<NavMeshPlacementGridVisual>();
         }
     }
 
@@ -40,6 +46,11 @@ public class BuildModeController : MonoBehaviour
         IsBuildMode = false;
         wasPlacing = false;
         InputMgr.Instance.SetBuildInputCaptured(false);
+
+        if (gridVisual != null)
+        {
+            gridVisual.SetVisible(false);
+        }
     }
 
     private void Update()
@@ -111,6 +122,11 @@ public class BuildModeController : MonoBehaviour
         EventCenter.Instance.EventTrigger<bool>(E_EventType.E_Camera_InputEnable, !enabled);
         Cursor.lockState = enabled ? CursorLockMode.None : CursorLockMode.Locked;
         Cursor.visible = enabled;
+
+        if (gridVisual != null)
+        {
+            gridVisual.SetVisible(enabled);
+        }
 
         if (!enabled)
         {

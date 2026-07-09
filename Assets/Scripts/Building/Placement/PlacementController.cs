@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.EventSystems;
 
 public class PlacementController : MonoBehaviour
@@ -16,6 +17,11 @@ public class PlacementController : MonoBehaviour
 
     [Header("Validation")]
     [SerializeField] private float placementCheckInterval = 0.1f;
+
+    [Header("NavMesh Placement")]
+    [SerializeField] private bool requireNavMeshSurface = true;
+    [SerializeField] private float navMeshSampleDistance = 0.45f;
+    [SerializeField] private int navMeshAreaMask = NavMesh.AllAreas;
 
     private BuildableItemData currentItem;
     private Quaternion currentRotation = Quaternion.identity;
@@ -233,7 +239,11 @@ public class PlacementController : MonoBehaviour
         Ray ray = ActiveCamera.ScreenPointToRay(mousePosition);
         if (Physics.Raycast(ray, out RaycastHit hit, raycastDistance, groundLayer, QueryTriggerInteraction.Ignore))
         {
-            SetPreviewPositionFromWorld(hit.point);
+            if (!TrySetPreviewPositionFromWorld(hit.point))
+            {
+                hasPlacementPosition = false;
+            }
+
             ValidateCurrentPlacement(false);
         }
     }
@@ -285,12 +295,24 @@ public class PlacementController : MonoBehaviour
         return EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
     }
 
-    private void SetPreviewPositionFromWorld(Vector3 worldPosition)
+    private bool TrySetPreviewPositionFromWorld(Vector3 worldPosition)
     {
+        if (requireNavMeshSurface && !TrySampleNavMesh(worldPosition, out worldPosition))
+        {
+            return false;
+        }
+
         currentPivotCell = gridPlacementSystem.WorldToPivotCell(worldPosition, currentItem.Size, currentRotationSteps);
         currentPlacementPosition = gridPlacementSystem.PivotCellToWorld(currentPivotCell, currentItem.Size, currentRotationSteps);
+
+        if (requireNavMeshSurface && TrySampleNavMesh(currentPlacementPosition, out Vector3 snappedPosition))
+        {
+            currentPlacementPosition.y = snappedPosition.y;
+        }
+
         hasPlacementPosition = true;
         previewController.SetTransform(currentPlacementPosition, currentRotation);
+        return true;
     }
 
     private void ValidateCurrentPlacement(bool force)
@@ -309,7 +331,38 @@ public class PlacementController : MonoBehaviour
         return currentItem != null
             && hasPlacementPosition
             && gridPlacementSystem != null
-            && gridPlacementSystem.CanPlace(currentPivotCell, currentItem.Size, currentRotationSteps);
+            && gridPlacementSystem.CanPlace(currentPivotCell, currentItem.Size, currentRotationSteps)
+            && IsCurrentFootprintOnNavMesh();
+    }
+
+    private bool IsCurrentFootprintOnNavMesh()
+    {
+        if (!requireNavMeshSurface)
+        {
+            return true;
+        }
+
+        foreach (Vector2Int cell in gridPlacementSystem.GetOccupiedCells(currentPivotCell, currentItem.Size, currentRotationSteps))
+        {
+            if (!TrySampleNavMesh(gridPlacementSystem.CellToWorld(cell), out _))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private bool TrySampleNavMesh(Vector3 position, out Vector3 navMeshPosition)
+    {
+        if (NavMesh.SamplePosition(position, out NavMeshHit hit, navMeshSampleDistance, navMeshAreaMask))
+        {
+            navMeshPosition = hit.position;
+            return true;
+        }
+
+        navMeshPosition = position;
+        return false;
     }
 
     private void RestoreEditedBuilding()

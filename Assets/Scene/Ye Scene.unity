@@ -5031,6 +5031,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   placementController: {fileID: 2146300301}
+  gridVisual: {fileID: 2146300403}
   slot1Item: {fileID: 11400000, guid: 56ad8ed871474a5dba8d52eb5d941f28, type: 2}
   exitBuildModeAfterPlacement: 1
 --- !u!4 &2146300202
@@ -5089,6 +5090,9 @@ MonoBehaviour:
   raycastDistance: 500
   ignorePointerOverUI: 1
   placementCheckInterval: 0.1
+  requireNavMeshSurface: 1
+  navMeshSampleDistance: 0.45
+  navMeshAreaMask: -1
 --- !u!114 &2146300302
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5142,6 +5146,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2146300402}
   - component: {fileID: 2146300401}
+  - component: {fileID: 2146300403}
   m_Layer: 0
   m_Name: Ye Grid Placement System
   m_TagString: Untagged
@@ -5163,6 +5168,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cellSize: 1
   origin: {x: 0, y: 0, z: 0}
+--- !u!114 &2146300403
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2146300400}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d93f6bcfd0994f9e9c8ebc24875e6f31, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gridPlacementSystem: {fileID: 2146300401}
+  targetCamera: {fileID: 1964026415}
+  radiusInCells: 12
+  surfaceOffset: 0.035
+  navMeshSampleDistance: 0.45
+  lineWidth: 0.025
+  lineColor: {r: 0.2, g: 0.95, b: 0.85, a: 0.42}
 --- !u!4 &2146300402
 Transform:
   m_ObjectHideFlags: 0
