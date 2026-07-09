@@ -131,6 +131,25 @@ public class GridPlacementSystem : MonoBehaviour
         GetCellData(cell).isBlocked = isBlocked;
     }
 
+    public void SetBlockedWorldBounds(Bounds worldBounds, bool isBlocked)
+    {
+        Vector2Int minCell = WorldToCell(worldBounds.min);
+        Vector2Int maxCell = WorldToCell(worldBounds.max);
+
+        int minX = Mathf.Min(minCell.x, maxCell.x);
+        int maxX = Mathf.Max(minCell.x, maxCell.x);
+        int minY = Mathf.Min(minCell.y, maxCell.y);
+        int maxY = Mathf.Max(minCell.y, maxCell.y);
+
+        for (int x = minX; x <= maxX; x++)
+        {
+            for (int y = minY; y <= maxY; y++)
+            {
+                SetBlocked(new Vector2Int(x, y), isBlocked);
+            }
+        }
+    }
+
     //Clears cells currently occupied by the given building.
     //清除当前由指定建筑占用的格子。
     public void ClearOccupied(BuildingInstance building)

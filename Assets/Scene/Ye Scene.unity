@@ -5183,14 +5183,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gridPlacementSystem: {fileID: 2146300401}
+  placementController: {fileID: 2146300301}
   targetCamera: {fileID: 1964026415}
   centerTarget: {fileID: 0}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 64
   radiusInCells: 12
   surfaceOffset: 0.035
+  surfaceRaycastHeight: 40
+  surfaceRaycastDistance: 100
   navMeshSampleDistance: 0.45
   lineWidth: 0.025
   lineColor: {r: 0.2, g: 0.95, b: 0.85, a: 0.42}
   occupiedCellColor: {r: 1, g: 0.12, b: 0.08, a: 0.5}
+  previewCellColor: {r: 1, g: 0.85, b: 0.12, a: 0.5}
 --- !u!4 &2146300402
 Transform:
   m_ObjectHideFlags: 0

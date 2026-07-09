@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.EventSystems;
@@ -214,6 +215,18 @@ public class PlacementController : MonoBehaviour
         previewController.RestoreEditingColliders();
         ClearPlacementState();
         placementCommitter.Delete(building);
+    }
+
+    public bool TryGetCurrentPlacementCells(List<Vector2Int> cells)
+    {
+        if (cells == null || currentItem == null || gridPlacementSystem == null || !hasPlacementPosition)
+        {
+            return false;
+        }
+
+        cells.Clear();
+        cells.AddRange(gridPlacementSystem.GetOccupiedCells(currentPivotCell, currentItem.Size, currentRotationSteps));
+        return cells.Count > 0;
     }
 
     private void BeginPlacementSession()
