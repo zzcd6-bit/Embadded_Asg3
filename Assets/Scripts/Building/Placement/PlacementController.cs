@@ -5,7 +5,6 @@ public class PlacementController : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private Camera placementCamera;
-    [SerializeField] private InputHandler inputHandler;
     [SerializeField] private GridPlacementSystem gridPlacementSystem;
     [SerializeField] private PlacementPreviewController previewController;
     [SerializeField] private PlacementCommitter placementCommitter;
@@ -47,15 +46,8 @@ public class PlacementController : MonoBehaviour
         }
     }
 
-    //Resolves collaborators used by the placement state machine.
-    //解析摆放状态机所需的协作组件。
     private void Awake()
     {
-        if (inputHandler == null)
-        {
-            inputHandler = InputHandler.GetOrCreate();
-        }
-
         if (gridPlacementSystem == null)
         {
             gridPlacementSystem = FindAnyObjectByType<GridPlacementSystem>();
@@ -84,8 +76,23 @@ public class PlacementController : MonoBehaviour
         placementCommitter.Initialize(gridPlacementSystem);
     }
 
-    //Updates active placement or edit interactions.
-    //更新当前激活的摆放或编辑交互。
+    // Ye build placement input bridge: placement commands now come from InputMgr/EventCenter.
+    private void OnEnable()
+    {
+        EventCenter.Instance.AddEventListener(E_EventType.E_Build_PlacementConfirm, HandleConfirmInput);
+        EventCenter.Instance.AddEventListener(E_EventType.E_Build_PlacementCancel, HandleCancelInput);
+        EventCenter.Instance.AddEventListener(E_EventType.E_Build_PlacementRotate, HandleRotateInput);
+        EventCenter.Instance.AddEventListener(E_EventType.E_Build_PlacementDelete, HandleDeleteInput);
+    }
+
+    private void OnDisable()
+    {
+        EventCenter.Instance.RemoveEventListener(E_EventType.E_Build_PlacementConfirm, HandleConfirmInput);
+        EventCenter.Instance.RemoveEventListener(E_EventType.E_Build_PlacementCancel, HandleCancelInput);
+        EventCenter.Instance.RemoveEventListener(E_EventType.E_Build_PlacementRotate, HandleRotateInput);
+        EventCenter.Instance.RemoveEventListener(E_EventType.E_Build_PlacementDelete, HandleDeleteInput);
+    }
+
     private void Update()
     {
         if (!IsPlacing)
@@ -94,11 +101,8 @@ public class PlacementController : MonoBehaviour
         }
 
         UpdatePreviewPosition();
-        HandlePlacementInput();
     }
 
-    //Starts placing a new buildable item from inventory selection.
-    //从物品栏选择开始摆放一个新的可建造物品。
     public void StartPlacement(BuildableItemData item)
     {
         if (item == null || item.BuildingPrefab == null || gridPlacementSystem == null)
@@ -116,8 +120,6 @@ public class PlacementController : MonoBehaviour
         ValidateCurrentPlacement(true);
     }
 
-    //Starts editing an already completed building instance.
-    //开始编辑一个已经完成摆放的建筑实例。
     public void StartEditing(BuildingInstance building)
     {
         if (building == null || !building.IsPlacementCompleted || gridPlacementSystem == null)
@@ -145,8 +147,6 @@ public class PlacementController : MonoBehaviour
         ValidateCurrentPlacement(true);
     }
 
-    //Confirms the current placement or edit if the grid rules allow it.
-    //当网格规则允许时确认当前摆放或编辑。
     public void ConfirmPlacement()
     {
         if (!CanCommitCurrentPlacement())
@@ -171,8 +171,6 @@ public class PlacementController : MonoBehaviour
         ClearPlacementState();
     }
 
-    //Cancels new placement or restores an edited building to its old state.
-    //取消新建摆放，或将编辑中的建筑恢复到旧状态。
     public void CancelPlacement()
     {
         if (!IsPlacing)
@@ -191,8 +189,6 @@ public class PlacementController : MonoBehaviour
         ClearPlacementState();
     }
 
-    //Rotates the preview or edited building by one quarter turn.
-    //将预览体或编辑中的建筑旋转 90 度。
     public void RotatePreview()
     {
         currentRotation *= Quaternion.Euler(0f, 90f, 0f);
@@ -201,8 +197,6 @@ public class PlacementController : MonoBehaviour
         ValidateCurrentPlacement(true);
     }
 
-    //Deletes the building currently being edited.
-    //删除当前正在编辑的建筑。
     public void DeleteEditingBuilding()
     {
         if (editingBuilding == null)
@@ -216,8 +210,6 @@ public class PlacementController : MonoBehaviour
         placementCommitter.Delete(building);
     }
 
-    //Initializes timing and position state for a new placement session.
-    //为新的摆放会话初始化时间和位置状态。
     private void BeginPlacementSession()
     {
         hasPlacementPosition = false;
@@ -225,8 +217,6 @@ public class PlacementController : MonoBehaviour
         placementStartedFrame = Time.frameCount;
     }
 
-    //Snaps the active preview to the grid position under the mouse.
-    //将当前预览体吸附到鼠标下方的网格位置。
     private void UpdatePreviewPosition()
     {
         if (ActiveCamera == null)
@@ -239,7 +229,7 @@ public class PlacementController : MonoBehaviour
             return;
         }
 
-        Vector3 mousePosition = inputHandler != null ? inputHandler.MousePosition : Input.mousePosition;
+        Vector3 mousePosition = Input.mousePosition;
         Ray ray = ActiveCamera.ScreenPointToRay(mousePosition);
         if (Physics.Raycast(ray, out RaycastHit hit, raycastDistance, groundLayer, QueryTriggerInteraction.Ignore))
         {
@@ -248,53 +238,53 @@ public class PlacementController : MonoBehaviour
         }
     }
 
-    //Handles confirm, cancel, rotate, and delete input while placing.
-    //处理摆放期间的确认、取消、旋转和删除输入。
-    private void HandlePlacementInput()
+    // Ye build placement input bridge: mirrors the old polling guard for the frame placement starts.
+    private bool CanHandlePlacementEvent()
     {
-        if (Time.frameCount == placementStartedFrame)
-        {
-            return;
-        }
+        return IsPlacing && Time.frameCount != placementStartedFrame;
+    }
 
-        if (inputHandler != null && inputHandler.PlacementRotatePressed)
-        {
-            RotatePreview();
-            return;
-        }
-
-        if (editingBuilding != null && inputHandler != null && inputHandler.PlacementDeletePressed)
-        {
-            DeleteEditingBuilding();
-            return;
-        }
-
-        if (IsPointerOverUI())
-        {
-            return;
-        }
-
-        if (inputHandler != null && inputHandler.PlacementConfirmPressed)
+    // Ye build placement input bridge: confirm placement via E_Build_PlacementConfirm.
+    private void HandleConfirmInput()
+    {
+        if (CanHandlePlacementEvent() && !IsPointerOverUI())
         {
             ConfirmPlacement();
-            return;
         }
+    }
 
-        if (inputHandler != null && inputHandler.PlacementCancelPressed)
+    // Ye build placement input bridge: cancel placement via E_Build_PlacementCancel.
+    private void HandleCancelInput()
+    {
+        if (CanHandlePlacementEvent() && !IsPointerOverUI())
         {
             CancelPlacement();
         }
     }
 
-    //Returns whether the pointer is currently over Unity UI.
-    //返回鼠标指针当前是否位于 Unity UI 上。
+    // Ye build placement input bridge: rotate placement via E_Build_PlacementRotate.
+    private void HandleRotateInput()
+    {
+        if (CanHandlePlacementEvent())
+        {
+            RotatePreview();
+        }
+    }
+
+    // Ye build placement input bridge: delete edited placement via E_Build_PlacementDelete.
+    private void HandleDeleteInput()
+    {
+        if (CanHandlePlacementEvent() && editingBuilding != null)
+        {
+            DeleteEditingBuilding();
+        }
+    }
+
     private static bool IsPointerOverUI()
     {
         return EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
     }
 
-    //Converts a world hit point to a grid-snapped preview transform.
-    //将世界命中点转换为网格吸附后的预览体位置。
     private void SetPreviewPositionFromWorld(Vector3 worldPosition)
     {
         currentPivotCell = gridPlacementSystem.WorldToPivotCell(worldPosition, currentItem.Size, currentRotationSteps);
@@ -303,8 +293,6 @@ public class PlacementController : MonoBehaviour
         previewController.SetTransform(currentPlacementPosition, currentRotation);
     }
 
-    //Refreshes placement validity and updates the preview visual.
-    //刷新摆放有效性，并更新预览显示。
     private void ValidateCurrentPlacement(bool force)
     {
         if (!force && Time.time < nextPlacementCheckTime)
@@ -316,8 +304,6 @@ public class PlacementController : MonoBehaviour
         previewController.SetValid(CanCommitCurrentPlacement());
     }
 
-    //Returns whether the current placement state can be committed.
-    //返回当前摆放状态是否可以提交。
     private bool CanCommitCurrentPlacement()
     {
         return currentItem != null
@@ -326,8 +312,6 @@ public class PlacementController : MonoBehaviour
             && gridPlacementSystem.CanPlace(currentPivotCell, currentItem.Size, currentRotationSteps);
     }
 
-    //Restores an edited building to its original transform and occupied cells.
-    //将编辑中的建筑恢复到原始位置、朝向和占用格。
     private void RestoreEditedBuilding()
     {
         previewController.RestoreVisual();
@@ -336,8 +320,6 @@ public class PlacementController : MonoBehaviour
         ClearPlacementState();
     }
 
-    //Clears transient placement state after completion, cancel, or delete.
-    //在完成、取消或删除后清理临时摆放状态。
     private void ClearPlacementState()
     {
         currentItem = null;

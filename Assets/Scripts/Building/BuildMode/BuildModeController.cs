@@ -2,24 +2,21 @@ using UnityEngine;
 
 public class BuildModeController : MonoBehaviour
 {
+    private const string DefaultSlot1ResourcePath = "BuildingData/Items/Slot1Bridge";
+
     public static BuildModeController Instance { get; private set; }
 
-    [SerializeField] private InputHandler inputHandler;
-    [SerializeField] private BuildInventoryPanelAnimator inventoryPanel;
     [SerializeField] private PlacementController placementController;
+    [SerializeField] private BuildableItemData slot1Item;
+    [SerializeField] private bool exitBuildModeAfterPlacement = true;
+
+    private bool wasPlacing;
 
     public bool IsBuildMode { get; private set; }
 
-    //Initializes references and exposes the active build mode controller.
-    //初始化引用，并暴露当前建造模式控制器。
     private void Awake()
     {
         Instance = this;
-
-        if (inputHandler == null)
-        {
-            inputHandler = InputHandler.GetOrCreate();
-        }
 
         if (placementController == null)
         {
@@ -27,37 +24,93 @@ public class BuildModeController : MonoBehaviour
         }
     }
 
-    //Starts gameplay in normal mode with the build inventory hidden.
-    //游戏开始时进入普通模式，并隐藏建造物品栏。
+    // Ye build placement input bridge: test hotkey for rune-to-placement flow.
+    private void OnEnable()
+    {
+        EventCenter.Instance.AddEventListener(E_EventType.E_Build_StartItem1, StartSlot1Placement);
+    }
+
+    private void OnDisable()
+    {
+        EventCenter.Instance.RemoveEventListener(E_EventType.E_Build_StartItem1, StartSlot1Placement);
+    }
+
     private void Start()
     {
-        SetBuildMode(false);
+        IsBuildMode = false;
+        wasPlacing = false;
+        InputMgr.Instance.SetBuildInputCaptured(false);
     }
 
-    //Toggles build mode when the configured input is pressed.
-    //按下配置的输入键时切换建造模式。
     private void Update()
     {
-        if (inputHandler != null && inputHandler.BuildModeTogglePressed)
+        if (!exitBuildModeAfterPlacement || !IsBuildMode || placementController == null)
         {
-            SetBuildMode(!IsBuildMode);
+            return;
         }
+
+        bool isPlacing = placementController.IsPlacing;
+        if (wasPlacing && !isPlacing)
+        {
+            SetBuildMode(false);
+        }
+
+        wasPlacing = isPlacing;
     }
 
-    //Applies build mode state and cancels active placement when leaving it.
-    //应用建造模式状态，并在退出时取消当前摆放。
-    public void SetBuildMode(bool enabled)
+    public void StartPlacement(BuildableItemData item)
     {
-        IsBuildMode = enabled;
-
-        if (inventoryPanel != null)
+        if (item == null || placementController == null)
         {
-            inventoryPanel.SetVisible(enabled);
+            return;
         }
 
-        if (!enabled && placementController != null)
+        SetBuildMode(true);
+        placementController.StartPlacement(item);
+        wasPlacing = placementController.IsPlacing;
+    }
+
+    private void StartSlot1Placement()
+    {
+        StartPlacement(GetSlot1Item());
+    }
+
+    private BuildableItemData GetSlot1Item()
+    {
+        if (slot1Item == null)
         {
-            placementController.CancelPlacement();
+            slot1Item = Resources.Load<BuildableItemData>(DefaultSlot1ResourcePath);
+        }
+
+        return slot1Item;
+    }
+
+    public void SetBuildMode(bool enabled)
+    {
+        if (IsBuildMode == enabled)
+        {
+            return;
+        }
+
+        IsBuildMode = enabled;
+
+        // Ye build placement input bridge: capture shared controls only while build mode is active.
+        InputMgr.Instance.SetBuildInputCaptured(enabled);
+
+        EventCenter.Instance.EventTrigger<bool>(E_EventType.E_Player_ControlEnable, !enabled);
+        EventCenter.Instance.EventTrigger<bool>(E_EventType.E_Player_CombatEnable, !enabled);
+        EventCenter.Instance.EventTrigger<bool>(E_EventType.E_Camera_InputEnable, !enabled);
+        Cursor.lockState = enabled ? CursorLockMode.None : CursorLockMode.Locked;
+        Cursor.visible = enabled;
+
+        if (!enabled)
+        {
+            wasPlacing = false;
+
+            if (placementController != null)
+            {
+                placementController.CancelPlacement();
+            }
         }
     }
 }

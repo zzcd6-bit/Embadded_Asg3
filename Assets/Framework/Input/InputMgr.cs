@@ -17,6 +17,8 @@ public class InputMgr : BaseMgr<InputMgr>
     private UnityAction<InputInfo> getInputInfoCallBack;
     //是否开始检测输入信息
     private bool isBeginCheckInput = false;
+    // Ye build placement input bridge: when build mode captures mouse/keys, suppress gameplay and brush input events.
+    private bool isBuildInputCaptured = false;
 
     private InputMgr()
     {
@@ -30,6 +32,12 @@ public class InputMgr : BaseMgr<InputMgr>
     public void StartOrCloseInputMgr(bool isStart)
     {
         this.isStart = isStart;
+    }
+
+    // Ye build placement input bridge: keeps original InputMgr behavior unchanged outside build mode.
+    public void SetBuildInputCaptured(bool isCaptured)
+    {
+        isBuildInputCaptured = isCaptured;
     }
 
     /// <summary>
@@ -149,6 +157,11 @@ public class InputMgr : BaseMgr<InputMgr>
 
         foreach (E_EventType eventType in inputDic.Keys)
         {
+            if (ShouldSuppressForBuildMode(eventType))
+            {
+                continue;
+            }
+
             nowInputInfo = inputDic[eventType];
             //如果是键盘输入
             if (nowInputInfo.keyOrMouse == InputInfo.E_KeyOrMouse.Key)
@@ -198,5 +211,26 @@ public class InputMgr : BaseMgr<InputMgr>
         EventCenter.Instance.EventTrigger(E_EventType.E_Input_Horizontal, Input.GetAxis("Horizontal"));
         EventCenter.Instance.EventTrigger(E_EventType.E_Input_Vertical, Input.GetAxis("Vertical"));
     }
+    // Ye build placement input bridge: filters only direct gameplay/brush actions that conflict with placement controls.
+    private bool ShouldSuppressForBuildMode(E_EventType eventType)
+    {
+        if (!isBuildInputCaptured)
+        {
+            return false;
+        }
 
+        switch (eventType)
+        {
+            case E_EventType.E_Input_Jump:
+            case E_EventType.E_Input_Dodge:
+            case E_EventType.E_Input_Attack:
+            case E_EventType.E_Input_LockOn:
+            case E_EventType.E_Player_Jump:
+            case E_EventType.E_Player_NormalAttack:
+            case E_EventType.E_Brush_Enter:
+                return true;
+            default:
+                return false;
+        }
+    }
 }

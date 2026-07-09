@@ -38,6 +38,15 @@ public enum E_EventType
     E_Brush_RequestExit,
     #endregion
 
+    #region Ye Build Placement Input Bridge
+    // Ye build placement input bridge: events routed through InputMgr so build mode can coexist with ZhongZhengchao input.
+    E_Build_StartItem1,
+    E_Build_PlacementConfirm,
+    E_Build_PlacementCancel,
+    E_Build_PlacementRotate,
+    E_Build_PlacementDelete,
+    #endregion
+
     #region Brush Result
     E_Brush_DrawStart,
     E_Brush_DrawEnd,

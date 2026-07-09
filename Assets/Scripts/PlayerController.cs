@@ -13,11 +13,14 @@ public class PlayerController : MonoBehaviour
 
     [Header("Cursor")]
     [SerializeField] private bool lockCursorOnStart = true;
-    [SerializeField] private InputHandler inputHandler;
+    [SerializeField] private KeyCode releaseCursorKey = KeyCode.LeftAlt;
+    [SerializeField] private KeyCode alternateReleaseCursorKey = KeyCode.RightAlt;
+    [SerializeField] private KeyCode runKey = KeyCode.LeftShift;
 
     private Animator anim;
     private CharacterController CC;
     private bool cursorReleased;
+    private Vector2 moveInput;
 
     [Header("Surface Check")]
     public float surfaceCheckRadius = 0.1f;
@@ -40,10 +43,20 @@ public class PlayerController : MonoBehaviour
             cam = Camera.main;
         }
 
-        if (inputHandler == null)
-        {
-            inputHandler = InputHandler.GetOrCreate();
-        }
+        InputMgr.Instance.StartOrCloseInputMgr(true);
+    }
+
+    private void OnEnable()
+    {
+        // Ye input cleanup: receive movement from ZhongZhengchao's InputMgr/EventCenter.
+        EventCenter.Instance.AddEventListener<float>(E_EventType.E_Input_Horizontal, OnHorizontalInput);
+        EventCenter.Instance.AddEventListener<float>(E_EventType.E_Input_Vertical, OnVerticalInput);
+    }
+
+    private void OnDisable()
+    {
+        EventCenter.Instance.RemoveEventListener<float>(E_EventType.E_Input_Horizontal, OnHorizontalInput);
+        EventCenter.Instance.RemoveEventListener<float>(E_EventType.E_Input_Vertical, OnVerticalInput);
     }
 
     private void Start()
@@ -76,7 +89,6 @@ public class PlayerController : MonoBehaviour
     {
         if (cam == null || CC == null) return;
 
-        Vector2 moveInput = inputHandler != null ? inputHandler.MoveInput : Vector2.zero;
         float horizontal = moveInput.x;
         float vertical = moveInput.y;
 
@@ -100,7 +112,7 @@ public class PlayerController : MonoBehaviour
             fallingSpeed += Physics.gravity.y * Time.deltaTime;
         }
 
-        bool isRunning = inputHandler != null && inputHandler.RunHeld;
+        bool isRunning = Input.GetKey(runKey);
         float currentSpeed = isRunning ? movementSpeed * 2f : movementSpeed;
         float targetBlend = movementAmount * (isRunning ? 1f : 0.5f);
 
@@ -141,7 +153,7 @@ public class PlayerController : MonoBehaviour
 
     private void HandleCursorReleaseInput()
     {
-        bool shouldReleaseCursor = inputHandler != null && inputHandler.ReleaseCursorHeld;
+        bool shouldReleaseCursor = Input.GetKey(releaseCursorKey) || Input.GetKey(alternateReleaseCursorKey);
         if (cursorReleased != shouldReleaseCursor)
         {
             SetCursorReleased(shouldReleaseCursor);
@@ -159,8 +171,18 @@ public class PlayerController : MonoBehaviour
     {
         if (hasFocus && lockCursorOnStart)
         {
-            SetCursorReleased(inputHandler != null && inputHandler.ReleaseCursorHeld);
+            SetCursorReleased(Input.GetKey(releaseCursorKey) || Input.GetKey(alternateReleaseCursorKey));
         }
+    }
+
+    private void OnHorizontalInput(float value)
+    {
+        moveInput = new Vector2(value, moveInput.y);
+    }
+
+    private void OnVerticalInput(float value)
+    {
+        moveInput = new Vector2(moveInput.x, value);
     }
 
     private void OnDrawGizmosSelected()

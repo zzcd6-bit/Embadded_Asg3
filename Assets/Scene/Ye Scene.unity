@@ -5001,7 +5001,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2109908326}
   m_CullTransparentMesh: 1
---- !u!1 &2146300100
+--- !u!1 &2146300200
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -5009,57 +5009,167 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 2146300102}
-  - component: {fileID: 2146300101}
+  - component: {fileID: 2146300202}
+  - component: {fileID: 2146300201}
   m_Layer: 0
-  m_Name: Ye Grid Placement Bootstrap
+  m_Name: Ye Build Hotkey Mode
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &2146300101
+--- !u!114 &2146300201
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2146300100}
+  m_GameObject: {fileID: 2146300200}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8f4cf39f90c74474995b46f77cc1fbad, type: 3}
+  m_Script: {fileID: 11500000, guid: 016d4b6b80859ef48955cc59955e2240, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  placementCamera: {fileID: 0}
-  inputHandler: {fileID: 0}
-  gridPlacementSystem: {fileID: 0}
-  placementController: {fileID: 0}
-  buildModeController: {fileID: 0}
-  cellSize: 1
-  gridOrigin: {x: 0, y: 0, z: 0}
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  itemAssets: []
-  createFallbackItems: 1
-  runtimeItems:
-  - displayName: Block 1x1
-    prefab: {fileID: 0}
-    size: {x: 1, y: 1}
-    cost: 0
-  - displayName: Block 2x2
-    prefab: {fileID: 0}
-    size: {x: 2, y: 2}
-    cost: 0
-  createRuntimeInventory: 1
-  panelSize: {x: 520, y: 104}
---- !u!4 &2146300102
+  placementController: {fileID: 2146300301}
+  slot1Item: {fileID: 11400000, guid: 56ad8ed871474a5dba8d52eb5d941f28, type: 2}
+  exitBuildModeAfterPlacement: 1
+--- !u!4 &2146300202
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2146300100}
+  m_GameObject: {fileID: 2146300200}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2146300300
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2146300304}
+  - component: {fileID: 2146300301}
+  - component: {fileID: 2146300302}
+  - component: {fileID: 2146300303}
+  m_Layer: 0
+  m_Name: Ye Placement Controller
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2146300301
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2146300300}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41d4e4f6b6d39e7438f59e139571d3d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  placementCamera: {fileID: 1964026415}
+  gridPlacementSystem: {fileID: 2146300401}
+  previewController: {fileID: 2146300302}
+  placementCommitter: {fileID: 2146300303}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  raycastDistance: 500
+  ignorePointerOverUI: 1
+  placementCheckInterval: 0.1
+--- !u!114 &2146300302
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2146300300}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa036871ecf23c34582babbfa618f3b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  validPreviewMaterial: {fileID: 0}
+  invalidPreviewMaterial: {fileID: 0}
+  fallbackPreviewAlpha: 0.55
+--- !u!114 &2146300303
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2146300300}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 566a3a8f5cd3a5940a3fe554c5c2b323, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gridPlacementSystem: {fileID: 2146300401}
+--- !u!4 &2146300304
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2146300300}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2146300400
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2146300402}
+  - component: {fileID: 2146300401}
+  m_Layer: 0
+  m_Name: Ye Grid Placement System
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2146300401
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2146300400}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1575a766da70193449ded490538f84e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cellSize: 1
+  origin: {x: 0, y: 0, z: 0}
+--- !u!4 &2146300402
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2146300400}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -5072,7 +5182,9 @@ Transform:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 2146300102}
+  - {fileID: 2146300202}
+  - {fileID: 2146300304}
+  - {fileID: 2146300402}
   - {fileID: 1964026416}
   - {fileID: 2090618917}
   - {fileID: 1326940455}
