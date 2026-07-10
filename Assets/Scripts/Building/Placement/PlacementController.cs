@@ -8,6 +8,7 @@ public class PlacementController : MonoBehaviour
     [Header("References")]
     [SerializeField] private Camera placementCamera;
     [SerializeField] private GridPlacementSystem gridPlacementSystem;
+    [SerializeField] private GridSurfaceClassifier surfaceClassifier;
     [SerializeField] private PlacementPreviewController previewController;
     [SerializeField] private PlacementCommitter placementCommitter;
 
@@ -58,6 +59,11 @@ public class PlacementController : MonoBehaviour
         if (gridPlacementSystem == null)
         {
             gridPlacementSystem = FindAnyObjectByType<GridPlacementSystem>();
+        }
+
+        if (surfaceClassifier == null)
+        {
+            surfaceClassifier = FindAnyObjectByType<GridSurfaceClassifier>();
         }
 
         if (previewController == null)
@@ -345,7 +351,8 @@ public class PlacementController : MonoBehaviour
             && hasPlacementPosition
             && gridPlacementSystem != null
             && gridPlacementSystem.CanPlace(currentPivotCell, currentItem.Size, currentRotationSteps)
-            && IsCurrentFootprintOnNavMesh();
+            && IsCurrentFootprintOnNavMesh()
+            && IsCurrentFootprintBuildableSurface();
     }
 
     private bool IsCurrentFootprintOnNavMesh()
@@ -358,6 +365,24 @@ public class PlacementController : MonoBehaviour
         foreach (Vector2Int cell in gridPlacementSystem.GetOccupiedCells(currentPivotCell, currentItem.Size, currentRotationSteps))
         {
             if (!TrySampleNavMesh(gridPlacementSystem.CellToWorld(cell), out _))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private bool IsCurrentFootprintBuildableSurface()
+    {
+        if (surfaceClassifier == null)
+        {
+            return true;
+        }
+
+        foreach (Vector2Int cell in gridPlacementSystem.GetOccupiedCells(currentPivotCell, currentItem.Size, currentRotationSteps))
+        {
+            if (!surfaceClassifier.IsCellBuildableSurface(cell))
             {
                 return false;
             }

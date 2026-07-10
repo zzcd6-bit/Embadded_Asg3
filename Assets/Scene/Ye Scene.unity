@@ -7106,6 +7106,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   placementCamera: {fileID: 1964026415}
   gridPlacementSystem: {fileID: 2146300401}
+  surfaceClassifier: {fileID: 2146300404}
   previewController: {fileID: 2146300302}
   placementCommitter: {fileID: 2146300303}
   groundLayer:
@@ -7170,6 +7171,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2146300402}
   - component: {fileID: 2146300401}
+  - component: {fileID: 2146300404}
   - component: {fileID: 2146300403}
   m_Layer: 0
   m_Name: Ye Grid Placement System
@@ -7192,6 +7194,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cellSize: 1
   origin: {x: 0, y: 0, z: 0}
+--- !u!114 &2146300404
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2146300400}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2e1d7a77f5545d2b3b5f2b4f2307a90, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gridPlacementSystem: {fileID: 2146300401}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  raycastHeight: 40
+  raycastDistance: 100
+  navMeshSampleDistance: 0.45
+  splitHeightThreshold: 0.75
+  layerClusterThreshold: 0.35
 --- !u!4 &2146300402
 Transform:
   m_ObjectHideFlags: 0
@@ -7221,6 +7244,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridPlacementSystem: {fileID: 2146300401}
   placementController: {fileID: 2146300301}
+  surfaceClassifier: {fileID: 2146300404}
   targetCamera: {fileID: 1964026415}
   centerTarget: {fileID: 0}
   groundLayer:
@@ -7231,10 +7255,12 @@ MonoBehaviour:
   surfaceRaycastHeight: 40
   surfaceRaycastDistance: 100
   navMeshSampleDistance: 0.45
+  maxLineHeightDelta: 0.75
   lineWidth: 0.025
   lineColor: {r: 0.2, g: 0.95, b: 0.85, a: 0.42}
   occupiedCellColor: {r: 1, g: 0.12, b: 0.08, a: 0.5}
   previewCellColor: {r: 1, g: 0.85, b: 0.12, a: 0.5}
+  splitCellColor: {r: 1, g: 0.45, b: 0.05, a: 0.45}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
