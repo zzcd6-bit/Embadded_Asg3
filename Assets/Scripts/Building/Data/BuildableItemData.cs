@@ -11,6 +11,7 @@ public class BuildableItemData : ScriptableObject
     [Header("Placement")]
     [SerializeField] private GameObject buildingPrefab;
     [SerializeField] private Vector2Int size = Vector2Int.one;
+    [SerializeField] private bool contributesWalkableNavMesh;
 
     [Header("Economy")]
     [SerializeField] private int cost;
@@ -20,5 +21,6 @@ public class BuildableItemData : ScriptableObject
     public string Description => description;
     public GameObject BuildingPrefab => buildingPrefab;
     public Vector2Int Size => new Vector2Int(Mathf.Max(1, size.x), Mathf.Max(1, size.y));
+    public bool ContributesWalkableNavMesh => contributesWalkableNavMesh;
     public int Cost => Mathf.Max(0, cost);
 }

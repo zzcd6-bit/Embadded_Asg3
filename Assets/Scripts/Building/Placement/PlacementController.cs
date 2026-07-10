@@ -20,6 +20,11 @@ public class PlacementController : MonoBehaviour
     [Header("Validation")]
     [SerializeField] private float placementCheckInterval = 0.1f;
 
+    [Header("Ground Alignment")]
+    [SerializeField] private bool alignToHighestGroundPoint = true;
+    [SerializeField] private float surfaceGap = 0.02f;
+    [SerializeField] private float fallbackGroundSampleHeight = 40f;
+
     [Header("NavMesh Placement")]
     [SerializeField] private bool requireNavMeshSurface = true;
     [SerializeField] private float navMeshSampleDistance = 0.45f;
@@ -145,7 +150,7 @@ public class PlacementController : MonoBehaviour
         currentItem = building.Item;
         currentPivotCell = building.PivotCell;
         currentRotationSteps = building.RotationSteps;
-        currentRotation = building.transform.rotation;
+        currentRotation = Quaternion.Euler(0f, building.transform.eulerAngles.y, 0f);
         currentPlacementPosition = building.transform.position;
         originalPivotCell = building.PivotCell;
         originalRotationSteps = building.RotationSteps;
@@ -205,8 +210,10 @@ public class PlacementController : MonoBehaviour
     public void RotatePreview()
     {
         currentRotation *= Quaternion.Euler(0f, 90f, 0f);
+        currentRotation = Quaternion.Euler(0f, currentRotation.eulerAngles.y, 0f);
         currentRotationSteps = (currentRotationSteps + 1) % 4;
         previewController.SetTransform(currentPlacementPosition, currentRotation);
+        AlignCurrentPlacementToGround();
         ValidateCurrentPlacement(true);
     }
 
@@ -323,15 +330,83 @@ public class PlacementController : MonoBehaviour
 
         currentPivotCell = gridPlacementSystem.WorldToPivotCell(worldPosition, currentItem.Size, currentRotationSteps);
         currentPlacementPosition = gridPlacementSystem.PivotCellToWorld(currentPivotCell, currentItem.Size, currentRotationSteps);
+        currentRotation = Quaternion.Euler(0f, currentRotation.eulerAngles.y, 0f);
 
         if (requireNavMeshSurface && TrySampleNavMesh(currentPlacementPosition, out Vector3 snappedPosition))
         {
             currentPlacementPosition.y = snappedPosition.y;
         }
 
+        AlignCurrentPlacementToGround();
         hasPlacementPosition = true;
         previewController.SetTransform(currentPlacementPosition, currentRotation);
         return true;
+    }
+
+    private void AlignCurrentPlacementToGround()
+    {
+        if (!alignToHighestGroundPoint || previewController == null || !previewController.HasPreview)
+        {
+            return;
+        }
+
+        if (!TryGetHighestFootprintGroundY(out float highestGroundY))
+        {
+            return;
+        }
+
+        previewController.SetTransform(currentPlacementPosition, currentRotation);
+        if (!previewController.TryGetWorldBounds(out Bounds previewBounds))
+        {
+            currentPlacementPosition.y = highestGroundY + surfaceGap;
+            previewController.SetTransform(currentPlacementPosition, currentRotation);
+            return;
+        }
+
+        float bottomOffset = currentPlacementPosition.y - previewBounds.min.y;
+        currentPlacementPosition.y = highestGroundY + bottomOffset + surfaceGap;
+        previewController.SetTransform(currentPlacementPosition, currentRotation);
+    }
+
+    private bool TryGetHighestFootprintGroundY(out float highestGroundY)
+    {
+        highestGroundY = float.MinValue;
+        bool foundGround = false;
+
+        foreach (Vector2Int cell in gridPlacementSystem.GetOccupiedCells(currentPivotCell, currentItem.Size, currentRotationSteps))
+        {
+            if (!TryGetCellHighestGroundY(cell, out float cellGroundY))
+            {
+                continue;
+            }
+
+            highestGroundY = Mathf.Max(highestGroundY, cellGroundY);
+            foundGround = true;
+        }
+
+        return foundGround;
+    }
+
+    private bool TryGetCellHighestGroundY(Vector2Int cell, out float highestGroundY)
+    {
+        if (surfaceClassifier != null
+            && surfaceClassifier.TryGetCellSurface(cell, out CellSurfaceInfo info)
+            && info.HasSurface)
+        {
+            highestGroundY = info.MaxY;
+            return true;
+        }
+
+        Vector3 cellWorld = gridPlacementSystem.CellToWorld(cell);
+        Vector3 rayOrigin = cellWorld + Vector3.up * fallbackGroundSampleHeight;
+        if (Physics.Raycast(rayOrigin, Vector3.down, out RaycastHit hit, raycastDistance, groundLayer, QueryTriggerInteraction.Ignore))
+        {
+            highestGroundY = hit.point.y;
+            return true;
+        }
+
+        highestGroundY = cellWorld.y;
+        return false;
     }
 
     private void ValidateCurrentPlacement(bool force)

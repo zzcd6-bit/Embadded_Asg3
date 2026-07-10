@@ -18,4 +18,5 @@ MonoBehaviour:
     mapping.
   buildingPrefab: {fileID: 3648350582486492644, guid: be12e42085f265745a4104d7a1347289, type: 3}
   size: {x: 8, y: 4}
+  contributesWalkableNavMesh: 1
   cost: 0

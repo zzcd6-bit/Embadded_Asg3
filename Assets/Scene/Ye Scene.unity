@@ -4172,7 +4172,7 @@ MonoBehaviour:
   m_Center: {x: 0, y: 2, z: 0}
   m_LayerMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 8256
   m_UseGeometry: 0
   m_DefaultArea: 0
   m_GenerateLinks: 0
@@ -7115,6 +7115,9 @@ MonoBehaviour:
   raycastDistance: 500
   ignorePointerOverUI: 1
   placementCheckInterval: 0.1
+  alignToHighestGroundPoint: 1
+  surfaceGap: 0.02
+  fallbackGroundSampleHeight: 40
   requireNavMeshSurface: 1
   navMeshSampleDistance: 0.45
   navMeshAreaMask: -1
@@ -7146,6 +7149,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gridPlacementSystem: {fileID: 2146300401}
+  rebakeNavMeshOnChanges: 1
+  walkableBuildingLayerName: Walkable Building
+  navMeshSurfaces:
+  - {fileID: 1326940456}
 --- !u!4 &2146300304
 Transform:
   m_ObjectHideFlags: 0
