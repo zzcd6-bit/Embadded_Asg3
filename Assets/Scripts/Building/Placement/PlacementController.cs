@@ -119,6 +119,12 @@ public class PlacementController : MonoBehaviour
             return;
         }
 
+        if (Input.GetMouseButtonDown(1))
+        {
+            CancelPlacement();
+            return;
+        }
+
         UpdatePreviewPosition();
     }
 
@@ -366,13 +372,13 @@ public class PlacementController : MonoBehaviour
         previewController.SetTransform(currentPlacementPosition, currentRotation);
         if (!previewController.TryGetWorldBounds(out Bounds previewBounds))
         {
-            currentPlacementPosition.y = highestGroundY + surfaceGap;
+            currentPlacementPosition.y = highestGroundY + surfaceGap + currentItem.PlacementYOffset;
             previewController.SetTransform(currentPlacementPosition, currentRotation);
             return;
         }
 
         float bottomOffset = currentPlacementPosition.y - previewBounds.min.y;
-        currentPlacementPosition.y = highestGroundY + bottomOffset + surfaceGap;
+        currentPlacementPosition.y = highestGroundY + bottomOffset + surfaceGap + currentItem.PlacementYOffset;
         previewController.SetTransform(currentPlacementPosition, currentRotation);
     }
 

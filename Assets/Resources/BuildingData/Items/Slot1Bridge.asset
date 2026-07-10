@@ -21,5 +21,6 @@ MonoBehaviour:
   surfaceRule: 1
   anchorDepth: 1
   maxAnchorHeightDelta: 0
+  placementYOffset: 0
   contributesWalkableNavMesh: 1
   cost: 0

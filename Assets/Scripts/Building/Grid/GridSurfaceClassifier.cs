@@ -9,7 +9,7 @@ public class GridSurfaceClassifier : MonoBehaviour
     [SerializeField] private float raycastHeight = 40f;
     [SerializeField] private float raycastDistance = 100f;
     [SerializeField] private float navMeshSampleDistance = 0.45f;
-    [SerializeField] private float splitHeightThreshold = 0.75f;
+    [SerializeField, Range(0f, 89f)] private float maxSurfaceAngle = 45f;
     [SerializeField] private float layerClusterThreshold = 0.35f;
 
     private readonly Dictionary<Vector2Int, CellSurfaceInfo> cellCache = new();
@@ -80,6 +80,7 @@ public class GridSurfaceClassifier : MonoBehaviour
         float maxY = float.MinValue;
         float sumY = 0f;
         int validCount = 0;
+        Vector3[] sampledPoints = new Vector3[SampleOffsets.Length];
 
         for (int i = 0; i < SampleOffsets.Length; i++)
         {
@@ -91,6 +92,7 @@ public class GridSurfaceClassifier : MonoBehaviour
             minY = Mathf.Min(minY, point.y);
             maxY = Mathf.Max(maxY, point.y);
             sumY += point.y;
+            sampledPoints[validCount] = point;
             validCount++;
         }
 
@@ -99,8 +101,8 @@ public class GridSurfaceClassifier : MonoBehaviour
             return CellSurfaceInfo.Empty;
         }
 
-        float heightDelta = maxY - minY;
-        bool hasSplit = heightDelta > splitHeightThreshold;
+        float steepestSurfaceAngle = CalculateSteepestSurfaceAngle(sampledPoints, validCount);
+        bool hasSplit = steepestSurfaceAngle > maxSurfaceAngle;
         float lowerY = minY;
         float upperY = maxY;
 
@@ -117,8 +119,32 @@ public class GridSurfaceClassifier : MonoBehaviour
             maxY,
             lowerY,
             upperY,
-            sumY / validCount
+            sumY / validCount,
+            steepestSurfaceAngle
         );
+    }
+
+    private static float CalculateSteepestSurfaceAngle(Vector3[] points, int count)
+    {
+        float steepestAngle = 0f;
+        for (int i = 0; i < count; i++)
+        {
+            for (int j = i + 1; j < count; j++)
+            {
+                Vector2 a = new(points[i].x, points[i].z);
+                Vector2 b = new(points[j].x, points[j].z);
+                float horizontalDistance = Vector2.Distance(a, b);
+                if (horizontalDistance <= 0.001f)
+                {
+                    continue;
+                }
+
+                float angle = Mathf.Atan2(Mathf.Abs(points[i].y - points[j].y), horizontalDistance) * Mathf.Rad2Deg;
+                steepestAngle = Mathf.Max(steepestAngle, angle);
+            }
+        }
+
+        return steepestAngle;
     }
 
     private void CalculateLayerHeights(Vector2Int cell, float minY, float maxY, out float lowerY, out float upperY)
@@ -193,8 +219,9 @@ public readonly struct CellSurfaceInfo
     public readonly float LowerY;
     public readonly float UpperY;
     public readonly float RepresentativeY;
+    public readonly float SteepestSurfaceAngle;
 
-    public static CellSurfaceInfo Empty => new(false, false, false, 0f, 0f, 0f, 0f, 0f);
+    public static CellSurfaceInfo Empty => new(false, false, false, 0f, 0f, 0f, 0f, 0f, 0f);
 
     public CellSurfaceInfo(
         bool hasSurface,
@@ -204,7 +231,8 @@ public readonly struct CellSurfaceInfo
         float maxY,
         float lowerY,
         float upperY,
-        float representativeY)
+        float representativeY,
+        float steepestSurfaceAngle)
     {
         HasSurface = hasSurface;
         IsFullyOnSurface = isFullyOnSurface;
@@ -214,5 +242,6 @@ public readonly struct CellSurfaceInfo
         LowerY = lowerY;
         UpperY = upperY;
         RepresentativeY = representativeY;
+        SteepestSurfaceAngle = steepestSurfaceAngle;
     }
 }

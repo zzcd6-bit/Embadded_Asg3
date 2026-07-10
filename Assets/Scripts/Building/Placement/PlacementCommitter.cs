@@ -150,9 +150,9 @@ public class PlacementCommitter : MonoBehaviour
         modifier.applyToChildren = true;
         modifier.ignoreFromBuild = !item.ContributesWalkableNavMesh;
 
-        if (item.ContributesWalkableNavMesh && TryGetLayer(walkableBuildingLayerName, out int walkableLayer))
+        if (item.ContributesWalkableNavMesh)
         {
-            SetLayerRecursively(building.gameObject, walkableLayer);
+            EnsureWalkableNavMeshProxy(building, item);
         }
     }
 
@@ -223,19 +223,66 @@ public class PlacementCommitter : MonoBehaviour
         return bounds;
     }
 
+    private void EnsureWalkableNavMeshProxy(BuildingInstance building, BuildableItemData item)
+    {
+        if (gridPlacementSystem == null || !TryGetLayer(walkableBuildingLayerName, out int walkableLayer))
+        {
+            return;
+        }
+
+        Transform proxyTransform = building.transform.Find("__BuildingNavMeshProxy");
+        GameObject proxyObject;
+        if (proxyTransform == null)
+        {
+            proxyObject = new GameObject("__BuildingNavMeshProxy");
+            proxyObject.transform.SetParent(building.transform, false);
+            proxyObject.AddComponent<BuildingNavMeshProxy>();
+        }
+        else
+        {
+            proxyObject = proxyTransform.gameObject;
+        }
+
+        proxyObject.layer = walkableLayer;
+        proxyObject.transform.localRotation = Quaternion.identity;
+
+        BoxCollider proxyCollider = proxyObject.GetComponent<BoxCollider>();
+        if (proxyCollider == null)
+        {
+            proxyCollider = proxyObject.AddComponent<BoxCollider>();
+        }
+
+        Bounds? renderBounds = CalculateRenderBounds(building.gameObject);
+        float proxyThickness = 0.12f;
+        Vector2Int rotatedSize = GridPlacementSystem.GetRotatedSize(item.Size, building.RotationSteps);
+        Vector3 worldSize = new(
+            rotatedSize.x * gridPlacementSystem.CellSize,
+            proxyThickness,
+            rotatedSize.y * gridPlacementSystem.CellSize
+        );
+
+        Vector3 worldCenter = building.transform.position;
+        if (renderBounds.HasValue)
+        {
+            Bounds bounds = renderBounds.Value;
+            worldCenter = new Vector3(bounds.center.x, bounds.max.y - proxyThickness * 0.5f, bounds.center.z);
+        }
+
+        proxyObject.transform.position = worldCenter;
+        proxyObject.transform.localScale = Vector3.one;
+        proxyCollider.center = Vector3.zero;
+        proxyCollider.size = new Vector3(
+            Mathf.Max(0.05f, worldSize.x / Mathf.Max(0.0001f, proxyObject.transform.lossyScale.x)),
+            proxyThickness / Mathf.Max(0.0001f, proxyObject.transform.lossyScale.y),
+            Mathf.Max(0.05f, worldSize.z / Mathf.Max(0.0001f, proxyObject.transform.lossyScale.z))
+        );
+        proxyCollider.isTrigger = false;
+    }
+
     private static bool TryGetLayer(string layerName, out int layer)
     {
         layer = LayerMask.NameToLayer(layerName);
         return layer >= 0;
-    }
-
-    private static void SetLayerRecursively(GameObject target, int layer)
-    {
-        target.layer = layer;
-        foreach (Transform child in target.transform)
-        {
-            SetLayerRecursively(child.gameObject, layer);
-        }
     }
 
     //Ensures the building owns a world-space edit button.

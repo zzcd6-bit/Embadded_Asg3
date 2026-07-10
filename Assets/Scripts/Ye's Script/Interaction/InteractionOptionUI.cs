@@ -2,13 +2,20 @@ using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
-public class InteractionOptionUI : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler
+public class InteractionOptionUI : MonoBehaviour, IPointerEnterHandler
 {
     [Header("References")]
     [SerializeField] private TMP_Text optionText;
     [SerializeField] private GameObject selectedBackground;
     [SerializeField] private CanvasGroup canvasGroup;
+    [SerializeField] private Button button;
+    [SerializeField] private Image buttonImage;
+
+    [Header("Button Sprites")]
+    [SerializeField] private Sprite normalSprite;
+    [SerializeField] private Sprite selectedSprite;
 
     [Header("Display")]
     [SerializeField, Range(0f, 1f)] private float normalAlpha = 0.65f;
@@ -25,6 +32,12 @@ public class InteractionOptionUI : MonoBehaviour, IPointerEnterHandler, IPointer
         index = optionIndex;
         clickCallback = onClick;
         hoverCallback = onHover;
+
+        if (button != null)
+        {
+            button.onClick.RemoveListener(HandleButtonClicked);
+            button.onClick.AddListener(HandleButtonClicked);
+        }
 
         if (optionText != null)
         {
@@ -43,6 +56,15 @@ public class InteractionOptionUI : MonoBehaviour, IPointerEnterHandler, IPointer
         {
             canvasGroup.alpha = selected ? selectedAlpha : normalAlpha;
         }
+
+        if (buttonImage != null)
+        {
+            Sprite sprite = selected ? selectedSprite : normalSprite;
+            if (sprite != null)
+            {
+                buttonImage.sprite = sprite;
+            }
+        }
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -50,13 +72,16 @@ public class InteractionOptionUI : MonoBehaviour, IPointerEnterHandler, IPointer
         hoverCallback?.Invoke(index);
     }
 
-    public void OnPointerClick(PointerEventData eventData)
+    private void HandleButtonClicked()
     {
-        if (eventData.button != PointerEventData.InputButton.Left)
-        {
-            return;
-        }
-
         clickCallback?.Invoke(index);
+    }
+
+    private void OnDisable()
+    {
+        if (button != null)
+        {
+            button.onClick.RemoveListener(HandleButtonClicked);
+        }
     }
 }
