@@ -17,5 +17,5 @@ MonoBehaviour:
   description: Test item started by key 1. Replace this asset for rune placement
     mapping.
   buildingPrefab: {fileID: 3648350582486492644, guid: be12e42085f265745a4104d7a1347289, type: 3}
-  size: {x: 4, y: 8}
+  size: {x: 8, y: 4}
   cost: 0
