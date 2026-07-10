@@ -15,7 +15,6 @@ public enum E_EventType
 
     #region New Player Input
     E_Input_Jump,
-    E_Input_Dodge,
     E_Input_Attack,
     E_Input_LockOn,
     #endregion
@@ -59,7 +58,6 @@ public enum E_EventType
     #region New Player Combat Events
     E_Player_Damaged,
     E_Player_Dead,
-    E_Player_PerfectDodge,
     #endregion
 
     #region Enemy

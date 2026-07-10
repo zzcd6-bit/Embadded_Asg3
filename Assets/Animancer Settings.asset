@@ -13,24 +13,24 @@ MonoBehaviour:
   m_Name: Animancer Settings
   m_EditorClassIdentifier: Kybernetik.Animancer.Editor::Animancer.Editor.AnimancerSettings
   _Data:
-  - rid: 1229894113992900696
-  - rid: 1229894113992900697
-  - rid: 1229894113992900698
-  - rid: 1229894113992900699
-  - rid: 1229894113992900700
-  - rid: 1229894113992900701
+  - rid: 3177271049362866260
+  - rid: 3177271049362866261
+  - rid: 3177271049362866262
+  - rid: 3177271049362866263
+  - rid: 3177271049362866264
+  - rid: 3177271049362866265
   references:
     version: 2
     RefIds:
-    - rid: 1229894113992900696
+    - rid: 3177271049362866260
       type: {class: AnimancerComponentPreviewSettings, ns: Animancer.Editor.Previews, asm: Kybernetik.Animancer.Editor}
       data:
         _RepaintRate: 30
-    - rid: 1229894113992900697
+    - rid: 3177271049362866261
       type: {class: AnimancerGraphControls, ns: Animancer.Editor, asm: Kybernetik.Animancer.Editor}
       data:
         _FrameStep: 0.02
-    - rid: 1229894113992900698
+    - rid: 3177271049362866262
       type: {class: TransitionPreviewSettings, ns: Animancer.Editor.Previews, asm: Kybernetik.Animancer.Editor}
       data:
         _AutoClose: 1
@@ -39,18 +39,18 @@ MonoBehaviour:
         _FrameStep: 0.02
         _SceneEnvironment: {fileID: 0}
         _Models: []
-    - rid: 1229894113992900699
+    - rid: 3177271049362866263
       type: {class: SerializableEventSequenceDrawerSettings, ns: Animancer.Editor, asm: Kybernetik.Animancer.Editor}
       data:
         _HideEventCallbacks: 0
-    - rid: 1229894113992900700
+    - rid: 3177271049362866264
       type: {class: AnimationTimeAttributeSettings, ns: Animancer.Units.Editor, asm: Kybernetik.Animancer.Editor}
       data:
         showApproximations: 1
         showNormalized: 1
         showSeconds: 1
         showFrames: 1
-    - rid: 1229894113992900701
+    - rid: 3177271049362866265
       type: {class: GenerateSpriteAnimationsSettings, ns: Animancer.Editor.Tools, asm: Kybernetik.Animancer.Editor}
       data:
         _FrameRate: 12

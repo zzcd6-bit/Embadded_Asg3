@@ -14,7 +14,6 @@ public class PlayerAnimancerDriver : MonoBehaviour
 
     [Header("Actions")]
     [SerializeField] private ClipTransition jump;
-    [SerializeField] private ClipTransition dodge;
 
     public void Init(Animator targetAnimator)
     {
@@ -69,11 +68,6 @@ public class PlayerAnimancerDriver : MonoBehaviour
         PlayTransition(jump, "Jump");
     }
 
-    public void PlayDodge()
-    {
-        PlayTransition(dodge, "Dodge");
-    }
-
     public float GetRunStartLength()
     {
         return GetTransitionLength(runStart);
@@ -87,11 +81,6 @@ public class PlayerAnimancerDriver : MonoBehaviour
     public float GetJumpLength()
     {
         return GetTransitionLength(jump);
-    }
-
-    public float GetDodgeLength()
-    {
-        return GetTransitionLength(dodge);
     }
 
     private void PlayTransition(ClipTransition transition, string stateName)

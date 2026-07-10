@@ -17,8 +17,8 @@ TagManager:
   - BrushCanvas
   - BrushLine
   - BrushCursor
-  - 
-  - 
+  - Obstacle
+  - BridgeTrigger
   - 
   - 
   - 
