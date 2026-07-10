@@ -29,6 +29,11 @@ public class BrushGestureRecognizer : MonoBehaviour
 
     private void Awake()
     {
+        ReloadTemplates();
+    }
+
+    public void ReloadTemplates()
+    {
         trainingSet.Clear();
 
         if (loadXmlTemplatesFromResources)

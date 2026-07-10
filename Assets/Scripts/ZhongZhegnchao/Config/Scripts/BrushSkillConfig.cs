@@ -47,9 +47,7 @@ public class BrushSkillConfig : ScriptableObject
     public int infusionBurningTickDamage = 1;
 
     [Header("Bridge ◊® Ù…Ë÷√")]
-    public GameObject bridgePrefab;
-    public float bridgeDuration = 8f;
-    public float bridgeLength = 6f;
-    public float bridgeWidth = 2f;
-    public float bridgeHeightOffset = 0.05f;
+    public LayerMask bridgeTriggerLayer;
+    public float bridgeCastRadius = 0.6f;
+    public float bridgeActiveDuration = 8f;
 }

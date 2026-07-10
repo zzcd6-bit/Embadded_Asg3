@@ -36,11 +36,9 @@ public class BrushSkillConfigEditor : Editor
     private SerializedProperty infusionBurningTickInterval;
     private SerializedProperty infusionBurningTickDamage;
 
-    private SerializedProperty bridgePrefab;
-    private SerializedProperty bridgeDuration;
-    private SerializedProperty bridgeLength;
-    private SerializedProperty bridgeWidth;
-    private SerializedProperty bridgeHeightOffset;
+    private SerializedProperty bridgeTriggerLayer;
+    private SerializedProperty bridgeCastRadius;
+    private SerializedProperty bridgeActiveDuration;
 
     private void OnEnable()
     {
@@ -76,11 +74,9 @@ public class BrushSkillConfigEditor : Editor
         infusionBurningTickInterval = serializedObject.FindProperty("infusionBurningTickInterval");
         infusionBurningTickDamage = serializedObject.FindProperty("infusionBurningTickDamage");
 
-        bridgePrefab = serializedObject.FindProperty("bridgePrefab");
-        bridgeDuration = serializedObject.FindProperty("bridgeDuration");
-        bridgeLength = serializedObject.FindProperty("bridgeLength");
-        bridgeWidth = serializedObject.FindProperty("bridgeWidth");
-        bridgeHeightOffset = serializedObject.FindProperty("bridgeHeightOffset");
+        bridgeTriggerLayer = serializedObject.FindProperty("bridgeTriggerLayer");
+        bridgeCastRadius = serializedObject.FindProperty("bridgeCastRadius");
+        bridgeActiveDuration = serializedObject.FindProperty("bridgeActiveDuration");
     }
 
     public override void OnInspectorGUI()
@@ -257,11 +253,9 @@ public class BrushSkillConfigEditor : Editor
             MessageType.None
         );
 
-        EditorGUILayout.PropertyField(bridgePrefab, new GUIContent("桥 Prefab"));
-        EditorGUILayout.PropertyField(bridgeDuration, new GUIContent("桥持续时间"));
-        EditorGUILayout.PropertyField(bridgeLength, new GUIContent("桥长度"));
-        EditorGUILayout.PropertyField(bridgeWidth, new GUIContent("桥宽度"));
-        EditorGUILayout.PropertyField(bridgeHeightOffset, new GUIContent("桥高度偏移"));
+        EditorGUILayout.PropertyField(bridgeTriggerLayer, new GUIContent("桥触发器 Layer"));
+        EditorGUILayout.PropertyField(bridgeCastRadius, new GUIContent("射线检测半径"));
+        EditorGUILayout.PropertyField(bridgeActiveDuration, new GUIContent("桥激活时间"));
     }
 
     private void DrawTitle(string title)
