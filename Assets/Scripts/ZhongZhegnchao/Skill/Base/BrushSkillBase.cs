@@ -11,6 +11,11 @@ public abstract class BrushSkillBase : MonoBehaviour
     [Header("Caster")]
     public GameObject caster;
 
+    [Header("技能获得限制")]
+    public bool requireUnlockedSkill = true;
+
+    private IBrushSkillUnlockReceiver skillUnlockReceiver;
+
     protected abstract BrushSkillType SkillType { get; }
 
     protected virtual void Awake()
@@ -29,6 +34,8 @@ public abstract class BrushSkillBase : MonoBehaviour
         {
             caster = gameObject;
         }
+
+        ResolveSkillUnlockReceiver();
     }
 
     protected virtual void OnEnable()
@@ -47,6 +54,75 @@ public abstract class BrushSkillBase : MonoBehaviour
         );
     }
 
+    private void ResolveSkillUnlockReceiver()
+    {
+        skillUnlockReceiver = null;
+
+        GameObject searchObject = caster != null
+            ? caster
+            : gameObject;
+
+        if (searchObject == null)
+            return;
+
+        MonoBehaviour[] parentBehaviours =
+            searchObject.GetComponentsInParent<MonoBehaviour>(true);
+
+        for (int i = 0; i < parentBehaviours.Length; i++)
+        {
+            if (parentBehaviours[i] is IBrushSkillUnlockReceiver receiver)
+            {
+                skillUnlockReceiver = receiver;
+                return;
+            }
+        }
+
+        MonoBehaviour[] childBehaviours =
+            searchObject.GetComponentsInChildren<MonoBehaviour>(true);
+
+        for (int i = 0; i < childBehaviours.Length; i++)
+        {
+            if (childBehaviours[i] is IBrushSkillUnlockReceiver receiver)
+            {
+                skillUnlockReceiver = receiver;
+                return;
+            }
+        }
+    }
+
+    private bool CanUseUnlockedSkill()
+    {
+        if (!requireUnlockedSkill)
+            return true;
+
+        if (skillUnlockReceiver == null)
+        {
+            ResolveSkillUnlockReceiver();
+        }
+
+        if (skillUnlockReceiver == null)
+        {
+            Debug.LogWarning(
+                $"[BrushSkillBase] Skill inventory not found. Skill blocked: {SkillType}",
+                this
+            );
+
+            return false;
+        }
+
+        if (!skillUnlockReceiver.HasBrushSkill(SkillType))
+        {
+            Debug.Log(
+                $"[BrushSkillBase] Player has not unlocked skill: {SkillType}",
+                this
+            );
+
+            return false;
+        }
+
+        return true;
+    }
+
     private void OnGestureRecognized(BrushGestureResult result)
     {
         if (result == null)
@@ -56,6 +132,9 @@ public abstract class BrushSkillBase : MonoBehaviour
             return;
 
         if (result.skillType != SkillType)
+            return;
+
+        if (!CanUseUnlockedSkill())
             return;
 
         BrushCastContext context = null;

@@ -10,6 +10,9 @@ public class BrushModeController : MonoBehaviour
     [Header("New Player")]
     [SerializeField] private ActionPlayerController newPlayerController;
 
+    [Header("»­»­Ä£Ê½ÀäÈ´")]
+    public BrushModeCooldownController cooldownController;
+
     public bool IsBrushMode { get; private set; }
 
     private const float DefaultFixedDeltaTime = 0.02f;
@@ -20,6 +23,21 @@ public class BrushModeController : MonoBehaviour
         if (newPlayerController == null)
         {
             newPlayerController = FindObjectOfType<ActionPlayerController>();
+        }
+
+        if (cooldownController == null)
+        {
+            cooldownController = GetComponent<BrushModeCooldownController>();
+        }
+
+        if (cooldownController == null)
+        {
+            cooldownController = GetComponentInChildren<BrushModeCooldownController>();
+        }
+
+        if (cooldownController == null)
+        {
+            cooldownController = GetComponentInParent<BrushModeCooldownController>();
         }
     }
 
@@ -45,6 +63,15 @@ public class BrushModeController : MonoBehaviour
 
     private void EnterBrushMode()
     {
+        if (cooldownController != null && !cooldownController.CanEnterBrushMode())
+        {
+            Debug.Log(
+                $"[BrushModeController] Brush mode is cooling down. Remaining: {cooldownController.RemainingCooldown:F1}s"
+            );
+
+            return;
+        }
+
         if (IsBrushMode)
             return;
 
@@ -70,6 +97,11 @@ public class BrushModeController : MonoBehaviour
     {
         if (!IsBrushMode)
             return;
+
+        if (cooldownController != null)
+        {
+            cooldownController.StartCooldown();
+        }
 
         IsBrushMode = false;
 

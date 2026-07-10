@@ -7,6 +7,7 @@ public class EnemyWhitebox : MonoBehaviour, IDamageable
     public int currentHp = 100;
 
     private ElementVfxController elementVfxController;
+    private DamageNumberAnchor damageNumberAnchor;
 
     [Header("Debug")]
     public bool debugLog = true;
@@ -42,6 +43,13 @@ public class EnemyWhitebox : MonoBehaviour, IDamageable
         {
             elementVfxController = GetComponentInChildren<ElementVfxController>();
         }
+
+        damageNumberAnchor = GetComponent<DamageNumberAnchor>();
+
+        if (damageNumberAnchor == null)
+        {
+            damageNumberAnchor = GetComponentInChildren<DamageNumberAnchor>();
+        }
     }
 
     public void TakeDamage(DamageInfo damageInfo)
@@ -62,6 +70,21 @@ public class EnemyWhitebox : MonoBehaviour, IDamageable
 
         currentHp -= damage;
         currentHp = Mathf.Max(0, currentHp);
+
+        if (DamageNumberSpawner.Instance != null && damage > 0)
+        {
+            Vector3 numberPosition = transform.position;
+
+            if (damageNumberAnchor != null)
+            {
+                numberPosition = damageNumberAnchor.GetWorldPosition();
+            }
+
+            DamageNumberSpawner.Instance.ShowDamageNumber(
+                calculatedDamage,
+                numberPosition
+            );
+        }
 
         if (debugLog)
         {

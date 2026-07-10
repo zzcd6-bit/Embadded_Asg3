@@ -27,6 +27,12 @@ public class PlayerDamageReceiver : MonoBehaviour, IDamageable
         get { return isDead; }
     }
 
+    public void SetHp(int newCurrentHp, int newMaxHp)
+    {
+        maxHp = Mathf.Max(1, newMaxHp);
+        currentHp = Mathf.Clamp(newCurrentHp, 0, maxHp);
+    }
+
     private void Awake()
     {
         ResetHp();
@@ -49,6 +55,14 @@ public class PlayerDamageReceiver : MonoBehaviour, IDamageable
 
         currentHp -= damage;
         currentHp = Mathf.Max(0, currentHp);
+
+        if (DamageNumberSpawner.Instance != null && damage > 0)
+        {
+            DamageNumberSpawner.Instance.ShowDamageNumber(
+                calculatedDamage,
+                transform.position
+            );
+        }
 
         bool willDie = currentHp <= 0;
 
