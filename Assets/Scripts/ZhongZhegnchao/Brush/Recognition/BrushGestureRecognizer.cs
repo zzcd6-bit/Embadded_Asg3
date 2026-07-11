@@ -5,6 +5,12 @@ using System.IO;
 
 public class BrushGestureRecognizer : MonoBehaviour
 {
+    private class GestureDebugMatch
+    {
+        public string gestureName;
+        public float score;
+    }
+
     [Header("Recognition")]
     public float minScore = 0.65f;
     public int minPointCount = 6;
@@ -29,6 +35,10 @@ public class BrushGestureRecognizer : MonoBehaviour
     [Header("Debug")]
     public bool debugPointInfo = true;
     public bool debugTemplateInfo = true;
+    public bool debugTopMatches = true;
+    public int debugTopMatchCount = 5;
+
+
 
     private readonly List<Gesture> trainingSet = new List<Gesture>();
 
@@ -241,6 +251,8 @@ public class BrushGestureRecognizer : MonoBehaviour
 
         Gesture candidate = new Gesture(candidatePoints);
 
+        DebugTopGestureMatches(candidate);
+
         Result result = PointCloudRecognizer.Classify(
             candidate,
             trainingSet.ToArray()
@@ -386,5 +398,63 @@ public class BrushGestureRecognizer : MonoBehaviour
 
             points.Add(new Point(p.x, p.y, 0));
         }
+    }
+
+    private void DebugTopGestureMatches(Gesture candidate)
+    {
+        if (!debugTopMatches)
+            return;
+
+        if (candidate == null)
+            return;
+
+        if (trainingSet == null || trainingSet.Count == 0)
+        {
+            Debug.LogWarning("[BrushGestureRecognizer] Debug failed: trainingSet is empty.");
+            return;
+        }
+
+        List<GestureDebugMatch> matches = new List<GestureDebugMatch>();
+
+        for (int i = 0; i < trainingSet.Count; i++)
+        {
+            Gesture template = trainingSet[i];
+
+            if (template == null)
+                continue;
+
+            Result singleResult = PointCloudRecognizer.Classify(
+                candidate,
+                new Gesture[] { template }
+            );
+
+            GestureDebugMatch match = new GestureDebugMatch
+            {
+                gestureName = template.Name,
+                score = singleResult.Score
+            };
+
+            matches.Add(match);
+        }
+
+        matches.Sort(
+            (a, b) => b.score.CompareTo(a.score)
+        );
+
+        int count = Mathf.Min(debugTopMatchCount, matches.Count);
+
+        string message = "[BrushGestureRecognizer] Top Gesture Matches:\n";
+
+        for (int i = 0; i < count; i++)
+        {
+            BrushSkillType skillType = GetSkillTypeFromGestureName(matches[i].gestureName);
+
+            message +=
+                $"{i + 1}. Name={matches[i].gestureName}, " +
+                $"Skill={skillType}, " +
+                $"Score={matches[i].score:F4}\n";
+        }
+
+        Debug.Log(message);
     }
 }

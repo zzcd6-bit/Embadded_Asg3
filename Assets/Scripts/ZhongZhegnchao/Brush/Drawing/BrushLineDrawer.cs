@@ -23,7 +23,9 @@ public class BrushLineDrawer : MonoBehaviour
 
     [Header("Clear Settings")]
     public float clearDelay = 0.8f;
-    public bool clearWhenExitBrushMode = true;
+
+    [Tooltip("建议保持 false。不要在退出画符模式时立刻清空，否则可能导致识别前点数被清掉。")]
+    public bool clearWhenExitBrushMode = false;
 
     [Header("Ink Brush Style")]
     public Material[] brushMaterials;
@@ -33,6 +35,7 @@ public class BrushLineDrawer : MonoBehaviour
 
     [Header("Debug")]
     public bool debugLog = true;
+    public bool debugDrawFlow = true;
 
     private bool isBrushMode;
     private bool isDrawing;
@@ -104,21 +107,54 @@ public class BrushLineDrawer : MonoBehaviour
     {
         isBrushMode = state;
 
-        if (!state)
+        if (debugDrawFlow)
         {
-            isDrawing = false;
+            Debug.Log(
+                $"[BrushLineDrawer] Brush mode changed: {state}. isDrawing={isDrawing}, screenPoints={screenPoints.Count}",
+                this
+            );
+        }
 
-            if (clearWhenExitBrushMode)
+        if (state)
+        {
+            return;
+        }
+
+        // 退出画画模式后，如果当前笔画已经结算完成，就马上清除线条
+        if (clearWhenExitBrushMode && !isDrawing)
+        {
+            if (clearRoutine != null)
             {
-                ClearLine();
+                StopCoroutine(clearRoutine);
+                clearRoutine = null;
             }
+
+            ClearLine();
         }
     }
 
     private void OnDrawStart()
     {
+        if (debugDrawFlow)
+        {
+            Debug.Log(
+                $"[BrushLineDrawer] OnDrawStart called. isBrushMode={isBrushMode}",
+                this
+            );
+        }
+
         if (!isBrushMode)
+        {
+            if (debugDrawFlow)
+            {
+                Debug.LogWarning(
+                    "[BrushLineDrawer] DrawStart ignored because brush mode is false.",
+                    this
+                );
+            }
+
             return;
+        }
 
         isDrawing = true;
 
@@ -143,16 +179,38 @@ public class BrushLineDrawer : MonoBehaviour
 
     private void OnDrawEnd()
     {
-        if (!isBrushMode || !isDrawing)
+        if (debugDrawFlow)
+        {
+            Debug.Log(
+                $"[BrushLineDrawer] OnDrawEnd called. isBrushMode={isBrushMode}, isDrawing={isDrawing}, screenPoints={screenPoints.Count}, pdollarPoints={pdollarPoints.Count}",
+                this
+            );
+        }
+
+        /*
+         * 这里只判断 isDrawing。
+         * 不要因为 isBrushMode == false 就 return。
+         * 因为有些情况下退出画符模式和松开鼠标在同一帧发生。
+         */
+        if (!isDrawing)
+        {
+            if (debugDrawFlow)
+            {
+                Debug.LogWarning(
+                    "[BrushLineDrawer] DrawEnd ignored because isDrawing is false.",
+                    this
+                );
+            }
+
             return;
+        }
 
         isDrawing = false;
 
-        if (debugLog)
+        if (debugDrawFlow)
         {
             Debug.Log(
-                $"[BrushLineDrawer] Draw ended. ScreenPoints={screenPoints.Count}, " +
-                $"PDollarPoints={pdollarPoints.Count}, WorldPoints={worldPoints.Count}",
+                $"[BrushLineDrawer] Draw ended. ScreenPoints={screenPoints.Count}, WorldPoints={worldPoints.Count}, PDollarPoints={pdollarPoints.Count}",
                 this
             );
         }
@@ -165,6 +223,14 @@ public class BrushLineDrawer : MonoBehaviour
                 pdollarPoints
             );
 
+            if (debugDrawFlow)
+            {
+                Debug.Log(
+                    $"[BrushLineDrawer] StrokeFinished triggered. PDollarPoints={pdollarPoints.Count}",
+                    this
+                );
+            }
+
             EventCenter.Instance.EventTrigger<BrushStrokeData>(
                 E_EventType.E_Brush_StrokeFinished,
                 data
@@ -172,16 +238,13 @@ public class BrushLineDrawer : MonoBehaviour
         }
         else
         {
-            if (debugLog)
-            {
-                Debug.LogWarning(
-                    $"[BrushLineDrawer] Not enough PDollar points. Count={pdollarPoints.Count}",
-                    this
-                );
-            }
+            Debug.LogWarning(
+                $"[BrushLineDrawer] Stroke not triggered. Not enough points. Count={pdollarPoints.Count}, Need={minRecognitionPointCount}",
+                this
+            );
         }
 
-        if (clearDelay >= 0)
+        if (clearDelay >= 0f)
         {
             clearRoutine = StartCoroutine(ClearLineAfterDelay());
         }
@@ -207,7 +270,6 @@ public class BrushLineDrawer : MonoBehaviour
 
         screenPoints.Add(screenPoint);
 
-        // 这里直接按 PDollar Demo 的方式记录
         pdollarPoints.Add(
             new Point(
                 screenPoint.x,
@@ -215,6 +277,14 @@ public class BrushLineDrawer : MonoBehaviour
                 0
             )
         );
+
+        if (debugDrawFlow && screenPoints.Count % 30 == 0)
+        {
+            Debug.Log(
+                $"[BrushLineDrawer] Recording points... Count={screenPoints.Count}",
+                this
+            );
+        }
     }
 
     private void AddVisualPointFromMouse(bool forceAdd = false)
@@ -317,6 +387,7 @@ public class BrushLineDrawer : MonoBehaviour
     {
         yield return new WaitForSecondsRealtime(clearDelay);
         ClearLine();
+        clearRoutine = null;
     }
 
     private void ClearLine()
