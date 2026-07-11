@@ -40,6 +40,8 @@ public class BrushSkillConfigEditor : Editor
     private SerializedProperty bridgeCastRadius;
     private SerializedProperty bridgeActiveDuration;
 
+    private SerializedProperty inkCost;
+
     private void OnEnable()
     {
         skillType = serializedObject.FindProperty("skillType");
@@ -77,6 +79,8 @@ public class BrushSkillConfigEditor : Editor
         bridgeTriggerLayer = serializedObject.FindProperty("bridgeTriggerLayer");
         bridgeCastRadius = serializedObject.FindProperty("bridgeCastRadius");
         bridgeActiveDuration = serializedObject.FindProperty("bridgeActiveDuration");
+
+        inkCost = serializedObject.FindProperty("inkCost");
     }
 
     public override void OnInspectorGUI()
@@ -164,6 +168,11 @@ public class BrushSkillConfigEditor : Editor
         {
             EditorGUILayout.PropertyField(fallbackDistance, new GUIContent("Ä¬ÈÏÊÍ·Å¾àÀë"));
         }
+
+        EditorGUILayout.Space(8);
+
+        DrawTitle("Ä«ÄÒÏûºÄÉèÖÃ");
+        EditorGUILayout.PropertyField(inkCost, new GUIContent("Ä«ÄÒÏûºÄ"));
 
         EditorGUILayout.Space(8);
 

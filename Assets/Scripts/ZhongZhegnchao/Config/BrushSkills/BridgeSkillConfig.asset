@@ -18,6 +18,7 @@ MonoBehaviour:
     m_Bits: 128
   rayDistance: 200
   fallbackDistance: 12
+  inkCost: 2
   baseDamage: 1
   knockback: 0
   element: 1

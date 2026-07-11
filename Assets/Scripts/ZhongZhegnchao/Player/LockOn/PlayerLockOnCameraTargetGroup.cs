@@ -113,6 +113,19 @@ public class PlayerLockOnCameraTargetGroup : MonoBehaviour
         bound = false;
     }
 
+    public void RemoveTargetFromGroup(Transform target)
+    {
+        if (target == null)
+            return;
+
+        if (targetGroup == null)
+            return;
+
+        targetGroup.RemoveMember(target);
+
+        Debug.Log($"[LockOnCameraTargetGroup] Removed target from group: {target.name}", this);
+    }
+
     private void EnsureCinemachineCamera()
     {
         if (cinemachineCamera != null)

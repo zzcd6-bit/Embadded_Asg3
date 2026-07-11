@@ -136,4 +136,12 @@ public class SlashBrushSkill : BrushSkillBase
 
         UnityEngine.Debug.Log($"Slash executed. Damage target count: {hitTargets.Count}");
     }
+
+    protected override int GetInkCost()
+    {
+        if (config == null)
+            return 0;
+
+        return config.inkCost;
+    }
 }

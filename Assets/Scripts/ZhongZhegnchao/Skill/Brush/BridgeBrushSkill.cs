@@ -93,4 +93,12 @@ public class BridgeBrushSkill : BrushSkillBase
 
         return preset;
     }
+
+    protected override int GetInkCost()
+    {
+        if (config == null)
+            return 0;
+
+        return config.inkCost;
+    }
 }

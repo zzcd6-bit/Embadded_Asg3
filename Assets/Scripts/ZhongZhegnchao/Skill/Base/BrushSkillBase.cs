@@ -14,6 +14,11 @@ public abstract class BrushSkillBase : MonoBehaviour
     [Header("技能获得限制")]
     public bool requireUnlockedSkill = true;
 
+    [Header("墨囊消耗限制")]
+    public bool requireInkCost = true;
+
+    private IBrushSkillCostReceiver skillCostReceiver;
+
     private IBrushSkillUnlockReceiver skillUnlockReceiver;
 
     protected abstract BrushSkillType SkillType { get; }
@@ -36,6 +41,7 @@ public abstract class BrushSkillBase : MonoBehaviour
         }
 
         ResolveSkillUnlockReceiver();
+        ResolveSkillCostReceiver();
     }
 
     protected virtual void OnEnable()
@@ -137,6 +143,9 @@ public abstract class BrushSkillBase : MonoBehaviour
         if (!CanUseUnlockedSkill())
             return;
 
+        if (!TryPayInkCost())
+            return;
+
         BrushCastContext context = null;
 
         if (castContextBuilder != null)
@@ -145,6 +154,85 @@ public abstract class BrushSkillBase : MonoBehaviour
         }
 
         Execute(result, context);
+    }
+
+    private void ResolveSkillCostReceiver()
+    {
+        skillCostReceiver = null;
+
+        GameObject searchObject = caster != null
+            ? caster
+            : gameObject;
+
+        if (searchObject == null)
+            return;
+
+        MonoBehaviour[] parentBehaviours =
+            searchObject.GetComponentsInParent<MonoBehaviour>(true);
+
+        for (int i = 0; i < parentBehaviours.Length; i++)
+        {
+            if (parentBehaviours[i] is IBrushSkillCostReceiver receiver)
+            {
+                skillCostReceiver = receiver;
+                return;
+            }
+        }
+
+        MonoBehaviour[] childBehaviours =
+            searchObject.GetComponentsInChildren<MonoBehaviour>(true);
+
+        for (int i = 0; i < childBehaviours.Length; i++)
+        {
+            if (childBehaviours[i] is IBrushSkillCostReceiver receiver)
+            {
+                skillCostReceiver = receiver;
+                return;
+            }
+        }
+    }
+
+    protected virtual int GetInkCost()
+    {
+        return 0;
+    }
+
+    private bool TryPayInkCost()
+    {
+        if (!requireInkCost)
+            return true;
+
+        int inkCost = Mathf.Max(0, GetInkCost());
+
+        if (inkCost <= 0)
+            return true;
+
+        if (skillCostReceiver == null)
+        {
+            ResolveSkillCostReceiver();
+        }
+
+        if (skillCostReceiver == null)
+        {
+            Debug.LogWarning(
+                $"[BrushSkillBase] Ink receiver not found. Skill blocked: {SkillType}",
+                this
+            );
+
+            return false;
+        }
+
+        if (!skillCostReceiver.TryConsumeInk(inkCost))
+        {
+            Debug.Log(
+                $"[BrushSkillBase] Not enough ink for skill: {SkillType}, Cost={inkCost}",
+                this
+            );
+
+            return false;
+        }
+
+        return true;
     }
 
     protected abstract void Execute(

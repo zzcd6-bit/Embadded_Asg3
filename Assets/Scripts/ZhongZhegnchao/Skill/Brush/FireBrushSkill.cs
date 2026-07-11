@@ -3,10 +3,18 @@ using UnityEngine;
 
 public class FireBrushSkill : BrushSkillBase
 {
+    private class VisibleFireTarget
+    {
+        public IDamageable damageable;
+        public GameObject targetObject;
+        public Vector3 hitPoint;
+    }
+
     protected override BrushSkillType SkillType
     {
         get { return BrushSkillType.Fire; }
     }
+
     [Header("Config")]
     public BrushSkillConfig config;
 
@@ -33,49 +41,44 @@ public class FireBrushSkill : BrushSkillBase
             return;
         }
 
-        Vector3 castPoint = GetCastPoint(context);
+        List<VisibleFireTarget> visibleTargets = FindVisibleEnemyTargets();
+
+        if (visibleTargets.Count <= 0)
+        {
+            Debug.Log("[FireBrushSkill] No enemy visible on screen.");
+            return;
+        }
+
+        ApplyFireToVisibleTargets(visibleTargets, context);
+        ApplyFireInfusionToPlayer(context);
 
         if (drawDebug)
         {
-            Debug.DrawRay(
-                context.centerRay.origin,
-                context.centerRay.direction * config.rayDistance,
-                Color.red,
-                1.5f
+            Debug.Log(
+                $"[FireBrushSkill] Fire applied to visible enemies. Count = {visibleTargets.Count}"
             );
-
-            Debug.Log($"[FireBrushSkill] Cast fire at: {castPoint}");
         }
-
-        ApplyFireDamage(castPoint, context);
-        ApplyFireInfusionToPlayer(context);
     }
 
-    private Vector3 GetCastPoint(BrushCastContext context)
+    private List<VisibleFireTarget> FindVisibleEnemyTargets()
     {
-        if (context.hasTarget)
+        List<VisibleFireTarget> results = new List<VisibleFireTarget>();
+        HashSet<IDamageable> addedTargets = new HashSet<IDamageable>();
+
+        Camera cameraToUse = GetWorldCamera();
+
+        if (cameraToUse == null)
         {
-            return context.targetPoint;
+            Debug.LogWarning("[FireBrushSkill] World camera not found.");
+            return results;
         }
 
-        if (context.hasGroundPoint)
-        {
-            return context.groundPoint;
-        }
-
-        return context.centerRay.origin + context.centerRay.direction * config.fallbackDistance;
-    }
-
-    private void ApplyFireDamage(Vector3 castPoint, BrushCastContext context)
-    {
         Collider[] colliders = Physics.OverlapSphere(
-            castPoint,
-            config.fireDamageRadius,
+            cameraToUse.transform.position,
+            config.rayDistance,
             config.targetLayer,
             QueryTriggerInteraction.Collide
         );
-
-        HashSet<IDamageable> damagedTargets = new HashSet<IDamageable>();
 
         for (int i = 0; i < colliders.Length; i++)
         {
@@ -84,12 +87,15 @@ public class FireBrushSkill : BrushSkillBase
             if (col == null)
                 continue;
 
+            if (!IsColliderOnScreen(col, cameraToUse))
+                continue;
+
             IDamageable damageable = col.GetComponentInParent<IDamageable>();
 
             if (damageable == null)
                 continue;
 
-            if (damagedTargets.Contains(damageable))
+            if (addedTargets.Contains(damageable))
                 continue;
 
             Component damageComponent = damageable as Component;
@@ -98,7 +104,104 @@ public class FireBrushSkill : BrushSkillBase
                 ? damageComponent.gameObject
                 : col.gameObject;
 
-            Vector3 hitDirection = targetObject.transform.position - transform.position;
+            EnemyWhitebox enemy = targetObject.GetComponent<EnemyWhitebox>();
+
+            if (enemy == null)
+            {
+                enemy = targetObject.GetComponentInParent<EnemyWhitebox>();
+            }
+
+            if (enemy != null && enemy.IsDead)
+                continue;
+
+            VisibleFireTarget target = new VisibleFireTarget
+            {
+                damageable = damageable,
+                targetObject = targetObject,
+                hitPoint = col.bounds.center
+            };
+
+            results.Add(target);
+            addedTargets.Add(damageable);
+        }
+
+        return results;
+    }
+
+    private bool IsColliderOnScreen(Collider col, Camera cameraToUse)
+    {
+        if (col == null || cameraToUse == null)
+            return false;
+
+        Bounds bounds = col.bounds;
+
+        Vector3 center = bounds.center;
+        Vector3 extents = bounds.extents;
+
+        Vector3[] checkPoints =
+        {
+            center,
+            center + new Vector3(0f, extents.y, 0f),
+            center - new Vector3(0f, extents.y, 0f),
+            center + new Vector3(extents.x, 0f, 0f),
+            center - new Vector3(extents.x, 0f, 0f),
+            center + new Vector3(0f, 0f, extents.z),
+            center - new Vector3(0f, 0f, extents.z)
+        };
+
+        for (int i = 0; i < checkPoints.Length; i++)
+        {
+            Vector3 viewportPoint = cameraToUse.WorldToViewportPoint(checkPoints[i]);
+
+            if (viewportPoint.z <= 0f)
+                continue;
+
+            if (viewportPoint.x >= 0f &&
+                viewportPoint.x <= 1f &&
+                viewportPoint.y >= 0f &&
+                viewportPoint.y <= 1f)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private Camera GetWorldCamera()
+    {
+        if (castContextBuilder != null && castContextBuilder.worldCamera != null)
+        {
+            return castContextBuilder.worldCamera;
+        }
+
+        return Camera.main;
+    }
+
+    private void ApplyFireToVisibleTargets(
+        List<VisibleFireTarget> targets,
+        BrushCastContext context
+    )
+    {
+        if (targets == null || targets.Count <= 0)
+            return;
+
+        GameObject attackerObject = context.caster != null
+            ? context.caster
+            : gameObject;
+
+        for (int i = 0; i < targets.Count; i++)
+        {
+            VisibleFireTarget target = targets[i];
+
+            if (target == null)
+                continue;
+
+            if (target.damageable == null || target.targetObject == null)
+                continue;
+
+            Vector3 hitDirection =
+                target.targetObject.transform.position - attackerObject.transform.position;
 
             if (hitDirection.sqrMagnitude > 0.001f)
             {
@@ -106,18 +209,18 @@ public class FireBrushSkill : BrushSkillBase
             }
             else
             {
-                hitDirection = context.centerRay.direction;
+                hitDirection = Vector3.forward;
             }
 
             DamageInfo damageInfo = new DamageInfo
             {
-                attacker = context.caster != null ? context.caster : gameObject,
-                target = targetObject,
+                attacker = attackerObject,
+                target = target.targetObject,
 
                 damage = config.baseDamage,
                 knockback = config.knockback,
 
-                hitPoint = targetObject.transform.position,
+                hitPoint = target.hitPoint,
                 hitDirection = hitDirection,
                 sourceAction = null,
 
@@ -131,44 +234,14 @@ public class FireBrushSkill : BrushSkillBase
                 canCrit = config.canCrit
             };
 
-            damageable.TakeDamage(damageInfo);
+            target.damageable.TakeDamage(damageInfo);
 
-            ApplyBurningToTarget(targetObject);
-            ActivateFireVfxOnTarget(targetObject);
-
-            damagedTargets.Add(damageable);
+            ApplyBurningToTarget(target.targetObject, attackerObject);
+            ActivateFireVfxOnTarget(target.targetObject);
         }
-
-        Debug.Log($"[FireBrushSkill] Fire damage target count: {damagedTargets.Count}");
     }
 
-    private void ActivateFireVfxOnTarget(GameObject targetObject)
-    {
-        if (targetObject == null)
-            return;
-
-        ElementVfxController vfxController =
-            targetObject.GetComponent<ElementVfxController>();
-
-        if (vfxController == null)
-        {
-            vfxController = targetObject.GetComponentInParent<ElementVfxController>();
-        }
-
-        if (vfxController == null)
-        {
-            vfxController = targetObject.GetComponentInChildren<ElementVfxController>();
-        }
-
-        if (vfxController == null)
-        {
-            return;
-        }
-
-        vfxController.ActivateFireVfx(config.burningDuration);
-    }
-
-    private void ApplyBurningToTarget(GameObject targetObject)
+    private void ApplyBurningToTarget(GameObject targetObject, GameObject attacker)
     {
         if (config == null || !config.applyBurning)
             return;
@@ -190,11 +263,35 @@ public class FireBrushSkill : BrushSkillBase
         }
 
         statusController.ApplyBurning(
-            gameObject,
+            attacker,
             config.burningDuration,
             config.burningTickInterval,
             config.burningTickDamage
         );
+    }
+
+    private void ActivateFireVfxOnTarget(GameObject targetObject)
+    {
+        if (targetObject == null)
+            return;
+
+        ElementVfxController vfxController =
+            targetObject.GetComponent<ElementVfxController>();
+
+        if (vfxController == null)
+        {
+            vfxController = targetObject.GetComponentInParent<ElementVfxController>();
+        }
+
+        if (vfxController == null)
+        {
+            vfxController = targetObject.GetComponentInChildren<ElementVfxController>();
+        }
+
+        if (vfxController == null)
+            return;
+
+        vfxController.ActivateFireVfx(config.burningDuration);
     }
 
     private void ApplyFireInfusionToPlayer(BrushCastContext context)
@@ -245,8 +342,11 @@ public class FireBrushSkill : BrushSkillBase
         );
     }
 
-    private void OnDrawGizmosSelected()
+    protected override int GetInkCost()
     {
-        Gizmos.color = Color.red;
+        if (config == null)
+            return 0;
+
+        return config.inkCost;
     }
 }

@@ -19,6 +19,9 @@ public class BrushGestureTemplateRecorder : MonoBehaviour
     public int minPointCount = 6;
     public bool reloadRecognizerAfterSave = true;
 
+    [Header("Â¼ÖÆÈÝ´í")]
+    public bool keepWaitingIfInvalidStroke = true;
+
     [Header("Debug")]
     public bool debugLog = true;
 
@@ -62,22 +65,14 @@ public class BrushGestureTemplateRecorder : MonoBehaviour
             if (debugLog)
             {
                 Debug.Log(
-                    $"[BrushGestureTemplateRecorder] Next stroke will be saved as template: {templateName}"
+                    $"[BrushGestureTemplateRecorder] Recording armed. Next valid stroke will be saved as: {templateName}"
                 );
             }
         }
 
         if (Input.GetKeyDown(reloadTemplatesKey))
         {
-            if (recognizer != null)
-            {
-                recognizer.ReloadTemplates();
-
-                if (debugLog)
-                {
-                    Debug.Log("[BrushGestureTemplateRecorder] Templates reloaded.");
-                }
-            }
+            ReloadTemplates();
         }
     }
 
@@ -86,29 +81,67 @@ public class BrushGestureTemplateRecorder : MonoBehaviour
         if (!saveNextStroke)
             return;
 
-        saveNextStroke = false;
-
-        SaveStrokeAsTemplate(strokeData);
-    }
-
-    private void SaveStrokeAsTemplate(BrushStrokeData strokeData)
-    {
         if (strokeData == null || strokeData.screenPoints == null)
         {
             Debug.LogWarning("[BrushGestureTemplateRecorder] Stroke data is null.");
+
+            if (!keepWaitingIfInvalidStroke)
+            {
+                saveNextStroke = false;
+            }
+
             return;
         }
 
-        if (strokeData.screenPoints.Count < minPointCount)
+        int pointCount = strokeData.screenPoints.Count;
+
+        if (debugLog)
+        {
+            Debug.Log($"[BrushGestureTemplateRecorder] Stroke finished. Point Count = {pointCount}");
+        }
+
+        if (pointCount < minPointCount)
+        {
+            Debug.LogWarning(
+                $"[BrushGestureTemplateRecorder] Not enough points. Need {minPointCount}, got {pointCount}."
+            );
+
+            if (!keepWaitingIfInvalidStroke)
+            {
+                saveNextStroke = false;
+            }
+
+            return;
+        }
+
+        List<Vector2> copiedPoints = new List<Vector2>(strokeData.screenPoints);
+
+        bool saved = SavePointsAsTemplate(copiedPoints);
+
+        if (saved)
+        {
+            saveNextStroke = false;
+        }
+    }
+
+    private bool SavePointsAsTemplate(List<Vector2> screenPoints)
+    {
+        if (screenPoints == null)
+        {
+            Debug.LogWarning("[BrushGestureTemplateRecorder] Screen points are null.");
+            return false;
+        }
+
+        if (screenPoints.Count < minPointCount)
         {
             Debug.LogWarning("[BrushGestureTemplateRecorder] Not enough points to save template.");
-            return;
+            return false;
         }
 
         if (string.IsNullOrEmpty(templateName))
         {
             Debug.LogWarning("[BrushGestureTemplateRecorder] Template name is empty.");
-            return;
+            return false;
         }
 
         string folderPath = Path.Combine(
@@ -127,7 +160,7 @@ public class BrushGestureTemplateRecorder : MonoBehaviour
         string fileName = $"{safeName}_{timeStamp}.xml";
         string filePath = Path.Combine(folderPath, fileName);
 
-        Point[] points = ConvertToPDollarPoints(strokeData.screenPoints);
+        Point[] points = ConvertToPDollarPoints(screenPoints);
 
         try
         {
@@ -140,16 +173,36 @@ public class BrushGestureTemplateRecorder : MonoBehaviour
                 );
             }
 
-            if (reloadRecognizerAfterSave && recognizer != null)
+            if (reloadRecognizerAfterSave)
             {
-                recognizer.ReloadTemplates();
+                ReloadTemplates();
             }
+
+            return true;
         }
         catch (Exception exception)
         {
             Debug.LogWarning(
                 $"[BrushGestureTemplateRecorder] Failed to save gesture XML.\n{exception.Message}"
             );
+
+            return false;
+        }
+    }
+
+    private void ReloadTemplates()
+    {
+        if (recognizer == null)
+        {
+            Debug.LogWarning("[BrushGestureTemplateRecorder] Recognizer is missing.");
+            return;
+        }
+
+        recognizer.ReloadTemplates();
+
+        if (debugLog)
+        {
+            Debug.Log("[BrushGestureTemplateRecorder] Templates reloaded.");
         }
     }
 

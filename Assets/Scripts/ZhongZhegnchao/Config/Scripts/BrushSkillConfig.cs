@@ -14,6 +14,9 @@ public class BrushSkillConfig : ScriptableObject
     public float rayDistance = 200f;
     public float fallbackDistance = 12f;
 
+    [Header("墨囊消耗")]
+    public int inkCost = 1;
+
     [Header("通用伤害设置")]
     public int baseDamage = 1;
     public float knockback = 0f;

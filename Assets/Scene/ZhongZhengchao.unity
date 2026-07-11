@@ -528,6 +528,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8711962937741669046, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
       insertIndex: -1
       addedObject: {fileID: 219517349}
+    - targetCorrespondingSourceObject: {fileID: 8711962937741669046, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 219517351}
   m_SourcePrefab: {fileID: 100100000, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
 --- !u!1 &219517335 stripped
 GameObject:
@@ -642,6 +645,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerSaveController
   damageReceiver: {fileID: 219517349}
   skillInventory: {fileID: 219517347}
+  inkPouchController: {fileID: 0}
   playerRoot: {fileID: 219517342}
   characterController: {fileID: 219517346}
   playerRigidbody: {fileID: 0}
@@ -660,6 +664,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerDamageReceiver
   maxHp: 100
   currentHp: 100
+  debugLog: 1
+--- !u!114 &219517351
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 219517335}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1aab3b9cb62a1064c82bb1891a3bd01a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerInkPouchController
+  config: {fileID: 11400000, guid: 975f637e3db06d343bf98eb008e9e35b, type: 2}
+  currentInk: 0
+  maxInk: 0
   debugLog: 1
 --- !u!1 &248848576
 GameObject:
@@ -813,6 +833,7 @@ MonoBehaviour:
   castContextBuilder: {fileID: 248848585}
   caster: {fileID: 219517335}
   requireUnlockedSkill: 1
+  requireInkCost: 1
   config: {fileID: 11400000, guid: ae83d61708a7fb946855e61997676743, type: 2}
   drawDebugRay: 1
 --- !u!114 &248848584
@@ -876,6 +897,7 @@ MonoBehaviour:
   castContextBuilder: {fileID: 248848585}
   caster: {fileID: 219517335}
   requireUnlockedSkill: 1
+  requireInkCost: 1
   config: {fileID: 11400000, guid: bba5128e535c36e40a514a8e82d5e048, type: 2}
   drawDebug: 1
 --- !u!114 &248848587
@@ -894,6 +916,7 @@ MonoBehaviour:
   castContextBuilder: {fileID: 248848585}
   caster: {fileID: 219517335}
   requireUnlockedSkill: 1
+  requireInkCost: 1
   config: {fileID: 11400000, guid: a22f57a3d9ce8434cbdc3dd692d70a31, type: 2}
   drawDebug: 1
 --- !u!114 &248848588
@@ -4639,8 +4662,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a11f3e3355b61564dbf2032541a0d38e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyWhitebox
-  maxHp: 1000
-  currentHp: 1000
+  maxHp: 100
+  currentHp: 100
   debugLog: 1
 --- !u!114 &718873964
 MonoBehaviour:
@@ -5986,6 +6009,7 @@ MonoBehaviour:
   castContextBuilder: {fileID: 0}
   caster: {fileID: 0}
   requireUnlockedSkill: 1
+  requireInkCost: 1
   config: {fileID: 0}
   drawDebugRay: 1
 --- !u!114 &1566920734
@@ -6004,6 +6028,7 @@ MonoBehaviour:
   castContextBuilder: {fileID: 0}
   caster: {fileID: 0}
   requireUnlockedSkill: 1
+  requireInkCost: 1
   config: {fileID: 0}
   drawDebug: 1
 --- !u!1 &1594269730

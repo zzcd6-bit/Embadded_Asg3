@@ -6,6 +6,7 @@ public class PlayerSaveController : MonoBehaviour, IPlayerSaveable
     [Header("组件")]
     public PlayerDamageReceiver damageReceiver;
     public PlayerBrushSkillInventory skillInventory;
+    public PlayerInkPouchController inkPouchController;
 
     [Header("位移组件")]
     public Transform playerRoot;
@@ -17,6 +18,16 @@ public class PlayerSaveController : MonoBehaviour, IPlayerSaveable
 
     private void Awake()
     {
+        ResolveReferences();
+    }
+
+    private void ResolveReferences()
+    {
+        if (playerRoot == null)
+        {
+            playerRoot = transform;
+        }
+
         if (damageReceiver == null)
         {
             damageReceiver = GetComponent<PlayerDamageReceiver>();
@@ -37,9 +48,14 @@ public class PlayerSaveController : MonoBehaviour, IPlayerSaveable
             skillInventory = GetComponentInChildren<PlayerBrushSkillInventory>();
         }
 
-        if (playerRoot == null)
+        if (inkPouchController == null)
         {
-            playerRoot = transform;
+            inkPouchController = GetComponent<PlayerInkPouchController>();
+        }
+
+        if (inkPouchController == null)
+        {
+            inkPouchController = GetComponentInChildren<PlayerInkPouchController>();
         }
 
         if (characterController == null)
@@ -82,15 +98,34 @@ public class PlayerSaveController : MonoBehaviour, IPlayerSaveable
         {
             List<BrushSkillType> unlockedSkills = skillInventory.GetUnlockedSkills();
 
+            saveData.unlockedBrushSkills.Clear();
+
             for (int i = 0; i < unlockedSkills.Count; i++)
             {
-                saveData.unlockedBrushSkills.Add(unlockedSkills[i].ToString());
+                BrushSkillType skillType = unlockedSkills[i];
+
+                if (skillType == BrushSkillType.None)
+                    continue;
+
+                saveData.unlockedBrushSkills.Add(skillType.ToString());
             }
+        }
+
+        if (inkPouchController != null)
+        {
+            saveData.currentInk = inkPouchController.CurrentInk;
+            saveData.maxInk = inkPouchController.MaxInk;
         }
 
         if (debugLog)
         {
-            Debug.Log("[PlayerSaveController] Player data captured.", this);
+            Debug.Log(
+                $"[PlayerSaveController] Player data captured. " +
+                $"HP={saveData.currentHp}/{saveData.maxHp}, " +
+                $"Ink={saveData.currentInk}/{saveData.maxInk}, " +
+                $"SkillCount={saveData.unlockedBrushSkills.Count}",
+                this
+            );
         }
 
         return saveData;
@@ -108,29 +143,52 @@ public class PlayerSaveController : MonoBehaviour, IPlayerSaveable
 
         if (damageReceiver != null)
         {
-            damageReceiver.SetHp(saveData.currentHp, saveData.maxHp);
+            damageReceiver.SetHp(
+                saveData.currentHp,
+                saveData.maxHp
+            );
         }
 
         if (skillInventory != null)
         {
             List<BrushSkillType> loadedSkills = new List<BrushSkillType>();
 
-            for (int i = 0; i < saveData.unlockedBrushSkills.Count; i++)
+            if (saveData.unlockedBrushSkills != null)
             {
-                string skillName = saveData.unlockedBrushSkills[i];
-
-                if (System.Enum.TryParse(skillName, out BrushSkillType skillType))
+                for (int i = 0; i < saveData.unlockedBrushSkills.Count; i++)
                 {
-                    loadedSkills.Add(skillType);
+                    string skillName = saveData.unlockedBrushSkills[i];
+
+                    if (System.Enum.TryParse(skillName, out BrushSkillType skillType))
+                    {
+                        if (skillType != BrushSkillType.None &&
+                            !loadedSkills.Contains(skillType))
+                        {
+                            loadedSkills.Add(skillType);
+                        }
+                    }
                 }
             }
 
             skillInventory.SetUnlockedSkills(loadedSkills);
         }
 
+        if (inkPouchController != null)
+        {
+            inkPouchController.SetInk(
+                saveData.currentInk,
+                saveData.maxInk
+            );
+        }
+
         if (debugLog)
         {
-            Debug.Log("[PlayerSaveController] Player data restored.", this);
+            Debug.Log(
+                $"[PlayerSaveController] Player data restored. " +
+                $"HP={saveData.currentHp}/{saveData.maxHp}, " +
+                $"Ink={saveData.currentInk}/{saveData.maxInk}",
+                this
+            );
         }
     }
 

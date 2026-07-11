@@ -1,7 +1,10 @@
 using UnityEngine;
+using System;
 
 public class EnemyWhitebox : MonoBehaviour, IDamageable
 {
+    public static event Action<EnemyWhitebox> OnAnyEnemyDead;
+
     [Header("HP")]
     public int maxHp = 100;
     public int currentHp = 100;
@@ -123,6 +126,8 @@ public class EnemyWhitebox : MonoBehaviour, IDamageable
         {
             elementVfxController.StopAllElementVfx();
         }
+
+        OnAnyEnemyDead?.Invoke(this);
 
         Debug.Log("[EnemyDamageReceiver] Enemy Dead.", this);
     }
