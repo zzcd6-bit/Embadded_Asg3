@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using PDollarGestureRecognizer;
 
 public class BrushLineDrawer : MonoBehaviour
 {
@@ -8,6 +9,12 @@ public class BrushLineDrawer : MonoBehaviour
     public Camera brushLineCamera;
     public Transform drawPlane;
     public LineRenderer lineRenderer;
+
+    [Header("Recognition Point Settings")]
+    public int minRecognitionPointCount = 6;
+
+    [Tooltip("0 means record every frame, same as PDollar demo.")]
+    public float minScreenPointDistance = 0f;
 
     [Header("Line Point Settings")]
     public float minPointDistance = 0.02f;
@@ -24,11 +31,15 @@ public class BrushLineDrawer : MonoBehaviour
     public float widthNoiseAmount = 0.35f;
     public int widthCurveKeyCount = 8;
 
+    [Header("Debug")]
+    public bool debugLog = true;
+
     private bool isBrushMode;
     private bool isDrawing;
 
     private readonly List<Vector2> screenPoints = new List<Vector2>();
     private readonly List<Vector3> worldPoints = new List<Vector3>();
+    private readonly List<Point> pdollarPoints = new List<Point>();
 
     private Coroutine clearRoutine;
 
@@ -85,7 +96,8 @@ public class BrushLineDrawer : MonoBehaviour
         if (!isBrushMode || !isDrawing)
             return;
 
-        AddPointFromMouse();
+        AddRecognitionPointFromMouse();
+        AddVisualPointFromMouse();
     }
 
     private void OnBrushModeChanged(bool state)
@@ -97,7 +109,9 @@ public class BrushLineDrawer : MonoBehaviour
             isDrawing = false;
 
             if (clearWhenExitBrushMode)
+            {
                 ClearLine();
+            }
         }
     }
 
@@ -119,9 +133,12 @@ public class BrushLineDrawer : MonoBehaviour
         ApplyRandomInkStyle();
 
         if (lineRenderer != null)
+        {
             lineRenderer.enabled = true;
+        }
 
-        AddPointFromMouse(true);
+        AddRecognitionPointFromMouse(true);
+        AddVisualPointFromMouse(true);
     }
 
     private void OnDrawEnd()
@@ -131,28 +148,82 @@ public class BrushLineDrawer : MonoBehaviour
 
         isDrawing = false;
 
-        if (screenPoints.Count >= 2)
+        if (debugLog)
         {
-            BrushStrokeData data = new BrushStrokeData(screenPoints, worldPoints);
+            Debug.Log(
+                $"[BrushLineDrawer] Draw ended. ScreenPoints={screenPoints.Count}, " +
+                $"PDollarPoints={pdollarPoints.Count}, WorldPoints={worldPoints.Count}",
+                this
+            );
+        }
+
+        if (pdollarPoints.Count >= minRecognitionPointCount)
+        {
+            BrushStrokeData data = new BrushStrokeData(
+                screenPoints,
+                worldPoints,
+                pdollarPoints
+            );
+
             EventCenter.Instance.EventTrigger<BrushStrokeData>(
                 E_EventType.E_Brush_StrokeFinished,
                 data
             );
         }
+        else
+        {
+            if (debugLog)
+            {
+                Debug.LogWarning(
+                    $"[BrushLineDrawer] Not enough PDollar points. Count={pdollarPoints.Count}",
+                    this
+                );
+            }
+        }
 
         if (clearDelay >= 0)
+        {
             clearRoutine = StartCoroutine(ClearLineAfterDelay());
+        }
     }
 
-    private void AddPointFromMouse(bool forceAdd = false)
+    private void AddRecognitionPointFromMouse(bool forceAdd = false)
+    {
+        Vector2 screenPoint = Input.mousePosition;
+
+        if (!forceAdd && screenPoints.Count > 0 && minScreenPointDistance > 0f)
+        {
+            float distance = Vector2.Distance(
+                screenPoints[screenPoints.Count - 1],
+                screenPoint
+            );
+
+            if (distance < minScreenPointDistance)
+                return;
+        }
+
+        if (limitPointCount && screenPoints.Count >= maxPointCount)
+            return;
+
+        screenPoints.Add(screenPoint);
+
+        // 这里直接按 PDollar Demo 的方式记录
+        pdollarPoints.Add(
+            new Point(
+                screenPoint.x,
+                -screenPoint.y,
+                0
+            )
+        );
+    }
+
+    private void AddVisualPointFromMouse(bool forceAdd = false)
     {
         if (lineRenderer == null)
             return;
 
         if (!TryGetMouseWorldPoint(out Vector3 worldPoint))
             return;
-
-        Vector2 screenPoint = Input.mousePosition;
 
         if (!forceAdd && worldPoints.Count > 0)
         {
@@ -169,7 +240,6 @@ public class BrushLineDrawer : MonoBehaviour
             return;
 
         worldPoints.Add(worldPoint);
-        screenPoints.Add(screenPoint);
 
         lineRenderer.positionCount = worldPoints.Count;
         lineRenderer.SetPosition(worldPoints.Count - 1, worldPoint);
@@ -211,7 +281,10 @@ public class BrushLineDrawer : MonoBehaviour
                 noise *= 0.35f;
             }
 
-            keys[i] = new Keyframe(time, Mathf.Clamp(noise, 0.15f, 1.5f));
+            keys[i] = new Keyframe(
+                time,
+                Mathf.Clamp(noise, 0.15f, 1.5f)
+            );
         }
 
         return new AnimationCurve(keys);
@@ -250,6 +323,7 @@ public class BrushLineDrawer : MonoBehaviour
     {
         screenPoints.Clear();
         worldPoints.Clear();
+        pdollarPoints.Clear();
 
         if (lineRenderer != null)
         {

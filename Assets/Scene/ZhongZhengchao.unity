@@ -786,6 +786,8 @@ MonoBehaviour:
   brushLineCamera: {fileID: 1152969513}
   drawPlane: {fileID: 768588562}
   lineRenderer: {fileID: 760347732}
+  minRecognitionPointCount: 6
+  minScreenPointDistance: 0
   minPointDistance: 0.05
   limitPointCount: 0
   maxPointCount: 2048
@@ -796,6 +798,7 @@ MonoBehaviour:
   widthRange: {x: 0.5, y: 0.5}
   widthNoiseAmount: 0.35
   widthCurveKeyCount: 8
+  debugLog: 0
 --- !u!114 &248848582
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -849,15 +852,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BrushGestureRecognizer
   minScore: 0.65
+  minPointCount: 6
   loadXmlTemplatesFromResources: 1
   resourcesGestureFolder: GestureTemplates
   loadCustomXmlTemplates: 1
   customGestureFolderName: GestureTemplates
   useRuntimeTemplatesIfXmlEmpty: 1
-  useRuntimeSlashTemplate: 1
-  useRuntimeFireTemplate: 1
-  useRuntimeBridgeTemplate: 1
+  useRuntimeSlashTemplate: 0
+  useRuntimeFireTemplate: 0
+  useRuntimeBridgeTemplate: 0
   exitBrushModeOnRecognized: 1
+  debugPointInfo: 1
+  debugTemplateInfo: 1
 --- !u!114 &248848585
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -938,6 +944,7 @@ MonoBehaviour:
   customGestureFolderName: GestureTemplates/Fire
   minPointCount: 6
   reloadRecognizerAfterSave: 1
+  keepWaitingIfInvalidStroke: 1
   debugLog: 1
 --- !u!114 &248848589
 MonoBehaviour:

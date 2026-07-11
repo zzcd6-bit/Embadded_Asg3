@@ -7,6 +7,7 @@ public class BrushGestureRecognizer : MonoBehaviour
 {
     [Header("Recognition")]
     public float minScore = 0.65f;
+    public int minPointCount = 6;
 
     [Header("XML Templates")]
     public bool loadXmlTemplatesFromResources = true;
@@ -24,6 +25,10 @@ public class BrushGestureRecognizer : MonoBehaviour
 
     [Header("Brush Mode")]
     public bool exitBrushModeOnRecognized = true;
+
+    [Header("Debug")]
+    public bool debugPointInfo = true;
+    public bool debugTemplateInfo = true;
 
     private readonly List<Gesture> trainingSet = new List<Gesture>();
 
@@ -63,6 +68,7 @@ public class BrushGestureRecognizer : MonoBehaviour
             Debug.LogWarning(
                 $"[BrushGestureRecognizer] No XML templates found in Resources/{resourcesGestureFolder}."
             );
+
             return;
         }
 
@@ -109,9 +115,12 @@ public class BrushGestureRecognizer : MonoBehaviour
                 {
                     trainingSet.Add(gesture);
 
-                    Debug.Log(
-                        $"[BrushGestureRecognizer] Loaded custom gesture XML: {Path.GetFileName(filePath)}"
-                    );
+                    if (debugTemplateInfo)
+                    {
+                        Debug.Log(
+                            $"[BrushGestureRecognizer] Loaded custom gesture XML: {Path.GetFileName(filePath)}, Name={gesture.Name}"
+                        );
+                    }
                 }
             }
             catch (System.Exception exception)
@@ -143,9 +152,12 @@ public class BrushGestureRecognizer : MonoBehaviour
 
             trainingSet.Add(gesture);
 
-            Debug.Log(
-                $"[BrushGestureRecognizer] Loaded XML gesture: {gesture.Name} from {sourceName}"
-            );
+            if (debugTemplateInfo)
+            {
+                Debug.Log(
+                    $"[BrushGestureRecognizer] Loaded XML gesture: {gesture.Name} from {sourceName}"
+                );
+            }
         }
         catch (System.Exception exception)
         {
@@ -191,6 +203,94 @@ public class BrushGestureRecognizer : MonoBehaviour
         );
     }
 
+    private void OnStrokeFinished(BrushStrokeData strokeData)
+    {
+        if (strokeData == null || strokeData.pdollarPoints == null)
+            return;
+
+        if (strokeData.pdollarPoints.Count < minPointCount)
+        {
+            if (debugPointInfo)
+            {
+                Debug.LogWarning(
+                    $"[BrushGestureRecognizer] Not enough PDollar points. Count={strokeData.pdollarPoints.Count}"
+                );
+            }
+
+            return;
+        }
+
+        if (trainingSet.Count == 0)
+        {
+            Debug.LogWarning("[BrushGestureRecognizer] No gesture templates found.");
+            return;
+        }
+
+        if (debugPointInfo)
+        {
+            Point first = strokeData.pdollarPoints[0];
+            Point last = strokeData.pdollarPoints[strokeData.pdollarPoints.Count - 1];
+
+            Debug.Log(
+                $"[BrushGestureRecognizer] PDollar point count={strokeData.pdollarPoints.Count}, " +
+                $"First=({first.X}, {first.Y}), Last=({last.X}, {last.Y})"
+            );
+        }
+
+        Point[] candidatePoints = strokeData.pdollarPoints.ToArray();
+
+        Gesture candidate = new Gesture(candidatePoints);
+
+        Result result = PointCloudRecognizer.Classify(
+            candidate,
+            trainingSet.ToArray()
+        );
+
+        BrushSkillType skillType = GetSkillTypeFromGestureName(result.GestureClass);
+
+        Debug.Log(
+            $"Gesture Result: {result.GestureClass}, Skill: {skillType}, Score: {result.Score}"
+        );
+
+        if (result.Score < minScore)
+            return;
+
+        BrushGestureResult brushResult = new BrushGestureResult(
+            result.GestureClass,
+            skillType,
+            result.Score,
+            strokeData
+        );
+
+        if (exitBrushModeOnRecognized)
+        {
+            EventCenter.Instance.EventTrigger(E_EventType.E_Brush_RequestExit);
+        }
+
+        EventCenter.Instance.EventTrigger<BrushGestureResult>(
+            E_EventType.E_Brush_GestureRecognized,
+            brushResult
+        );
+    }
+
+    private Point[] ConvertToPDollarPoints(List<Vector2> screenPoints)
+    {
+        Point[] points = new Point[screenPoints.Count];
+
+        for (int i = 0; i < screenPoints.Count; i++)
+        {
+            Vector2 p = screenPoints[i];
+
+            points[i] = new Point(
+                p.x,
+                -p.y,
+                0
+            );
+        }
+
+        return points;
+    }
+
     private BrushSkillType GetSkillTypeFromGestureName(string gestureName)
     {
         if (string.IsNullOrEmpty(gestureName))
@@ -214,74 +314,10 @@ public class BrushGestureRecognizer : MonoBehaviour
         }
     }
 
-    private void OnStrokeFinished(BrushStrokeData strokeData)
-    {
-        if (strokeData == null || strokeData.screenPoints == null)
-            return;
-
-        if (strokeData.screenPoints.Count < 6)
-            return;
-
-        if (trainingSet.Count == 0)
-        {
-            Debug.LogWarning("No gesture templates found.");
-            return;
-        }
-
-        Point[] candidatePoints = ConvertToPDollarPoints(strokeData.screenPoints);
-
-        Gesture candidate = new Gesture(candidatePoints);
-        Result result = PointCloudRecognizer.Classify(candidate, trainingSet.ToArray());
-
-        BrushSkillType skillType = GetSkillTypeFromGestureName(result.GestureClass);
-
-        Debug.Log(
-            $"Gesture Result: {result.GestureClass}, Skill: {skillType}, Score: {result.Score}"
-        );
-
-        if (result.Score < minScore)
-            return;
-
-        BrushGestureResult brushResult = new BrushGestureResult(
-            result.GestureClass,
-            skillType,
-            result.Score,
-            strokeData
-        );
-
-        // 先退出绘画模式
-        if (exitBrushModeOnRecognized)
-        {
-            EventCenter.Instance.EventTrigger(E_EventType.E_Brush_RequestExit);
-        }
-
-        // 再执行对应手势效果
-        EventCenter.Instance.EventTrigger<BrushGestureResult>(
-            E_EventType.E_Brush_GestureRecognized,
-            brushResult
-        );
-    }
-
-    private Point[] ConvertToPDollarPoints(List<Vector2> screenPoints)
-    {
-        Point[] points = new Point[screenPoints.Count];
-
-        for (int i = 0; i < screenPoints.Count; i++)
-        {
-            Vector2 p = screenPoints[i];
-
-            // 和 Demo 一样，Y 取反
-            points[i] = new Point(p.x, -p.y, 0);
-        }
-
-        return points;
-    }
-
     private void AddRuntimeSlashTemplate()
     {
         List<Point> slashPoints = new List<Point>();
 
-        // 横线模板，从左到右
         for (int i = 0; i < 32; i++)
         {
             float x = i * 10f;
@@ -301,11 +337,6 @@ public class BrushGestureRecognizer : MonoBehaviour
     {
         List<Point> firePoints = new List<Point>();
 
-        // Fire 符号：一笔画火焰形状
-        // 大概形状：
-        //   /\  /\
-        //  /  \/  \
-        // /        \
         AddLine(firePoints, new Vector2(0f, 100f), new Vector2(40f, 0f), 8);
         AddLine(firePoints, new Vector2(40f, 0f), new Vector2(70f, 70f), 8);
         AddLine(firePoints, new Vector2(70f, 70f), new Vector2(100f, 10f), 8);
@@ -319,22 +350,15 @@ public class BrushGestureRecognizer : MonoBehaviour
         trainingSet.Add(fireGesture);
     }
 
-
     private void AddRuntimeBridgeTemplate()
     {
         List<Point> bridgePoints = new List<Point>();
 
-        // Bridge 符号：一笔画拱桥形状
-        // 大概形状：
-        //   __
-        // /    \
         for (int i = 0; i < 32; i++)
         {
             float t = i / 31f;
 
             float x = Mathf.Lerp(0f, 160f, t);
-
-            // 用 sin 做一个拱形
             float y = Mathf.Sin(t * Mathf.PI) * -80f;
 
             bridgePoints.Add(new Point(x, y, 0));

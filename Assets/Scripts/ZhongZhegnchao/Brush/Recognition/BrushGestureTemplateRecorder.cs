@@ -114,7 +114,7 @@ public class BrushGestureTemplateRecorder : MonoBehaviour
             return;
         }
 
-        List<Vector2> copiedPoints = new List<Vector2>(strokeData.screenPoints);
+        List<Point> copiedPoints = new List<Point>(strokeData.pdollarPoints);
 
         bool saved = SavePointsAsTemplate(copiedPoints);
 
@@ -124,15 +124,15 @@ public class BrushGestureTemplateRecorder : MonoBehaviour
         }
     }
 
-    private bool SavePointsAsTemplate(List<Vector2> screenPoints)
+    private bool SavePointsAsTemplate(List<Point> points)
     {
-        if (screenPoints == null)
+        if (points == null)
         {
-            Debug.LogWarning("[BrushGestureTemplateRecorder] Screen points are null.");
+            Debug.LogWarning("[BrushGestureTemplateRecorder] PDollar points are null.");
             return false;
         }
 
-        if (screenPoints.Count < minPointCount)
+        if (points.Count < minPointCount)
         {
             Debug.LogWarning("[BrushGestureTemplateRecorder] Not enough points to save template.");
             return false;
@@ -160,11 +160,9 @@ public class BrushGestureTemplateRecorder : MonoBehaviour
         string fileName = $"{safeName}_{timeStamp}.xml";
         string filePath = Path.Combine(folderPath, fileName);
 
-        Point[] points = ConvertToPDollarPoints(screenPoints);
-
         try
         {
-            GestureIO.WriteGesture(points, safeName, filePath);
+            GestureIO.WriteGesture(points.ToArray(), safeName, filePath);
 
             if (debugLog)
             {
