@@ -51,6 +51,39 @@ public class CombatActionManager : MonoBehaviour
         UpdateBufferedCombo();
     }
 
+    public void SetActionConfigSet(PlayerActionConfigSet newActionSet)
+    {
+        if (newActionSet == null)
+        {
+            Debug.LogWarning("[CombatActionManager] SetActionConfigSet failed: newActionSet is null.", this);
+            return;
+        }
+
+        actionMap.Clear();
+
+        for (int i = 0; i < initialActions.Count; i++)
+        {
+            RegisterAction(initialActions[i]);
+        }
+
+        ActionConfig[] actions = newActionSet.GetAllActions();
+
+        if (actions != null)
+        {
+            for (int i = 0; i < actions.Length; i++)
+            {
+                RegisterAction(actions[i]);
+            }
+        }
+
+        ClearBufferedCombo();
+
+        Debug.Log(
+            $"[CombatActionManager] Action set switched. Count={actionMap.Count}, NormalAttack={newActionSet.normalAttackActionId}",
+            this
+        );
+    }
+
     public void RegisterAction(ActionConfig config)
     {
         if (config == null)

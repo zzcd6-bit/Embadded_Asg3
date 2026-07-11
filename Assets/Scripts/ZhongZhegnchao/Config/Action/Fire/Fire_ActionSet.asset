@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80d6fd57ffcd62143b9cd4b19c00b412, type: 3}
+  m_Name: Fire_ActionSet
+  m_EditorClassIdentifier: HotUpdate::PlayerActionConfigSet
+  normalAttackActionId: Fire_Attack_01
+  actions:
+  - {fileID: 11400000, guid: 914e20bdb40ae27438098483ef4235e0, type: 2}
+  - {fileID: 11400000, guid: d822e0237b45c204fa01a2e69782db4a, type: 2}
+  - {fileID: 11400000, guid: e74c301f3e50b88429d5d2909c0c10cc, type: 2}
+  - {fileID: 11400000, guid: 9d6fba7580ffc80419719fd07ae07504, type: 2}
