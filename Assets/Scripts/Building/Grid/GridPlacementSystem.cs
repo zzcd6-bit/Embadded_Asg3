@@ -67,6 +67,12 @@ public class GridPlacementSystem : MonoBehaviour
         return data;
     }
 
+    public bool IsCellUnavailable(Vector2Int cell)
+    {
+        return cells.TryGetValue(cell, out CellData data)
+            && (data.isOccupied || data.isBlocked);
+    }
+
     //Calculates every cell covered by a footprint at the pivot cell.
     //根据 pivot cell 计算该占地区域覆盖的所有格子。
     public IReadOnlyList<Vector2Int> GetOccupiedCells(Vector2Int pivotCell, Vector2Int size, int rotationSteps)
@@ -123,6 +129,25 @@ public class GridPlacementSystem : MonoBehaviour
     public void SetBlocked(Vector2Int cell, bool isBlocked)
     {
         GetCellData(cell).isBlocked = isBlocked;
+    }
+
+    public void SetBlockedWorldBounds(Bounds worldBounds, bool isBlocked)
+    {
+        Vector2Int minCell = WorldToCell(worldBounds.min);
+        Vector2Int maxCell = WorldToCell(worldBounds.max);
+
+        int minX = Mathf.Min(minCell.x, maxCell.x);
+        int maxX = Mathf.Max(minCell.x, maxCell.x);
+        int minY = Mathf.Min(minCell.y, maxCell.y);
+        int maxY = Mathf.Max(minCell.y, maxCell.y);
+
+        for (int x = minX; x <= maxX; x++)
+        {
+            for (int y = minY; y <= maxY; y++)
+            {
+                SetBlocked(new Vector2Int(x, y), isBlocked);
+            }
+        }
     }
 
     //Clears cells currently occupied by the given building.

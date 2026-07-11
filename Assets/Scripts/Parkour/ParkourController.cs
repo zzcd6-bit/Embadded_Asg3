@@ -13,7 +13,7 @@ public class ParkourController : MonoBehaviour
     public float crossFadeTime = 0.2f;
 
     private bool playerInAction;
-    private InputHandler inputHandler;
+    private bool jumpPressed;
 
     private void Awake()
     {
@@ -23,12 +23,23 @@ public class ParkourController : MonoBehaviour
         if (anim == null)
             anim = GetComponent<Animator>();
 
-        inputHandler = InputHandler.GetOrCreate();
+        InputMgr.Instance.StartOrCloseInputMgr(true);
+    }
+
+    private void OnEnable()
+    {
+        // Ye input cleanup: consume jump through ZhongZhengchao's InputMgr/EventCenter.
+        EventCenter.Instance.AddEventListener(E_EventType.E_Player_Jump, OnJumpInput);
+    }
+
+    private void OnDisable()
+    {
+        EventCenter.Instance.RemoveEventListener(E_EventType.E_Player_Jump, OnJumpInput);
     }
 
     void Update()
     {
-        if (inputHandler != null && inputHandler.JumpPressed && !playerInAction)
+        if (ConsumeJumpPressed() && !playerInAction)
         {
             if (barrierChecker == null)
             {
@@ -93,5 +104,21 @@ public class ParkourController : MonoBehaviour
     {
         anim.MatchTarget(action.ComparePosition, transform.rotation, action.compareBodyPart, 
             new MatchTargetWeightMask(action.WeightMask,0), action.compareStartTime, action.compareEndTime);
+    }
+
+    private void OnJumpInput()
+    {
+        jumpPressed = true;
+    }
+
+    private bool ConsumeJumpPressed()
+    {
+        if (!jumpPressed)
+        {
+            return false;
+        }
+
+        jumpPressed = false;
+        return true;
     }
 }
