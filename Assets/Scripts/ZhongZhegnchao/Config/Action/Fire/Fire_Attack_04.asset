@@ -141,7 +141,7 @@ MonoBehaviour:
       capsuleHeight: 7.39
       sectorAngle: 90
       damage: 10
-      knockback: 3
+      knockback: 20
       targetLayer:
         serializedVersion: 2
         m_Bits: 128
@@ -411,7 +411,7 @@ MonoBehaviour:
       capsuleHeight: 5.3
       sectorAngle: 90
       damage: 10
-      knockback: 3
+      knockback: 20
       targetLayer:
         serializedVersion: 2
         m_Bits: 4294967295
@@ -501,7 +501,7 @@ MonoBehaviour:
       capsuleHeight: 5.64
       sectorAngle: 90
       damage: 10
-      knockback: 3
+      knockback: 20
       targetLayer:
         serializedVersion: 2
         m_Bits: 4294967295
@@ -591,7 +591,7 @@ MonoBehaviour:
       capsuleHeight: 4.09
       sectorAngle: 90
       damage: 10
-      knockback: 3
+      knockback: 20
       targetLayer:
         serializedVersion: 2
         m_Bits: 4294967295

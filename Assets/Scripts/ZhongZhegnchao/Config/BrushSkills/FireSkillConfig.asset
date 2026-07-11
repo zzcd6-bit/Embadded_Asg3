@@ -35,7 +35,7 @@ MonoBehaviour:
   burningTickInterval: 0.3
   burningTickDamage: 1
   applyInfusionToPlayer: 1
-  infusionDuration: 8
+  infusionDuration: 20
   infusionDamageMultiplier: 1.5
   infusionApplyBurningOnHit: 1
   infusionBurningDuration: 5
