@@ -1,115 +1,121 @@
+using System;
+using System.Collections;
 using UnityEngine;
 
 public class PlayerElementInfusion : MonoBehaviour
 {
-    [Header("Current Infusion")]
-    [SerializeField] private ElementType currentElement = ElementType.Physical;
-    [SerializeField] private float remainingTime;
-    [SerializeField] private float damageMultiplier = 1f;
+    public event Action<bool> FireInfusionStateChanged;
 
-    [Header("Burning On Hit")]
-    [SerializeField] private bool applyBurningOnHit;
-    [SerializeField] private float burningDuration = 5f;
-    [SerializeField] private float burningTickInterval = 1f;
-    [SerializeField] private int burningTickDamage = 1;
+    [Header("µ±Ç°¸½Ä§×´Ì¬")]
+    [SerializeField] private bool isFireInfused;
+
+    [Header("»ðÑæ¸½Ä§²ÎÊý")]
+    [SerializeField] private float fireDamageMultiplier = 1.5f;
+    [SerializeField] private bool fireApplyBurningOnHit = true;
+    [SerializeField] private float fireBurningDuration = 5f;
+    [SerializeField] private float fireBurningTickInterval = 1f;
+    [SerializeField] private int fireBurningTickDamage = 1;
 
     [Header("Debug")]
     public bool debugLog = true;
 
-    public ElementType CurrentElement
+    private Coroutine infusionCoroutine;
+
+    public bool IsFireInfused
     {
-        get { return currentElement; }
-    }
-
-    public bool HasElementInfusion
-    {
-        get
-        {
-            return currentElement != ElementType.None &&
-                   currentElement != ElementType.Physical &&
-                   remainingTime > 0f;
-        }
-    }
-
-    private void Update()
-    {
-        if (remainingTime <= 0f)
-            return;
-
-        remainingTime -= Time.deltaTime;
-
-        if (remainingTime <= 0f)
-        {
-            ClearInfusion();
-        }
+        get { return isFireInfused; }
     }
 
     public void ApplyFireInfusion(
         float duration,
-        float newDamageMultiplier,
-        bool newApplyBurningOnHit,
-        float newBurningDuration,
-        float newBurningTickInterval,
-        int newBurningTickDamage
+        float damageMultiplier,
+        bool applyBurningOnHit,
+        float burningDuration,
+        float burningTickInterval,
+        int burningTickDamage
     )
     {
-        currentElement = ElementType.Fire;
-        remainingTime = duration;
-        damageMultiplier = Mathf.Max(1f, newDamageMultiplier);
+        fireDamageMultiplier = damageMultiplier;
+        fireApplyBurningOnHit = applyBurningOnHit;
+        fireBurningDuration = burningDuration;
+        fireBurningTickInterval = burningTickInterval;
+        fireBurningTickDamage = burningTickDamage;
 
-        applyBurningOnHit = newApplyBurningOnHit;
-        burningDuration = newBurningDuration;
-        burningTickInterval = newBurningTickInterval;
-        burningTickDamage = newBurningTickDamage;
+        if (!isFireInfused)
+        {
+            isFireInfused = true;
+            FireInfusionStateChanged?.Invoke(true);
+        }
+
+        if (infusionCoroutine != null)
+        {
+            StopCoroutine(infusionCoroutine);
+        }
+
+        infusionCoroutine = StartCoroutine(FireInfusionTimer(duration));
 
         if (debugLog)
         {
             Debug.Log(
-                $"[PlayerElementInfusion] Fire infusion applied. " +
-                $"duration={duration}, damageMultiplier={damageMultiplier}",
+                $"[PlayerElementInfusion] Fire infusion applied. Duration={duration}",
                 this
             );
         }
     }
 
-    public void ApplyToDamageInfo(ref DamageInfo damageInfo)
+    private IEnumerator FireInfusionTimer(float duration)
     {
-        if (!HasElementInfusion)
+        if (duration > 0f)
+        {
+            yield return new WaitForSeconds(duration);
+        }
+
+        ClearInfusion();
+    }
+
+    public void ClearInfusion()
+    {
+        if (infusionCoroutine != null)
+        {
+            StopCoroutine(infusionCoroutine);
+            infusionCoroutine = null;
+        }
+
+        if (!isFireInfused)
             return;
 
-        damageInfo.element = currentElement;
+        isFireInfused = false;
+
+        FireInfusionStateChanged?.Invoke(false);
+
+        if (debugLog)
+        {
+            Debug.Log("[PlayerElementInfusion] Fire infusion cleared.", this);
+        }
+    }
+
+    public void ApplyToDamageInfo(ref DamageInfo damageInfo)
+    {
+        if (!isFireInfused)
+            return;
+
+        damageInfo.element = ElementType.Fire;
         damageInfo.canApplyElementStatus = true;
 
-        damageInfo.damage = Mathf.Max(
-            1,
-            Mathf.RoundToInt(damageInfo.damage * damageMultiplier)
+        damageInfo.damage = Mathf.RoundToInt(
+            damageInfo.damage * fireDamageMultiplier
         );
     }
 
     public void ApplyElementStatusToTarget(GameObject targetObject, GameObject attacker)
     {
-        if (!HasElementInfusion)
+        if (!isFireInfused)
+            return;
+
+        if (!fireApplyBurningOnHit)
             return;
 
         if (targetObject == null)
-            return;
-
-        EnemyWhitebox enemy = targetObject.GetComponent<EnemyWhitebox>();
-
-        if (enemy == null)
-        {
-            enemy = targetObject.GetComponentInParent<EnemyWhitebox>();
-        }
-
-        if (enemy != null && enemy.IsDead)
-        {
-            return;
-        }
-
-        if (currentElement != ElementType.Fire)
-            return;
-
-        if (!applyBurningOnHit)
             return;
 
         ElementStatusController statusController =
@@ -127,23 +133,9 @@ public class PlayerElementInfusion : MonoBehaviour
 
         statusController.ApplyBurning(
             attacker,
-            burningDuration,
-            burningTickInterval,
-            burningTickDamage
+            fireBurningDuration,
+            fireBurningTickInterval,
+            fireBurningTickDamage
         );
-    }
-
-    public void ClearInfusion()
-    {
-        currentElement = ElementType.Physical;
-        remainingTime = 0f;
-        damageMultiplier = 1f;
-
-        applyBurningOnHit = false;
-
-        if (debugLog)
-        {
-            Debug.Log("[PlayerElementInfusion] Infusion cleared.", this);
-        }
     }
 }

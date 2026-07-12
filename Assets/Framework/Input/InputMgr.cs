@@ -222,7 +222,6 @@ public class InputMgr : BaseMgr<InputMgr>
         switch (eventType)
         {
             case E_EventType.E_Input_Jump:
-            case E_EventType.E_Input_Dodge:
             case E_EventType.E_Input_Attack:
             case E_EventType.E_Input_LockOn:
             case E_EventType.E_Player_Jump:

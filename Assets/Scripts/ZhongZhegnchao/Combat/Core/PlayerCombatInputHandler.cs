@@ -77,6 +77,22 @@ public class PlayerCombatInputHandler : MonoBehaviour
         bound = false;
     }
 
+    public void SetNormalAttackActionId(string newNormalAttackActionId)
+    {
+        if (string.IsNullOrEmpty(newNormalAttackActionId))
+        {
+            Debug.LogWarning("[PlayerCombatInputHandler] New normalAttackActionId is empty.", this);
+            return;
+        }
+
+        normalAttackActionId = newNormalAttackActionId;
+
+        Debug.Log(
+            $"[PlayerCombatInputHandler] Normal attack action id changed to: {normalAttackActionId}",
+            this
+        );
+    }
+
     private void OnAttackPressed()
     {
 

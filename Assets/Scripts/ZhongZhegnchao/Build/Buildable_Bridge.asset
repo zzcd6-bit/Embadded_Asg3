@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1b703aa75fd4ad49b637b2361209252, type: 3}
+  m_Name: Buildable_Bridge
+  m_EditorClassIdentifier: Assembly-CSharp::BuildableItemData
+  displayName: Bridge
+  icon: {fileID: 0}
+  description: 
+  buildingPrefab: {fileID: 1697032908129488615, guid: d7c328c1a7d2c484d84fbd2717b2fa60, type: 3}
+  size: {x: 20, y: 5}
+  surfaceRule: 0
+  anchorDepth: 1
+  maxAnchorHeightDelta: 0
+  placementYOffset: 0
+  contributesWalkableNavMesh: 0
+  cost: 0

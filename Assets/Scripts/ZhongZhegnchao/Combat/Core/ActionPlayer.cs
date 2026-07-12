@@ -18,6 +18,8 @@ public class ActionPlayer : MonoBehaviour, IHitStopReceiver
     private AnimancerState currentState;
     private CharacterController characterController;
 
+    [SerializeField] private PlayerActionConfigSet actionConfigSet;
+
     [SerializeField] private PlayerLocomotion locomotion;
     [SerializeField] private PlayerElementInfusion elementInfusion;
 
@@ -676,14 +678,27 @@ public class ActionPlayer : MonoBehaviour, IHitStopReceiver
 
             IDamageable damageable = hitCollider.GetComponentInParent<IDamageable>();
 
+            Vector3 hitPoint = GetSafeClosestPoint(hitCollider, transform.position);
+
+            Vector3 hitDirection = hitCollider.transform.position - transform.position;
+
+            if (hitDirection.sqrMagnitude > 0.0001f)
+            {
+                hitDirection.Normalize();
+            }
+            else
+            {
+                hitDirection = transform.forward;
+            }
+
             DamageInfo damageInfo = new DamageInfo
             {
                 attacker = gameObject,
                 target = hitCollider.gameObject,
                 damage = data.damage,
                 knockback = data.knockback,
-                hitPoint = hitCollider.ClosestPoint(transform.position),
-                hitDirection = (hitCollider.transform.position - transform.position).normalized,
+                hitPoint = hitPoint,
+                hitDirection = hitDirection,
                 sourceAction = currentAction,
 
                 element = ElementType.Physical,
@@ -727,6 +742,21 @@ public class ActionPlayer : MonoBehaviour, IHitStopReceiver
         }
     }
 
+    public void SetActionConfigSet(PlayerActionConfigSet newActionConfigSet)
+    {
+        if (newActionConfigSet == null)
+        {
+            Debug.LogWarning("[ActionPlayer] SetActionConfigSet failed: newActionConfigSet is null.", this);
+            return;
+        }
+
+        actionConfigSet = newActionConfigSet;
+
+        Debug.Log(
+            $"[ActionPlayer] ActionConfigSet changed to: {newActionConfigSet.name}",
+            this
+        );
+    }
     private void TriggerHitFeedback(HitBoxEventData hitBoxData, DamageInfo damageInfo)
     {
         if (hitBoxData == null)
@@ -997,5 +1027,29 @@ public class ActionPlayer : MonoBehaviour, IHitStopReceiver
     public bool IsActionPlaying
     {
         get { return currentAction != null; }
+    }
+
+    private Vector3 GetSafeClosestPoint(Collider targetCollider, Vector3 fromPosition)
+    {
+        if (targetCollider == null)
+        {
+            return fromPosition;
+        }
+
+        if (targetCollider is BoxCollider ||
+            targetCollider is SphereCollider ||
+            targetCollider is CapsuleCollider)
+        {
+            return targetCollider.ClosestPoint(fromPosition);
+        }
+
+        MeshCollider meshCollider = targetCollider as MeshCollider;
+
+        if (meshCollider != null && meshCollider.convex)
+        {
+            return targetCollider.ClosestPoint(fromPosition);
+        }
+
+        return targetCollider.bounds.ClosestPoint(fromPosition);
     }
 }

@@ -6,12 +6,14 @@ public class PlayerCameraController : MonoBehaviour
     [SerializeField] private Transform cameraTarget;
     [SerializeField] private bool detachTargetFromPlayer = true;
 
-    [Header("Target Y Lock")]
-    [SerializeField] private float fixedWorldY = 1.6f;
-    [SerializeField] private bool followJumpY = true;
-    [SerializeField] private float jumpYFollowSpeed = 8f;
-    [SerializeField] private float jumpYDeadZone = 0.05f;
-    [SerializeField] private float maxJumpYFollow = 2.5f;
+    [Header("Target Height Follow")]
+    [Tooltip("CameraTarget 相对 Player 的高度，例如 1.6 表示在角色头部附近")]
+    [SerializeField] private float targetHeightOffset = 1.6f;
+
+    [Tooltip("是否跟随 Player 的 Y 高度。上桥、上坡、下坡建议开启")]
+    [SerializeField] private bool followPlayerY = true;
+
+    [SerializeField] private float yFollowSpeed = 12f;
 
     [Header("Look Settings")]
     [SerializeField] private float mouseSensitivity = 180f;
@@ -19,7 +21,6 @@ public class PlayerCameraController : MonoBehaviour
 
     private bool cameraInputEnabled = true;
     private float yaw;
-    private float basePlayerY;
     private float currentTargetY;
 
     private bool initialized;
@@ -35,9 +36,6 @@ public class PlayerCameraController : MonoBehaviour
             return;
         }
 
-        basePlayerY = transform.position.y;
-        currentTargetY = fixedWorldY;
-
         if (detachTargetFromPlayer)
         {
             if (cameraTarget.parent == transform)
@@ -50,6 +48,8 @@ public class PlayerCameraController : MonoBehaviour
 
         Vector3 playerPos = transform.position;
 
+        currentTargetY = playerPos.y + targetHeightOffset;
+
         cameraTarget.position = new Vector3(
             playerPos.x,
             currentTargetY,
@@ -57,6 +57,7 @@ public class PlayerCameraController : MonoBehaviour
         );
 
         yaw = transform.eulerAngles.y;
+        cameraTarget.rotation = Quaternion.Euler(0f, yaw, 0f);
 
         initialized = true;
 
@@ -99,30 +100,26 @@ public class PlayerCameraController : MonoBehaviour
         Cursor.lockState = locked ? CursorLockMode.Locked : CursorLockMode.None;
         Cursor.visible = !locked;
     }
+
     private void UpdateTargetPosition()
     {
         Vector3 playerPos = transform.position;
 
-        float targetY = fixedWorldY;
+        float targetY;
 
-        if (followJumpY)
+        if (followPlayerY)
         {
-            float jumpOffset = playerPos.y - basePlayerY;
-
-            if (jumpOffset < jumpYDeadZone)
-            {
-                jumpOffset = 0f;
-            }
-
-            jumpOffset = Mathf.Clamp(jumpOffset, 0f, maxJumpYFollow);
-
-            targetY = fixedWorldY + jumpOffset;
+            targetY = playerPos.y + targetHeightOffset;
+        }
+        else
+        {
+            targetY = currentTargetY;
         }
 
         currentTargetY = Mathf.Lerp(
             currentTargetY,
             targetY,
-            jumpYFollowSpeed * Time.deltaTime
+            yFollowSpeed * Time.deltaTime
         );
 
         cameraTarget.position = new Vector3(

@@ -18,6 +18,9 @@ public class PlayerLockOnController : MonoBehaviour
     [Header("Attack Facing")]
     [SerializeField] private float attackFaceLockTime = 0.18f;
 
+    [Header("死亡目标处理")]
+    public PlayerLockOnCameraTargetGroup lockOnCameraTargetGroup;
+
     private EnemyTargetable currentTarget;
     private Camera mainCamera;
 
@@ -52,6 +55,8 @@ public class PlayerLockOnController : MonoBehaviour
 
         mainCamera = Camera.main;
 
+        ResolveLockOnCameraTargetGroup();
+
         initialized = true;
 
         BindInput();
@@ -68,10 +73,14 @@ public class PlayerLockOnController : MonoBehaviour
         {
             mainCamera = Camera.main;
         }
+
+        ResolveLockOnCameraTargetGroup();
     }
 
     private void OnEnable()
     {
+        EnemyWhitebox.OnAnyEnemyDead += OnEnemyDead;
+
         if (initialized)
         {
             BindInput();
@@ -80,21 +89,79 @@ public class PlayerLockOnController : MonoBehaviour
 
     private void OnDisable()
     {
+        EnemyWhitebox.OnAnyEnemyDead -= OnEnemyDead;
+
         UnbindInput();
+
         ClearTargetSilently();
+    }
+
+    private void ResolveLockOnCameraTargetGroup()
+    {
+        if (lockOnCameraTargetGroup != null)
+            return;
+
+        lockOnCameraTargetGroup = GetComponent<PlayerLockOnCameraTargetGroup>();
+
+        if (lockOnCameraTargetGroup == null)
+        {
+            lockOnCameraTargetGroup = GetComponentInChildren<PlayerLockOnCameraTargetGroup>();
+        }
+
+        if (lockOnCameraTargetGroup == null)
+        {
+            lockOnCameraTargetGroup = GetComponentInParent<PlayerLockOnCameraTargetGroup>();
+        }
+    }
+
+    private void OnEnemyDead(EnemyWhitebox enemy)
+    {
+        if (enemy == null)
+            return;
+
+        EnemyTargetable deadTarget = enemy.GetComponent<EnemyTargetable>();
+
+        if (deadTarget == null)
+        {
+            deadTarget = enemy.GetComponentInChildren<EnemyTargetable>();
+        }
+
+        if (lockOnCameraTargetGroup != null)
+        {
+            lockOnCameraTargetGroup.RemoveTargetFromGroup(enemy.transform);
+
+            if (deadTarget != null && deadTarget.TargetPoint != null)
+            {
+                lockOnCameraTargetGroup.RemoveTargetFromGroup(deadTarget.TargetPoint);
+            }
+        }
+
+        if (!IsLocked)
+            return;
+
+        if (currentTarget == null)
+            return;
+
+        EnemyWhitebox currentEnemy = currentTarget.GetComponent<EnemyWhitebox>();
+
+        if (currentEnemy == null)
+        {
+            currentEnemy = currentTarget.GetComponentInParent<EnemyWhitebox>();
+        }
+
+        if (currentEnemy == enemy)
+        {
+            UnlockTarget();
+        }
     }
 
     private void BindInput()
     {
         if (bound)
-        {
             return;
-        }
 
         if (inputReceiver == null)
-        {
             return;
-        }
 
         inputReceiver.LockOnPressed += ToggleLockOn;
         bound = true;
@@ -103,9 +170,7 @@ public class PlayerLockOnController : MonoBehaviour
     private void UnbindInput()
     {
         if (!bound)
-        {
             return;
-        }
 
         if (inputReceiver != null)
         {
@@ -118,9 +183,7 @@ public class PlayerLockOnController : MonoBehaviour
     private void Update()
     {
         if (!IsLocked)
-        {
             return;
-        }
 
         if (!IsCurrentTargetValid())
         {
@@ -150,9 +213,7 @@ public class PlayerLockOnController : MonoBehaviour
     private void LockTarget(EnemyTargetable target)
     {
         if (target == null)
-        {
             return;
-        }
 
         currentTarget = target;
 
@@ -181,9 +242,7 @@ public class PlayerLockOnController : MonoBehaviour
     public bool FaceCurrentTargetForAttack()
     {
         if (!IsLocked)
-        {
             return false;
-        }
 
         if (!IsCurrentTargetValid())
         {
@@ -192,9 +251,7 @@ public class PlayerLockOnController : MonoBehaviour
         }
 
         if (!TryGetCurrentTargetDirection(out Vector3 direction))
-        {
             return false;
-        }
 
         if (locomotion != null)
         {
@@ -228,16 +285,12 @@ public class PlayerLockOnController : MonoBehaviour
         direction = Vector3.zero;
 
         if (currentTarget == null)
-        {
             return false;
-        }
 
         Transform targetPoint = currentTarget.TargetPoint;
 
         if (targetPoint == null)
-        {
             return false;
-        }
 
         Transform root = playerRoot != null ? playerRoot : transform;
 
@@ -257,21 +310,25 @@ public class PlayerLockOnController : MonoBehaviour
     private bool IsCurrentTargetValid()
     {
         if (currentTarget == null)
-        {
             return false;
-        }
 
         if (!currentTarget.CanBeLocked)
-        {
             return false;
+
+        EnemyWhitebox enemy = currentTarget.GetComponent<EnemyWhitebox>();
+
+        if (enemy == null)
+        {
+            enemy = currentTarget.GetComponentInParent<EnemyWhitebox>();
         }
+
+        if (enemy != null && enemy.IsDead)
+            return false;
 
         Transform targetPoint = currentTarget.TargetPoint;
 
         if (targetPoint == null)
-        {
             return false;
-        }
 
         Transform root = playerRoot != null ? playerRoot : transform;
 
@@ -281,9 +338,7 @@ public class PlayerLockOnController : MonoBehaviour
         );
 
         if (distance > unlockDistance)
-        {
             return false;
-        }
 
         return true;
     }
@@ -312,35 +367,35 @@ public class PlayerLockOnController : MonoBehaviour
         foreach (Collider hit in hits)
         {
             if (hit == null)
-            {
                 continue;
-            }
 
             EnemyTargetable target = hit.GetComponentInParent<EnemyTargetable>();
 
             if (target == null)
-            {
                 continue;
-            }
 
             if (checkedTargets.Contains(target))
-            {
                 continue;
-            }
 
             checkedTargets.Add(target);
 
             if (!target.CanBeLocked)
-            {
                 continue;
+
+            EnemyWhitebox enemy = target.GetComponent<EnemyWhitebox>();
+
+            if (enemy == null)
+            {
+                enemy = target.GetComponentInParent<EnemyWhitebox>();
             }
+
+            if (enemy != null && enemy.IsDead)
+                continue;
 
             Transform targetPoint = target.TargetPoint;
 
             if (targetPoint == null)
-            {
                 continue;
-            }
 
             Vector3 targetPosition = targetPoint.position;
 
@@ -349,17 +404,13 @@ public class PlayerLockOnController : MonoBehaviour
                 Vector3 viewportPosition = mainCamera.WorldToViewportPoint(targetPosition);
 
                 if (viewportPosition.z <= 0f)
-                {
                     continue;
-                }
 
                 Vector3 cameraToTarget = targetPosition - mainCamera.transform.position;
                 float angle = Vector3.Angle(mainCamera.transform.forward, cameraToTarget);
 
                 if (angle > maxLockAngle)
-                {
                     continue;
-                }
 
                 Vector2 screenCenter = new Vector2(0.5f, 0.5f);
                 Vector2 targetScreenPosition = new Vector2(

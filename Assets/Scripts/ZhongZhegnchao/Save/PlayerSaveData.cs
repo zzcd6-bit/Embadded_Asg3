@@ -11,5 +11,8 @@ public class PlayerSaveData
     public int currentHp;
     public int maxHp;
 
+    public int currentInk;
+    public int maxInk;
+
     public List<string> unlockedBrushSkills = new List<string>();
 }

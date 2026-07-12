@@ -22,7 +22,7 @@ public class BrushModeController : MonoBehaviour
     {
         if (newPlayerController == null)
         {
-            newPlayerController = FindObjectOfType<ActionPlayerController>();
+            newPlayerController = FindFirstObjectByType<ActionPlayerController>();
         }
 
         if (cooldownController == null)
@@ -43,8 +43,16 @@ public class BrushModeController : MonoBehaviour
 
     private void OnEnable()
     {
-        EventCenter.Instance.AddEventListener(E_EventType.E_Brush_Enter, EnterBrushMode);
-        EventCenter.Instance.AddEventListener(E_EventType.E_Brush_Exit, ExitBrushMode);
+        EventCenter.Instance.AddEventListener(
+            E_EventType.E_Brush_Enter,
+            EnterBrushMode
+        );
+
+        EventCenter.Instance.AddEventListener(
+            E_EventType.E_Brush_Exit,
+            ExitBrushMode
+        );
+
         EventCenter.Instance.AddEventListener(
             E_EventType.E_Brush_RequestExit,
             ExitBrushMode
@@ -53,8 +61,16 @@ public class BrushModeController : MonoBehaviour
 
     private void OnDisable()
     {
-        EventCenter.Instance.RemoveEventListener(E_EventType.E_Brush_Enter, EnterBrushMode);
-        EventCenter.Instance.RemoveEventListener(E_EventType.E_Brush_Exit, ExitBrushMode);
+        EventCenter.Instance.RemoveEventListener(
+            E_EventType.E_Brush_Enter,
+            EnterBrushMode
+        );
+
+        EventCenter.Instance.RemoveEventListener(
+            E_EventType.E_Brush_Exit,
+            ExitBrushMode
+        );
+
         EventCenter.Instance.RemoveEventListener(
             E_EventType.E_Brush_RequestExit,
             ExitBrushMode
@@ -66,7 +82,8 @@ public class BrushModeController : MonoBehaviour
         if (cooldownController != null && !cooldownController.CanEnterBrushMode())
         {
             Debug.Log(
-                $"[BrushModeController] Brush mode is cooling down. Remaining: {cooldownController.RemainingCooldown:F1}s"
+                $"[BrushModeController] Brush mode is cooling down. Remaining: {cooldownController.RemainingCooldown:F1}s",
+                this
             );
 
             return;
@@ -85,10 +102,25 @@ public class BrushModeController : MonoBehaviour
             newPlayerController.SetGameplayControlEnabled(false);
         }
 
-        EventCenter.Instance.EventTrigger<bool>(E_EventType.E_Player_ControlEnable, false);
-        EventCenter.Instance.EventTrigger<bool>(E_EventType.E_Player_CombatEnable, false);
-        EventCenter.Instance.EventTrigger<bool>(E_EventType.E_Camera_InputEnable, false);
-        EventCenter.Instance.EventTrigger<bool>(E_EventType.E_Brush_ModeChanged, true);
+        EventCenter.Instance.EventTrigger<bool>(
+            E_EventType.E_Player_ControlEnable,
+            false
+        );
+
+        EventCenter.Instance.EventTrigger<bool>(
+            E_EventType.E_Player_CombatEnable,
+            false
+        );
+
+        EventCenter.Instance.EventTrigger<bool>(
+            E_EventType.E_Camera_InputEnable,
+            false
+        );
+
+        EventCenter.Instance.EventTrigger<bool>(
+            E_EventType.E_Brush_ModeChanged,
+            true
+        );
 
         ChangeTimeScale(brushTimeScale);
     }
@@ -97,6 +129,15 @@ public class BrushModeController : MonoBehaviour
     {
         if (!IsBrushMode)
             return;
+
+        /*
+         * 关键修复：
+         * 先让 BrushLineDrawer 结算当前笔画。
+         * 不然如果先触发 E_Brush_ModeChanged(false)，
+         * BrushLineDrawer 会把 isDrawing / screenPoints 清掉，
+         * 导致 OnDrawEnd 时 screenPoints = 0。
+         */
+        EventCenter.Instance.EventTrigger(E_EventType.E_Brush_DrawEnd);
 
         if (cooldownController != null)
         {
@@ -108,7 +149,10 @@ public class BrushModeController : MonoBehaviour
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
 
-        EventCenter.Instance.EventTrigger<bool>(E_EventType.E_Brush_ModeChanged, false);
+        EventCenter.Instance.EventTrigger<bool>(
+            E_EventType.E_Brush_ModeChanged,
+            false
+        );
 
         ChangeTimeScale(1f, () =>
         {
@@ -117,16 +161,29 @@ public class BrushModeController : MonoBehaviour
                 newPlayerController.SetGameplayControlEnabled(true);
             }
 
-            EventCenter.Instance.EventTrigger<bool>(E_EventType.E_Player_ControlEnable, true);
-            EventCenter.Instance.EventTrigger<bool>(E_EventType.E_Player_CombatEnable, true);
-            EventCenter.Instance.EventTrigger<bool>(E_EventType.E_Camera_InputEnable, true);
+            EventCenter.Instance.EventTrigger<bool>(
+                E_EventType.E_Player_ControlEnable,
+                true
+            );
+
+            EventCenter.Instance.EventTrigger<bool>(
+                E_EventType.E_Player_CombatEnable,
+                true
+            );
+
+            EventCenter.Instance.EventTrigger<bool>(
+                E_EventType.E_Camera_InputEnable,
+                true
+            );
         });
     }
 
     private void ChangeTimeScale(float targetScale, TweenCallback onComplete = null)
     {
         if (timeTween != null && timeTween.IsActive())
+        {
             timeTween.Kill();
+        }
 
         timeTween = DOVirtual.Float(
             Time.timeScale,
@@ -135,7 +192,8 @@ public class BrushModeController : MonoBehaviour
             value =>
             {
                 Time.timeScale = value;
-                Time.fixedDeltaTime = DefaultFixedDeltaTime * Mathf.Max(value, 0.01f);
+                Time.fixedDeltaTime =
+                    DefaultFixedDeltaTime * Mathf.Max(value, 0.01f);
             }
         )
         .SetUpdate(true)

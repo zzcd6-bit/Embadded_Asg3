@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using PDollarGestureRecognizer;
 
 public class BrushLineDrawer : MonoBehaviour
 {
@@ -9,6 +10,12 @@ public class BrushLineDrawer : MonoBehaviour
     public Transform drawPlane;
     public LineRenderer lineRenderer;
 
+    [Header("Recognition Point Settings")]
+    public int minRecognitionPointCount = 6;
+
+    [Tooltip("0 means record every frame, same as PDollar demo.")]
+    public float minScreenPointDistance = 0f;
+
     [Header("Line Point Settings")]
     public float minPointDistance = 0.02f;
     public bool limitPointCount = false;
@@ -16,7 +23,9 @@ public class BrushLineDrawer : MonoBehaviour
 
     [Header("Clear Settings")]
     public float clearDelay = 0.8f;
-    public bool clearWhenExitBrushMode = true;
+
+    [Tooltip("建议保持 false。不要在退出画符模式时立刻清空，否则可能导致识别前点数被清掉。")]
+    public bool clearWhenExitBrushMode = false;
 
     [Header("Ink Brush Style")]
     public Material[] brushMaterials;
@@ -24,11 +33,16 @@ public class BrushLineDrawer : MonoBehaviour
     public float widthNoiseAmount = 0.35f;
     public int widthCurveKeyCount = 8;
 
+    [Header("Debug")]
+    public bool debugLog = true;
+    public bool debugDrawFlow = true;
+
     private bool isBrushMode;
     private bool isDrawing;
 
     private readonly List<Vector2> screenPoints = new List<Vector2>();
     private readonly List<Vector3> worldPoints = new List<Vector3>();
+    private readonly List<Point> pdollarPoints = new List<Point>();
 
     private Coroutine clearRoutine;
 
@@ -85,26 +99,62 @@ public class BrushLineDrawer : MonoBehaviour
         if (!isBrushMode || !isDrawing)
             return;
 
-        AddPointFromMouse();
+        AddRecognitionPointFromMouse();
+        AddVisualPointFromMouse();
     }
 
     private void OnBrushModeChanged(bool state)
     {
         isBrushMode = state;
 
-        if (!state)
+        if (debugDrawFlow)
         {
-            isDrawing = false;
+            Debug.Log(
+                $"[BrushLineDrawer] Brush mode changed: {state}. isDrawing={isDrawing}, screenPoints={screenPoints.Count}",
+                this
+            );
+        }
 
-            if (clearWhenExitBrushMode)
-                ClearLine();
+        if (state)
+        {
+            return;
+        }
+
+        // 退出画画模式后，如果当前笔画已经结算完成，就马上清除线条
+        if (clearWhenExitBrushMode && !isDrawing)
+        {
+            if (clearRoutine != null)
+            {
+                StopCoroutine(clearRoutine);
+                clearRoutine = null;
+            }
+
+            ClearLine();
         }
     }
 
     private void OnDrawStart()
     {
+        if (debugDrawFlow)
+        {
+            Debug.Log(
+                $"[BrushLineDrawer] OnDrawStart called. isBrushMode={isBrushMode}",
+                this
+            );
+        }
+
         if (!isBrushMode)
+        {
+            if (debugDrawFlow)
+            {
+                Debug.LogWarning(
+                    "[BrushLineDrawer] DrawStart ignored because brush mode is false.",
+                    this
+                );
+            }
+
             return;
+        }
 
         isDrawing = true;
 
@@ -119,40 +169,131 @@ public class BrushLineDrawer : MonoBehaviour
         ApplyRandomInkStyle();
 
         if (lineRenderer != null)
+        {
             lineRenderer.enabled = true;
+        }
 
-        AddPointFromMouse(true);
+        AddRecognitionPointFromMouse(true);
+        AddVisualPointFromMouse(true);
     }
 
     private void OnDrawEnd()
     {
-        if (!isBrushMode || !isDrawing)
+        if (debugDrawFlow)
+        {
+            Debug.Log(
+                $"[BrushLineDrawer] OnDrawEnd called. isBrushMode={isBrushMode}, isDrawing={isDrawing}, screenPoints={screenPoints.Count}, pdollarPoints={pdollarPoints.Count}",
+                this
+            );
+        }
+
+        /*
+         * 这里只判断 isDrawing。
+         * 不要因为 isBrushMode == false 就 return。
+         * 因为有些情况下退出画符模式和松开鼠标在同一帧发生。
+         */
+        if (!isDrawing)
+        {
+            if (debugDrawFlow)
+            {
+                Debug.LogWarning(
+                    "[BrushLineDrawer] DrawEnd ignored because isDrawing is false.",
+                    this
+                );
+            }
+
             return;
+        }
 
         isDrawing = false;
 
-        if (screenPoints.Count >= 2)
+        if (debugDrawFlow)
         {
-            BrushStrokeData data = new BrushStrokeData(screenPoints, worldPoints);
+            Debug.Log(
+                $"[BrushLineDrawer] Draw ended. ScreenPoints={screenPoints.Count}, WorldPoints={worldPoints.Count}, PDollarPoints={pdollarPoints.Count}",
+                this
+            );
+        }
+
+        if (pdollarPoints.Count >= minRecognitionPointCount)
+        {
+            BrushStrokeData data = new BrushStrokeData(
+                screenPoints,
+                worldPoints,
+                pdollarPoints
+            );
+
+            if (debugDrawFlow)
+            {
+                Debug.Log(
+                    $"[BrushLineDrawer] StrokeFinished triggered. PDollarPoints={pdollarPoints.Count}",
+                    this
+                );
+            }
+
             EventCenter.Instance.EventTrigger<BrushStrokeData>(
                 E_EventType.E_Brush_StrokeFinished,
                 data
             );
         }
+        else
+        {
+            Debug.LogWarning(
+                $"[BrushLineDrawer] Stroke not triggered. Not enough points. Count={pdollarPoints.Count}, Need={minRecognitionPointCount}",
+                this
+            );
+        }
 
-        if (clearDelay >= 0)
+        if (clearDelay >= 0f)
+        {
             clearRoutine = StartCoroutine(ClearLineAfterDelay());
+        }
     }
 
-    private void AddPointFromMouse(bool forceAdd = false)
+    private void AddRecognitionPointFromMouse(bool forceAdd = false)
+    {
+        Vector2 screenPoint = Input.mousePosition;
+
+        if (!forceAdd && screenPoints.Count > 0 && minScreenPointDistance > 0f)
+        {
+            float distance = Vector2.Distance(
+                screenPoints[screenPoints.Count - 1],
+                screenPoint
+            );
+
+            if (distance < minScreenPointDistance)
+                return;
+        }
+
+        if (limitPointCount && screenPoints.Count >= maxPointCount)
+            return;
+
+        screenPoints.Add(screenPoint);
+
+        pdollarPoints.Add(
+            new Point(
+                screenPoint.x,
+                -screenPoint.y,
+                0
+            )
+        );
+
+        if (debugDrawFlow && screenPoints.Count % 30 == 0)
+        {
+            Debug.Log(
+                $"[BrushLineDrawer] Recording points... Count={screenPoints.Count}",
+                this
+            );
+        }
+    }
+
+    private void AddVisualPointFromMouse(bool forceAdd = false)
     {
         if (lineRenderer == null)
             return;
 
         if (!TryGetMouseWorldPoint(out Vector3 worldPoint))
             return;
-
-        Vector2 screenPoint = Input.mousePosition;
 
         if (!forceAdd && worldPoints.Count > 0)
         {
@@ -169,7 +310,6 @@ public class BrushLineDrawer : MonoBehaviour
             return;
 
         worldPoints.Add(worldPoint);
-        screenPoints.Add(screenPoint);
 
         lineRenderer.positionCount = worldPoints.Count;
         lineRenderer.SetPosition(worldPoints.Count - 1, worldPoint);
@@ -211,7 +351,10 @@ public class BrushLineDrawer : MonoBehaviour
                 noise *= 0.35f;
             }
 
-            keys[i] = new Keyframe(time, Mathf.Clamp(noise, 0.15f, 1.5f));
+            keys[i] = new Keyframe(
+                time,
+                Mathf.Clamp(noise, 0.15f, 1.5f)
+            );
         }
 
         return new AnimationCurve(keys);
@@ -244,12 +387,14 @@ public class BrushLineDrawer : MonoBehaviour
     {
         yield return new WaitForSecondsRealtime(clearDelay);
         ClearLine();
+        clearRoutine = null;
     }
 
     private void ClearLine()
     {
         screenPoints.Clear();
         worldPoints.Clear();
+        pdollarPoints.Clear();
 
         if (lineRenderer != null)
         {

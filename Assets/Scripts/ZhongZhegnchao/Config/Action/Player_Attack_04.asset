@@ -231,7 +231,7 @@ MonoBehaviour:
       capsuleHeight: 0
       sectorAngle: 0
       damage: 20
-      knockback: 5
+      knockback: 8
       targetLayer:
         serializedVersion: 2
         m_Bits: 192
@@ -411,7 +411,7 @@ MonoBehaviour:
       capsuleHeight: 2
       sectorAngle: 90
       damage: 10
-      knockback: 3
+      knockback: 8
       targetLayer:
         serializedVersion: 2
         m_Bits: 192
