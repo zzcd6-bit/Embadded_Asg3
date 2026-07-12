@@ -7,6 +7,22 @@ public class ElementStatusController : MonoBehaviour
     [SerializeField] private bool hasFireStatus;
     [SerializeField] private float fireStatusRemainingTime;
 
+    [Header("Water Status")]
+    [SerializeField] private bool isWet;
+    [SerializeField] private float wetRemainingTime;
+    [SerializeField] private GameObject wetOwner;
+
+    [Header("Reaction Settings")]
+    [SerializeField] private float vaporizeMultiplier = 1.5f;
+
+    [Header("元素反应内置 CD")]
+    public bool useReactionInternalCooldown = true;
+
+    [Tooltip("蒸发反应内置 CD")]
+    public float vaporizeInternalCooldown = 0.8f;
+
+    [SerializeField] private float nextVaporizeAllowedTime;
+
     [Header("Debug")]
     public bool debugLog = true;
 
@@ -30,6 +46,24 @@ public class ElementStatusController : MonoBehaviour
         if (damageable == null)
         {
             damageable = GetComponentInParent<IDamageable>();
+        }
+    }
+
+    private void Update()
+    {
+        UpdateWetStatus();
+    }
+
+    private void UpdateWetStatus()
+    {
+        if (!isWet)
+            return;
+
+        wetRemainingTime -= Time.deltaTime;
+
+        if (wetRemainingTime <= 0f)
+        {
+            ClearWetStatus();
         }
     }
 
@@ -70,50 +104,133 @@ public class ElementStatusController : MonoBehaviour
         }
     }
 
+    private bool CanTriggerVaporize()
+    {
+        if (!useReactionInternalCooldown)
+            return true;
+
+        return Time.time >= nextVaporizeAllowedTime;
+    }
+
+    private void StartVaporizeCooldown()
+    {
+        if (!useReactionInternalCooldown)
+            return;
+
+        nextVaporizeAllowedTime = Time.time + vaporizeInternalCooldown;
+    }
+
+    private float GetVaporizeCooldownRemaining()
+    {
+        if (!useReactionInternalCooldown)
+            return 0f;
+
+        return Mathf.Max(0f, nextVaporizeAllowedTime - Time.time);
+    }
+    public void ApplyWet(GameObject attacker, float duration)
+    {
+        isWet = true;
+        wetOwner = attacker;
+        wetRemainingTime = Mathf.Max(wetRemainingTime, duration);
+
+        if (debugLog)
+        {
+            Debug.Log(
+                $"[ElementStatusController] Wet applied to {gameObject.name}. duration={duration}",
+                this
+            );
+        }
+    }
+
+    public void ClearWetStatus()
+    {
+        isWet = false;
+        wetOwner = null;
+        wetRemainingTime = 0f;
+
+        if (debugLog)
+        {
+            Debug.Log(
+                $"[ElementStatusController] Wet cleared from {gameObject.name}.",
+                this
+            );
+        }
+    }
+
     public DamageInfo ProcessIncomingElement(DamageInfo damageInfo)
     {
-        if (damageInfo.element == ElementType.None ||
-            damageInfo.element == ElementType.Physical)
+        // Water 打到 Fire / Burning，触发蒸发，增强这一次 Water 伤害
+        if (damageInfo.element == ElementType.Water && IsBurning())
         {
-            return damageInfo;
-        }
-
-        if (hasFireStatus)
-        {
-            ElementReactionType reactionType;
-            float reactionMultiplier;
-            bool shouldClearFire;
-
-            bool reacted = ElementReactionCalculator.TryReactWithFire(
-                damageInfo.element,
-                out reactionType,
-                out reactionMultiplier,
-                out shouldClearFire
-            );
-
-            if (reacted)
+            if (!CanTriggerVaporize())
             {
-                damageInfo.reactionType = reactionType;
-                damageInfo.reactionMultiplier *= reactionMultiplier;
-
                 if (debugLog)
                 {
                     Debug.Log(
-                        $"[ElementStatusController] Reaction triggered: {reactionType}, " +
-                        $"multiplier={reactionMultiplier}",
+                        $"[ElementStatusController] Vaporize is cooling down. Remaining={GetVaporizeCooldownRemaining():F2}s",
                         this
                     );
                 }
 
-                if (shouldClearFire)
-                {
-                    StopBurning();
-                    ClearFireStatus();
-                }
+                return damageInfo;
             }
+
+            damageInfo.reactionType = ElementReactionType.Vaporize;
+            damageInfo.reactionMultiplier *= vaporizeMultiplier;
+
+            ClearFireStatus();
+            StartVaporizeCooldown();
+
+            if (debugLog)
+            {
+                Debug.Log(
+                    "[ElementStatusController] Vaporize triggered: Water hit Fire. Water damage increased.",
+                    this
+                );
+            }
+
+            return damageInfo;
+        }
+
+        // Fire 打到 Wet，触发蒸发，增强这一次 Fire 伤害
+        if (damageInfo.element == ElementType.Fire && isWet)
+        {
+            if (!CanTriggerVaporize())
+            {
+                if (debugLog)
+                {
+                    Debug.Log(
+                        $"[ElementStatusController] Vaporize is cooling down. Remaining={GetVaporizeCooldownRemaining():F2}s",
+                        this
+                    );
+                }
+
+                return damageInfo;
+            }
+
+            damageInfo.reactionType = ElementReactionType.Vaporize;
+            damageInfo.reactionMultiplier *= vaporizeMultiplier;
+
+            ClearWetStatus();
+            StartVaporizeCooldown();
+
+            if (debugLog)
+            {
+                Debug.Log(
+                    "[ElementStatusController] Vaporize triggered: Fire hit Wet. Fire damage increased.",
+                    this
+                );
+            }
+
+            return damageInfo;
         }
 
         return damageInfo;
+    }
+
+    private bool IsBurning()
+    {
+        return hasFireStatus;
     }
 
     private void StopBurning()

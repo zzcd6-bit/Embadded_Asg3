@@ -284,25 +284,6 @@ public class BrushGestureRecognizer : MonoBehaviour
             brushResult
         );
     }
-
-    private Point[] ConvertToPDollarPoints(List<Vector2> screenPoints)
-    {
-        Point[] points = new Point[screenPoints.Count];
-
-        for (int i = 0; i < screenPoints.Count; i++)
-        {
-            Vector2 p = screenPoints[i];
-
-            points[i] = new Point(
-                p.x,
-                -p.y,
-                0
-            );
-        }
-
-        return points;
-    }
-
     private BrushSkillType GetSkillTypeFromGestureName(string gestureName)
     {
         if (string.IsNullOrEmpty(gestureName))
@@ -317,6 +298,9 @@ public class BrushGestureRecognizer : MonoBehaviour
 
             case "fire":
                 return BrushSkillType.Fire;
+
+            case "water":
+                return BrushSkillType.Water;
 
             case "bridge":
                 return BrushSkillType.Bridge;
