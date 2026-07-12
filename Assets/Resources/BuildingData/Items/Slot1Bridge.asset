@@ -12,15 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1b703aa75fd4ad49b637b2361209252, type: 3}
   m_Name: Slot1Bridge
   m_EditorClassIdentifier: Assembly-CSharp::BuildableItemData
+  itemId: Slot1Bridge
   displayName: Slot 1 Bridge
   icon: {fileID: 0}
   description: Test item started by key 1. Replace this asset for rune placement
-  mapping.
+    mapping.
   buildingPrefab: {fileID: 3648350582486492644, guid: be12e42085f265745a4104d7a1347289, type: 3}
   size: {x: 8, y: 4}
   surfaceRule: 1
   anchorDepth: 1
   maxAnchorHeightDelta: 0
-  placementYOffset: 0
+  placementYOffset: -0.78
   contributesWalkableNavMesh: 1
   cost: 0

@@ -44,6 +44,8 @@ public class PlacementController : MonoBehaviour
     private Vector3 originalPosition;
     private Quaternion originalRotation;
     private readonly List<Vector2Int> validationCells = new();
+    private readonly List<Vector2Int> anchorStartCells = new();
+    private readonly List<Vector2Int> anchorEndCells = new();
 
     public bool IsPlacing => previewController != null && previewController.HasPreview;
 
@@ -249,6 +251,29 @@ public class PlacementController : MonoBehaviour
         return cells.Count > 0;
     }
 
+    public bool TryGetCurrentPreviewCells(List<Vector2Int> cells, out bool isValid)
+    {
+        isValid = false;
+        if (cells == null || currentItem == null || gridPlacementSystem == null || !hasPlacementPosition)
+        {
+            return false;
+        }
+
+        cells.Clear();
+        isValid = CanCommitCurrentPlacement();
+
+        if (!isValid || !UsesAnchorSurfaceRule())
+        {
+            cells.AddRange(gridPlacementSystem.GetOccupiedCells(currentPivotCell, currentItem.Size, currentRotationSteps));
+            return cells.Count > 0;
+        }
+
+        GetAnchorSideCells(anchorStartCells, anchorEndCells);
+        cells.AddRange(anchorStartCells);
+        cells.AddRange(anchorEndCells);
+        return cells.Count > 0;
+    }
+
     private void BeginPlacementSession()
     {
         hasPlacementPosition = false;
@@ -387,7 +412,7 @@ public class PlacementController : MonoBehaviour
         highestGroundY = float.MinValue;
         bool foundGround = false;
 
-        GetSurfaceValidationCells(validationCells);
+        GetGroundAlignmentCells(validationCells);
         foreach (Vector2Int cell in validationCells)
         {
             if (!TryGetCellHighestGroundY(cell, out float cellGroundY))
@@ -441,9 +466,18 @@ public class PlacementController : MonoBehaviour
             && hasPlacementPosition
             && gridPlacementSystem != null
             && gridPlacementSystem.CanPlace(currentPivotCell, currentItem.Size, currentRotationSteps)
-            && IsCurrentFootprintOnNavMesh()
-            && AreAnchorHeightsAllowed()
-            && IsCurrentFootprintBuildableSurface();
+            && IsCurrentPlacementSurfaceValid();
+    }
+
+    private bool IsCurrentPlacementSurfaceValid()
+    {
+        if (UsesAnchorSurfaceRule())
+        {
+            GetAnchorSideCells(anchorStartCells, anchorEndCells);
+            return IsAnchorSideValid(anchorStartCells) || IsAnchorSideValid(anchorEndCells);
+        }
+
+        return IsCurrentFootprintOnNavMesh() && IsCurrentFootprintBuildableSurface();
     }
 
     private bool IsCurrentFootprintOnNavMesh()
@@ -465,7 +499,51 @@ public class PlacementController : MonoBehaviour
         return true;
     }
 
-    private bool AreAnchorHeightsAllowed()
+    private bool IsAnchorSideValid(List<Vector2Int> cells)
+    {
+        return cells.Count > 0
+            && AreCellsOnNavMesh(cells)
+            && AreCellsBuildableSurface(cells)
+            && AreAnchorHeightsAllowed(cells);
+    }
+
+    private bool AreCellsOnNavMesh(List<Vector2Int> cells)
+    {
+        if (!requireNavMeshSurface)
+        {
+            return true;
+        }
+
+        foreach (Vector2Int cell in cells)
+        {
+            if (!TrySampleNavMesh(gridPlacementSystem.CellToWorld(cell), out _))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private bool AreCellsBuildableSurface(List<Vector2Int> cells)
+    {
+        if (surfaceClassifier == null)
+        {
+            return true;
+        }
+
+        foreach (Vector2Int cell in cells)
+        {
+            if (!surfaceClassifier.IsCellBuildableSurface(cell))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private bool AreAnchorHeightsAllowed(List<Vector2Int> cells)
     {
         if (currentItem == null
             || currentItem.SurfaceRule != PlacementSurfaceRule.AnchorsOnly
@@ -474,12 +552,11 @@ public class PlacementController : MonoBehaviour
             return true;
         }
 
-        GetSurfaceValidationCells(validationCells);
         bool foundGround = false;
         float minY = float.MaxValue;
         float maxY = float.MinValue;
 
-        foreach (Vector2Int cell in validationCells)
+        foreach (Vector2Int cell in cells)
         {
             if (!TryGetCellHighestGroundY(cell, out float groundY))
             {
@@ -513,6 +590,33 @@ public class PlacementController : MonoBehaviour
         return true;
     }
 
+    private void GetGroundAlignmentCells(List<Vector2Int> cells)
+    {
+        if (!UsesAnchorSurfaceRule())
+        {
+            GetSurfaceValidationCells(cells);
+            return;
+        }
+
+        GetAnchorSideCells(anchorStartCells, anchorEndCells);
+        cells.Clear();
+
+        if (IsAnchorSideValid(anchorStartCells))
+        {
+            cells.AddRange(anchorStartCells);
+            return;
+        }
+
+        if (IsAnchorSideValid(anchorEndCells))
+        {
+            cells.AddRange(anchorEndCells);
+            return;
+        }
+
+        cells.AddRange(anchorStartCells);
+        cells.AddRange(anchorEndCells);
+    }
+
     private void GetSurfaceValidationCells(List<Vector2Int> cells)
     {
         cells.Clear();
@@ -533,10 +637,30 @@ public class PlacementController : MonoBehaviour
             return;
         }
 
-        AddAnchorCells(occupiedCells, cells);
+        GetAnchorSideCells(anchorStartCells, anchorEndCells);
+        cells.AddRange(anchorStartCells);
+        cells.AddRange(anchorEndCells);
     }
 
-    private void AddAnchorCells(IReadOnlyList<Vector2Int> occupiedCells, List<Vector2Int> cells)
+    private void GetAnchorSideCells(List<Vector2Int> startCells, List<Vector2Int> endCells)
+    {
+        startCells.Clear();
+        endCells.Clear();
+        if (currentItem == null || gridPlacementSystem == null)
+        {
+            return;
+        }
+
+        IReadOnlyList<Vector2Int> occupiedCells = gridPlacementSystem.GetOccupiedCells(
+            currentPivotCell,
+            currentItem.Size,
+            currentRotationSteps
+        );
+
+        AddAnchorSideCells(occupiedCells, startCells, endCells);
+    }
+
+    private void AddAnchorSideCells(IReadOnlyList<Vector2Int> occupiedCells, List<Vector2Int> startCells, List<Vector2Int> endCells)
     {
         if (occupiedCells == null || occupiedCells.Count == 0)
         {
@@ -562,9 +686,14 @@ public class PlacementController : MonoBehaviour
         {
             Vector2Int cell = occupiedCells[i];
             int axisValue = useXAxis ? cell.x : cell.y;
-            if (axisValue <= minAnchorLimit || axisValue >= maxAnchorLimit)
+            if (axisValue <= minAnchorLimit)
             {
-                cells.Add(cell);
+                startCells.Add(cell);
+            }
+
+            if (axisValue >= maxAnchorLimit)
+            {
+                endCells.Add(cell);
             }
         }
     }
