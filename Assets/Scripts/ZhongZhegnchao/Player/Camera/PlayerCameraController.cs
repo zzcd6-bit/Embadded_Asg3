@@ -183,7 +183,7 @@ public class PlayerCameraController : MonoBehaviour
             return;
         }
 
-        if (cameraInputEnabled)
+        if (cameraInputEnabled && !InteractionRollBoxUI.BlocksCameraZoom)
         {
             float scroll = Input.GetAxis("Mouse ScrollWheel");
             if (Mathf.Abs(scroll) > 0.0001f)

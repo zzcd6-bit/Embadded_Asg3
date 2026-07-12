@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public readonly struct InteractionDisplayData
@@ -15,8 +16,35 @@ public readonly struct InteractionDisplayData
     }
 }
 
+public class InteractionOptionSliderHandle : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, IDragHandler
+{
+    private InteractionRollBoxUI owner;
+
+    public void Init(InteractionRollBoxUI rollBoxUI)
+    {
+        owner = rollBoxUI;
+    }
+
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        owner?.SelectBySliderPointer(eventData);
+    }
+
+    public void OnBeginDrag(PointerEventData eventData)
+    {
+        owner?.SelectBySliderPointer(eventData);
+    }
+
+    public void OnDrag(PointerEventData eventData)
+    {
+        owner?.SelectBySliderPointer(eventData);
+    }
+}
+
 public class InteractionRollBoxUI : MonoBehaviour
 {
+    private static int visibleRollBoxCount;
+
     [Header("Root")]
     [SerializeField] private GameObject root;
 
@@ -25,16 +53,31 @@ public class InteractionRollBoxUI : MonoBehaviour
     [SerializeField] private RectTransform viewport;
     [SerializeField] private RectTransform content;
 
+    [Header("Option Slider")]
+    [SerializeField] private Scrollbar optionScrollbar;
+    [SerializeField] private RectTransform sliderHandle;
+    [SerializeField] private float sliderBaseY;
+    [SerializeField, Min(1f)] private float sliderLength = 260f;
+
     [Header("Option Template")]
     [SerializeField] private InteractionOptionUI optionPrefab;
 
     private readonly List<InteractionOptionUI> optionViews = new();
+    private int activeOptionCount;
+    private int currentSelectedIndex = -1;
+    private bool isVisible;
 
     public event Action<int> OptionClicked;
     public event Action<int> OptionHovered;
+    public event Action<int> OptionSliderSelected;
+
+    public static bool BlocksCameraZoom => visibleRollBoxCount > 0;
 
     public void SetOptions(IReadOnlyList<InteractionDisplayData> options, int selectedIndex)
     {
+        EnsureSliderReferences();
+        activeOptionCount = options.Count;
+        currentSelectedIndex = selectedIndex;
         EnsureViewCount(options.Count);
 
         for (int i = 0; i < optionViews.Count; i++)
@@ -52,6 +95,8 @@ public class InteractionRollBoxUI : MonoBehaviour
         }
 
         SetVisible(options.Count > 0);
+        RefreshSliderVisibility();
+        RefreshSliderPosition();
 
         if (content != null)
         {
@@ -61,6 +106,8 @@ public class InteractionRollBoxUI : MonoBehaviour
 
     public void SetSelected(int selectedIndex, bool scrollIntoView)
     {
+        currentSelectedIndex = selectedIndex;
+
         for (int i = 0; i < optionViews.Count; i++)
         {
             InteractionOptionUI view = optionViews[i];
@@ -76,15 +123,60 @@ public class InteractionRollBoxUI : MonoBehaviour
         {
             EnsureVisible(optionViews[selectedIndex].RectTransform);
         }
+
+        RefreshSliderPosition();
     }
 
     public void SetVisible(bool visible)
     {
         GameObject targetRoot = root != null ? root : gameObject;
+        if (isVisible != visible)
+        {
+            visibleRollBoxCount += visible ? 1 : -1;
+            visibleRollBoxCount = Mathf.Max(0, visibleRollBoxCount);
+            isVisible = visible;
+        }
+
         if (targetRoot.activeSelf != visible)
         {
             targetRoot.SetActive(visible);
         }
+    }
+
+    public void SelectBySliderPointer(PointerEventData eventData)
+    {
+        if (eventData == null || activeOptionCount <= 1 || sliderHandle == null)
+        {
+            return;
+        }
+
+        RectTransform coordinateRect = sliderHandle.parent as RectTransform;
+        if (coordinateRect == null)
+        {
+            return;
+        }
+
+        if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                coordinateRect,
+                eventData.position,
+                eventData.pressEventCamera,
+                out Vector2 localPoint))
+        {
+            return;
+        }
+
+        SelectBySliderLocalY(localPoint.y);
+    }
+
+    private void OnDisable()
+    {
+        if (!isVisible)
+        {
+            return;
+        }
+
+        visibleRollBoxCount = Mathf.Max(0, visibleRollBoxCount - 1);
+        isVisible = false;
     }
 
     private void EnsureViewCount(int requiredCount)
@@ -110,6 +202,77 @@ public class InteractionRollBoxUI : MonoBehaviour
     private void HandleOptionHovered(int index)
     {
         OptionHovered?.Invoke(index);
+    }
+
+    private void SelectBySliderLocalY(float localY)
+    {
+        float percent = Mathf.InverseLerp(sliderBaseY, sliderBaseY + sliderLength, localY);
+        int index = Mathf.RoundToInt(percent * activeOptionCount);
+        index = Mathf.Clamp(index, 0, activeOptionCount - 1);
+
+        if (index == currentSelectedIndex)
+        {
+            RefreshSliderPosition();
+            return;
+        }
+
+        currentSelectedIndex = index;
+        OptionSliderSelected?.Invoke(index);
+        RefreshSliderPosition();
+    }
+
+    private void RefreshSliderVisibility()
+    {
+        if (optionScrollbar == null)
+        {
+            return;
+        }
+
+        optionScrollbar.gameObject.SetActive(activeOptionCount > 1);
+    }
+
+    private void RefreshSliderPosition()
+    {
+        if (sliderHandle == null || activeOptionCount <= 1 || currentSelectedIndex < 0)
+        {
+            return;
+        }
+
+        float percent = (float)currentSelectedIndex / activeOptionCount;
+        Vector2 position = sliderHandle.anchoredPosition;
+        position.y = sliderBaseY + sliderLength * percent;
+        sliderHandle.anchoredPosition = position;
+    }
+
+    private void EnsureSliderReferences()
+    {
+        if (optionScrollbar == null)
+        {
+            optionScrollbar = GetComponentInChildren<Scrollbar>(true);
+        }
+
+        if (optionScrollbar != null)
+        {
+            optionScrollbar.enabled = false;
+
+            if (sliderHandle == null)
+            {
+                sliderHandle = optionScrollbar.handleRect;
+            }
+        }
+
+        if (sliderHandle == null)
+        {
+            return;
+        }
+
+        InteractionOptionSliderHandle dragHandle = sliderHandle.GetComponent<InteractionOptionSliderHandle>();
+        if (dragHandle == null)
+        {
+            dragHandle = sliderHandle.gameObject.AddComponent<InteractionOptionSliderHandle>();
+        }
+
+        dragHandle.Init(this);
     }
 
     private void EnsureVisible(RectTransform item)
