@@ -8,6 +8,7 @@ public class PlacementController : MonoBehaviour
     [Header("References")]
     [SerializeField] private Camera placementCamera;
     [SerializeField] private GridPlacementSystem gridPlacementSystem;
+    [SerializeField] private GridSurfaceClassifier surfaceClassifier;
     [SerializeField] private PlacementPreviewController previewController;
     [SerializeField] private PlacementCommitter placementCommitter;
 
@@ -18,6 +19,11 @@ public class PlacementController : MonoBehaviour
 
     [Header("Validation")]
     [SerializeField] private float placementCheckInterval = 0.1f;
+
+    [Header("Ground Alignment")]
+    [SerializeField] private bool alignToHighestGroundPoint = true;
+    [SerializeField] private float surfaceGap = 0.02f;
+    [SerializeField] private float fallbackGroundSampleHeight = 40f;
 
     [Header("NavMesh Placement")]
     [SerializeField] private bool requireNavMeshSurface = true;
@@ -37,6 +43,7 @@ public class PlacementController : MonoBehaviour
     private int originalRotationSteps;
     private Vector3 originalPosition;
     private Quaternion originalRotation;
+    private readonly List<Vector2Int> validationCells = new();
 
     public bool IsPlacing => previewController != null && previewController.HasPreview;
 
@@ -58,6 +65,11 @@ public class PlacementController : MonoBehaviour
         if (gridPlacementSystem == null)
         {
             gridPlacementSystem = FindAnyObjectByType<GridPlacementSystem>();
+        }
+
+        if (surfaceClassifier == null)
+        {
+            surfaceClassifier = FindAnyObjectByType<GridSurfaceClassifier>();
         }
 
         if (previewController == null)
@@ -107,6 +119,12 @@ public class PlacementController : MonoBehaviour
             return;
         }
 
+        if (Input.GetMouseButtonDown(1))
+        {
+            CancelPlacement();
+            return;
+        }
+
         UpdatePreviewPosition();
     }
 
@@ -139,7 +157,7 @@ public class PlacementController : MonoBehaviour
         currentItem = building.Item;
         currentPivotCell = building.PivotCell;
         currentRotationSteps = building.RotationSteps;
-        currentRotation = building.transform.rotation;
+        currentRotation = Quaternion.Euler(0f, building.transform.eulerAngles.y, 0f);
         currentPlacementPosition = building.transform.position;
         originalPivotCell = building.PivotCell;
         originalRotationSteps = building.RotationSteps;
@@ -199,8 +217,10 @@ public class PlacementController : MonoBehaviour
     public void RotatePreview()
     {
         currentRotation *= Quaternion.Euler(0f, 90f, 0f);
+        currentRotation = Quaternion.Euler(0f, currentRotation.eulerAngles.y, 0f);
         currentRotationSteps = (currentRotationSteps + 1) % 4;
         previewController.SetTransform(currentPlacementPosition, currentRotation);
+        AlignCurrentPlacementToGround();
         ValidateCurrentPlacement(true);
     }
 
@@ -310,22 +330,98 @@ public class PlacementController : MonoBehaviour
 
     private bool TrySetPreviewPositionFromWorld(Vector3 worldPosition)
     {
-        if (requireNavMeshSurface && !TrySampleNavMesh(worldPosition, out worldPosition))
+        if (requireNavMeshSurface
+            && !UsesAnchorSurfaceRule()
+            && !TrySampleNavMesh(worldPosition, out worldPosition))
         {
             return false;
         }
 
         currentPivotCell = gridPlacementSystem.WorldToPivotCell(worldPosition, currentItem.Size, currentRotationSteps);
         currentPlacementPosition = gridPlacementSystem.PivotCellToWorld(currentPivotCell, currentItem.Size, currentRotationSteps);
+        currentRotation = Quaternion.Euler(0f, currentRotation.eulerAngles.y, 0f);
 
         if (requireNavMeshSurface && TrySampleNavMesh(currentPlacementPosition, out Vector3 snappedPosition))
         {
             currentPlacementPosition.y = snappedPosition.y;
         }
 
+        AlignCurrentPlacementToGround();
         hasPlacementPosition = true;
         previewController.SetTransform(currentPlacementPosition, currentRotation);
         return true;
+    }
+
+    private bool UsesAnchorSurfaceRule()
+    {
+        return currentItem != null && currentItem.SurfaceRule == PlacementSurfaceRule.AnchorsOnly;
+    }
+
+    private void AlignCurrentPlacementToGround()
+    {
+        if (!alignToHighestGroundPoint || previewController == null || !previewController.HasPreview)
+        {
+            return;
+        }
+
+        if (!TryGetHighestFootprintGroundY(out float highestGroundY))
+        {
+            return;
+        }
+
+        previewController.SetTransform(currentPlacementPosition, currentRotation);
+        if (!previewController.TryGetWorldBounds(out Bounds previewBounds))
+        {
+            currentPlacementPosition.y = highestGroundY + surfaceGap + currentItem.PlacementYOffset;
+            previewController.SetTransform(currentPlacementPosition, currentRotation);
+            return;
+        }
+
+        float bottomOffset = currentPlacementPosition.y - previewBounds.min.y;
+        currentPlacementPosition.y = highestGroundY + bottomOffset + surfaceGap + currentItem.PlacementYOffset;
+        previewController.SetTransform(currentPlacementPosition, currentRotation);
+    }
+
+    private bool TryGetHighestFootprintGroundY(out float highestGroundY)
+    {
+        highestGroundY = float.MinValue;
+        bool foundGround = false;
+
+        GetSurfaceValidationCells(validationCells);
+        foreach (Vector2Int cell in validationCells)
+        {
+            if (!TryGetCellHighestGroundY(cell, out float cellGroundY))
+            {
+                continue;
+            }
+
+            highestGroundY = Mathf.Max(highestGroundY, cellGroundY);
+            foundGround = true;
+        }
+
+        return foundGround;
+    }
+
+    private bool TryGetCellHighestGroundY(Vector2Int cell, out float highestGroundY)
+    {
+        if (surfaceClassifier != null
+            && surfaceClassifier.TryGetCellSurface(cell, out CellSurfaceInfo info)
+            && info.HasSurface)
+        {
+            highestGroundY = info.MaxY;
+            return true;
+        }
+
+        Vector3 cellWorld = gridPlacementSystem.CellToWorld(cell);
+        Vector3 rayOrigin = cellWorld + Vector3.up * fallbackGroundSampleHeight;
+        if (Physics.Raycast(rayOrigin, Vector3.down, out RaycastHit hit, raycastDistance, groundLayer, QueryTriggerInteraction.Ignore))
+        {
+            highestGroundY = hit.point.y;
+            return true;
+        }
+
+        highestGroundY = cellWorld.y;
+        return false;
     }
 
     private void ValidateCurrentPlacement(bool force)
@@ -345,7 +441,9 @@ public class PlacementController : MonoBehaviour
             && hasPlacementPosition
             && gridPlacementSystem != null
             && gridPlacementSystem.CanPlace(currentPivotCell, currentItem.Size, currentRotationSteps)
-            && IsCurrentFootprintOnNavMesh();
+            && IsCurrentFootprintOnNavMesh()
+            && AreAnchorHeightsAllowed()
+            && IsCurrentFootprintBuildableSurface();
     }
 
     private bool IsCurrentFootprintOnNavMesh()
@@ -355,7 +453,8 @@ public class PlacementController : MonoBehaviour
             return true;
         }
 
-        foreach (Vector2Int cell in gridPlacementSystem.GetOccupiedCells(currentPivotCell, currentItem.Size, currentRotationSteps))
+        GetSurfaceValidationCells(validationCells);
+        foreach (Vector2Int cell in validationCells)
         {
             if (!TrySampleNavMesh(gridPlacementSystem.CellToWorld(cell), out _))
             {
@@ -364,6 +463,110 @@ public class PlacementController : MonoBehaviour
         }
 
         return true;
+    }
+
+    private bool AreAnchorHeightsAllowed()
+    {
+        if (currentItem == null
+            || currentItem.SurfaceRule != PlacementSurfaceRule.AnchorsOnly
+            || currentItem.MaxAnchorHeightDelta <= 0f)
+        {
+            return true;
+        }
+
+        GetSurfaceValidationCells(validationCells);
+        bool foundGround = false;
+        float minY = float.MaxValue;
+        float maxY = float.MinValue;
+
+        foreach (Vector2Int cell in validationCells)
+        {
+            if (!TryGetCellHighestGroundY(cell, out float groundY))
+            {
+                return false;
+            }
+
+            minY = Mathf.Min(minY, groundY);
+            maxY = Mathf.Max(maxY, groundY);
+            foundGround = true;
+        }
+
+        return foundGround && maxY - minY <= currentItem.MaxAnchorHeightDelta;
+    }
+
+    private bool IsCurrentFootprintBuildableSurface()
+    {
+        if (surfaceClassifier == null)
+        {
+            return true;
+        }
+
+        GetSurfaceValidationCells(validationCells);
+        foreach (Vector2Int cell in validationCells)
+        {
+            if (!surfaceClassifier.IsCellBuildableSurface(cell))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private void GetSurfaceValidationCells(List<Vector2Int> cells)
+    {
+        cells.Clear();
+        if (currentItem == null || gridPlacementSystem == null)
+        {
+            return;
+        }
+
+        IReadOnlyList<Vector2Int> occupiedCells = gridPlacementSystem.GetOccupiedCells(
+            currentPivotCell,
+            currentItem.Size,
+            currentRotationSteps
+        );
+
+        if (currentItem.SurfaceRule != PlacementSurfaceRule.AnchorsOnly)
+        {
+            cells.AddRange(occupiedCells);
+            return;
+        }
+
+        AddAnchorCells(occupiedCells, cells);
+    }
+
+    private void AddAnchorCells(IReadOnlyList<Vector2Int> occupiedCells, List<Vector2Int> cells)
+    {
+        if (occupiedCells == null || occupiedCells.Count == 0)
+        {
+            return;
+        }
+
+        Vector2Int rotatedSize = GridPlacementSystem.GetRotatedSize(currentItem.Size, currentRotationSteps);
+        bool useXAxis = rotatedSize.x >= rotatedSize.y;
+        int anchorDepth = Mathf.Min(currentItem.AnchorDepth, useXAxis ? rotatedSize.x : rotatedSize.y);
+
+        int minAxis = int.MaxValue;
+        int maxAxis = int.MinValue;
+        for (int i = 0; i < occupiedCells.Count; i++)
+        {
+            int axisValue = useXAxis ? occupiedCells[i].x : occupiedCells[i].y;
+            minAxis = Mathf.Min(minAxis, axisValue);
+            maxAxis = Mathf.Max(maxAxis, axisValue);
+        }
+
+        int minAnchorLimit = minAxis + anchorDepth - 1;
+        int maxAnchorLimit = maxAxis - anchorDepth + 1;
+        for (int i = 0; i < occupiedCells.Count; i++)
+        {
+            Vector2Int cell = occupiedCells[i];
+            int axisValue = useXAxis ? cell.x : cell.y;
+            if (axisValue <= minAnchorLimit || axisValue >= maxAnchorLimit)
+            {
+                cells.Add(cell);
+            }
+        }
     }
 
     private bool TrySampleNavMesh(Vector3 position, out Vector3 navMeshPosition)

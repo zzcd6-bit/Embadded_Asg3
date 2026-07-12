@@ -43,6 +43,29 @@ public class PlacementPreviewController : MonoBehaviour
         }
     }
 
+    public bool TryGetWorldBounds(out Bounds bounds)
+    {
+        bounds = default;
+        if (previewObject == null)
+        {
+            return false;
+        }
+
+        Renderer[] renderers = previewObject.GetComponentsInChildren<Renderer>();
+        if (renderers.Length == 0)
+        {
+            return false;
+        }
+
+        bounds = renderers[0].bounds;
+        for (int i = 1; i < renderers.Length; i++)
+        {
+            bounds.Encapsulate(renderers[i].bounds);
+        }
+
+        return true;
+    }
+
     public void SetValid(bool canPlace)
     {
         if (previewVisual != null)

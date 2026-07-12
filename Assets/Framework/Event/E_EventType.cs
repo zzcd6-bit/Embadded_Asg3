@@ -15,6 +15,8 @@ public enum E_EventType
 
     #region New Player Input
     E_Input_Jump,
+    // Ye interaction deployment note: InputMgr already filters this event; add the missing enum without changing dispatch logic.
+    E_Input_Dodge,
     E_Input_Attack,
     E_Input_LockOn,
     #endregion
@@ -44,6 +46,12 @@ public enum E_EventType
     E_Build_PlacementCancel,
     E_Build_PlacementRotate,
     E_Build_PlacementDelete,
+    #endregion
+
+    #region Ye Interaction Input Bridge
+    // Ye interaction input bridge: additive events for Ye's stable roll-box interaction system.
+    E_Interaction_ExecutePrimary,
+    E_Interaction_ExecuteAlternative,
     #endregion
 
     #region Brush Result

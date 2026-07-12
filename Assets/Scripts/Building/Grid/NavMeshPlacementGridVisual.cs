@@ -6,6 +6,7 @@ public class NavMeshPlacementGridVisual : MonoBehaviour
 {
     [SerializeField] private GridPlacementSystem gridPlacementSystem;
     [SerializeField] private PlacementController placementController;
+    [SerializeField] private GridSurfaceClassifier surfaceClassifier;
     [SerializeField] private Camera targetCamera;
     [SerializeField] private Transform centerTarget;
     [SerializeField] private LayerMask groundLayer = 1 << 6;
@@ -14,23 +15,28 @@ public class NavMeshPlacementGridVisual : MonoBehaviour
     [SerializeField] private float surfaceRaycastHeight = 40f;
     [SerializeField] private float surfaceRaycastDistance = 100f;
     [SerializeField] private float navMeshSampleDistance = 0.45f;
+    [SerializeField] private float maxLineHeightDelta = 0.75f;
     [SerializeField] private float lineWidth = 0.025f;
     [SerializeField] private Color lineColor = new(0.2f, 0.95f, 0.85f, 0.42f);
     [SerializeField] private Color occupiedCellColor = new(1f, 0.12f, 0.08f, 0.5f);
     [SerializeField] private Color previewCellColor = new(1f, 0.85f, 0.12f, 0.5f);
+    [SerializeField] private Color splitCellColor = new(1f, 0.45f, 0.05f, 0.45f);
 
     private readonly List<LineRenderer> linePool = new();
     private readonly List<MeshRenderer> occupiedCellPool = new();
     private readonly List<MeshRenderer> previewCellPool = new();
+    private readonly List<MeshRenderer> splitCellPool = new();
     private readonly List<Vector2Int> previewCells = new();
     private readonly Dictionary<Vector2Int, SurfaceSample> surfaceSampleCache = new();
     private Material generatedLineMaterial;
     private Material generatedOccupiedCellMaterial;
     private Material generatedPreviewCellMaterial;
+    private Material generatedSplitCellMaterial;
     private bool isVisible;
     private int usedLineCount;
     private int usedOccupiedCellCount;
     private int usedPreviewCellCount;
+    private int usedSplitCellCount;
 
     private Camera ActiveCamera
     {
@@ -55,6 +61,16 @@ public class NavMeshPlacementGridVisual : MonoBehaviour
         if (placementController == null)
         {
             placementController = FindAnyObjectByType<PlacementController>();
+        }
+
+        if (surfaceClassifier == null)
+        {
+            surfaceClassifier = GetComponent<GridSurfaceClassifier>();
+        }
+
+        if (surfaceClassifier == null)
+        {
+            surfaceClassifier = FindAnyObjectByType<GridSurfaceClassifier>();
         }
 
         ResolveCenterTarget();
@@ -90,6 +106,7 @@ public class NavMeshPlacementGridVisual : MonoBehaviour
         usedLineCount = 0;
         usedOccupiedCellCount = 0;
         usedPreviewCellCount = 0;
+        usedSplitCellCount = 0;
         bool hasPreviewCells = placementController != null
             && placementController.TryGetCurrentPlacementCells(previewCells);
         surfaceSampleCache.Clear();
@@ -120,6 +137,7 @@ public class NavMeshPlacementGridVisual : MonoBehaviour
             for (int y = minY; y <= maxY; y++)
             {
                 DrawOccupiedCell(new Vector2Int(x, y));
+                DrawSplitCell(new Vector2Int(x, y));
             }
         }
 
@@ -144,6 +162,11 @@ public class NavMeshPlacementGridVisual : MonoBehaviour
         for (int i = usedPreviewCellCount; i < previewCellPool.Count; i++)
         {
             previewCellPool[i].gameObject.SetActive(false);
+        }
+
+        for (int i = usedSplitCellCount; i < splitCellPool.Count; i++)
+        {
+            splitCellPool[i].gameObject.SetActive(false);
         }
     }
 
@@ -225,6 +248,11 @@ public class NavMeshPlacementGridVisual : MonoBehaviour
         from.y += surfaceOffset;
         to.y += surfaceOffset;
 
+        if (Mathf.Abs(from.y - to.y) > maxLineHeightDelta)
+        {
+            return;
+        }
+
         LineRenderer line = GetLine();
         line.SetPosition(0, from);
         line.SetPosition(1, to);
@@ -253,6 +281,11 @@ public class NavMeshPlacementGridVisual : MonoBehaviour
             return;
         }
 
+        if (IsSplitCell(cell))
+        {
+            return;
+        }
+
         if (!TryGetCellCorners(cell, surfaceOffset + 0.012f, out Vector3[] corners))
         {
             return;
@@ -260,6 +293,36 @@ public class NavMeshPlacementGridVisual : MonoBehaviour
 
         MeshRenderer cellRenderer = GetPreviewCell();
         SetCellMesh(cellRenderer, corners);
+    }
+
+    private void DrawSplitCell(Vector2Int cell)
+    {
+        if (gridPlacementSystem.IsCellUnavailable(cell)
+            || surfaceClassifier == null
+            || !surfaceClassifier.TryGetCellSurface(cell, out CellSurfaceInfo info)
+            || !info.HasSplit)
+        {
+            return;
+        }
+
+        if (TryGetFlatLayerCellCorners(cell, info.LowerY, surfaceOffset + 0.014f, out Vector3[] lowerCorners))
+        {
+            MeshRenderer lowerCellRenderer = GetSplitCell();
+            SetCellMesh(lowerCellRenderer, lowerCorners);
+        }
+
+        if (TryGetFlatLayerCellCorners(cell, info.UpperY, surfaceOffset + 0.02f, out Vector3[] upperCorners))
+        {
+            MeshRenderer upperCellRenderer = GetSplitCell();
+            SetCellMesh(upperCellRenderer, upperCorners);
+        }
+    }
+
+    private bool IsSplitCell(Vector2Int cell)
+    {
+        return surfaceClassifier != null
+            && surfaceClassifier.TryGetCellSurface(cell, out CellSurfaceInfo info)
+            && info.HasSplit;
     }
 
     private bool TrySampleNavMesh(Vector3 position, out Vector3 navMeshPosition)
@@ -293,6 +356,27 @@ public class NavMeshPlacementGridVisual : MonoBehaviour
         for (int i = 0; i < corners.Length; i++)
         {
             corners[i].y += extraOffset;
+        }
+
+        return true;
+    }
+
+    private bool TryGetFlatLayerCellCorners(Vector2Int cell, float y, float extraOffset, out Vector3[] corners)
+    {
+        corners = new Vector3[4];
+        Vector2Int bottomLeft = new(cell.x * 2 - 1, cell.y * 2 - 1);
+        Vector2Int bottomRight = new(cell.x * 2 + 1, cell.y * 2 - 1);
+        Vector2Int topRight = new(cell.x * 2 + 1, cell.y * 2 + 1);
+        Vector2Int topLeft = new(cell.x * 2 - 1, cell.y * 2 + 1);
+
+        corners[0] = CornerKeyToWorld(bottomLeft);
+        corners[1] = CornerKeyToWorld(bottomRight);
+        corners[2] = CornerKeyToWorld(topRight);
+        corners[3] = CornerKeyToWorld(topLeft);
+
+        for (int i = 0; i < corners.Length; i++)
+        {
+            corners[i].y = y + extraOffset;
         }
 
         return true;
@@ -401,6 +485,19 @@ public class NavMeshPlacementGridVisual : MonoBehaviour
         return cell;
     }
 
+    private MeshRenderer GetSplitCell()
+    {
+        if (usedSplitCellCount >= splitCellPool.Count)
+        {
+            splitCellPool.Add(CreateSplitCell());
+        }
+
+        MeshRenderer cell = splitCellPool[usedSplitCellCount];
+        usedSplitCellCount++;
+        cell.gameObject.SetActive(true);
+        return cell;
+    }
+
     private MeshRenderer CreateOccupiedCell()
     {
         GameObject cellObject = GameObject.CreatePrimitive(PrimitiveType.Quad);
@@ -439,6 +536,28 @@ public class NavMeshPlacementGridVisual : MonoBehaviour
         renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         renderer.receiveShadows = false;
         renderer.sharedMaterial = GetPreviewCellMaterial();
+
+        MeshFilter meshFilter = cellObject.GetComponent<MeshFilter>();
+        meshFilter.sharedMesh = CreateCellMesh();
+        return renderer;
+    }
+
+    private MeshRenderer CreateSplitCell()
+    {
+        GameObject cellObject = GameObject.CreatePrimitive(PrimitiveType.Quad);
+        cellObject.name = "Split Surface Grid Cell";
+        cellObject.transform.SetParent(transform, false);
+
+        Collider collider = cellObject.GetComponent<Collider>();
+        if (collider != null)
+        {
+            Destroy(collider);
+        }
+
+        MeshRenderer renderer = cellObject.GetComponent<MeshRenderer>();
+        renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        renderer.receiveShadows = false;
+        renderer.sharedMaterial = GetSplitCellMaterial();
 
         MeshFilter meshFilter = cellObject.GetComponent<MeshFilter>();
         meshFilter.sharedMesh = CreateCellMesh();
@@ -600,6 +719,21 @@ public class NavMeshPlacementGridVisual : MonoBehaviour
         return generatedPreviewCellMaterial;
     }
 
+    private Material GetSplitCellMaterial()
+    {
+        if (generatedSplitCellMaterial != null)
+        {
+            return generatedSplitCellMaterial;
+        }
+
+        generatedSplitCellMaterial = CreateTransparentMaterial(
+            "Generated Split Surface Grid Cell Material",
+            splitCellColor
+        );
+
+        return generatedSplitCellMaterial;
+    }
+
     private static Material CreateTransparentMaterial(string materialName, Color color)
     {
         Shader shader = Shader.Find("Universal Render Pipeline/Unlit");
@@ -659,9 +793,15 @@ public class NavMeshPlacementGridVisual : MonoBehaviour
             previewCellPool[i].gameObject.SetActive(false);
         }
 
+        for (int i = 0; i < splitCellPool.Count; i++)
+        {
+            splitCellPool[i].gameObject.SetActive(false);
+        }
+
         usedLineCount = 0;
         usedOccupiedCellCount = 0;
         usedPreviewCellCount = 0;
+        usedSplitCellCount = 0;
     }
 
     private readonly struct SurfaceSample
