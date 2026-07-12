@@ -7,6 +7,15 @@ public class ElementStatusController : MonoBehaviour
     [SerializeField] private bool hasFireStatus;
     [SerializeField] private float fireStatusRemainingTime;
 
+    [Header("Fire Burning Settings")]
+    [SerializeField] private bool addBurningDurationWhenReapply = true;
+    [SerializeField] private float maxFireStatusDuration = 15f;
+
+    [SerializeField] private float currentBurningTickInterval = 1f;
+    [SerializeField] private int currentBurningTickDamage = 1;
+    [SerializeField] private GameObject burningOwner;
+    [SerializeField] private float burningTickTimer;
+
     [Header("Water Status")]
     [SerializeField] private bool isWet;
     [SerializeField] private float wetRemainingTime;
@@ -37,6 +46,16 @@ public class ElementStatusController : MonoBehaviour
     public float FireStatusRemainingTime
     {
         get { return fireStatusRemainingTime; }
+    }
+
+    public bool IsWet
+    {
+        get { return isWet; }
+    }
+
+    public float WetRemainingTime
+    {
+        get { return wetRemainingTime; }
     }
 
     private void Awake()
@@ -82,17 +101,58 @@ public class ElementStatusController : MonoBehaviour
 
         tickDamage = Mathf.Max(0, tickDamage);
 
+        burningOwner = attacker;
+        currentBurningTickInterval = tickInterval;
+        currentBurningTickDamage = tickDamage;
+
+        if (hasFireStatus)
+        {
+            if (addBurningDurationWhenReapply)
+            {
+                fireStatusRemainingTime += duration;
+            }
+            else
+            {
+                fireStatusRemainingTime = Mathf.Max(
+                    fireStatusRemainingTime,
+                    duration
+                );
+            }
+
+            fireStatusRemainingTime = Mathf.Min(
+                fireStatusRemainingTime,
+                maxFireStatusDuration
+            );
+
+            if (burningCoroutine == null)
+            {
+                burningCoroutine = StartCoroutine(BurningRoutine());
+            }
+
+            if (debugLog)
+            {
+                Debug.Log(
+                    $"[ElementStatusController] Burning reapplied to {gameObject.name}. " +
+                    $"Remaining={fireStatusRemainingTime:F2}s, " +
+                    $"Tick={currentBurningTickInterval}, Damage={currentBurningTickDamage}",
+                    this
+                );
+            }
+
+            return;
+        }
+
         hasFireStatus = true;
-        fireStatusRemainingTime = duration;
+        fireStatusRemainingTime = Mathf.Min(duration, maxFireStatusDuration);
+        burningTickTimer = 0f;
 
         if (burningCoroutine != null)
         {
             StopCoroutine(burningCoroutine);
+            burningCoroutine = null;
         }
 
-        burningCoroutine = StartCoroutine(
-            BurningRoutine(attacker, duration, tickInterval, tickDamage)
-        );
+        burningCoroutine = StartCoroutine(BurningRoutine());
 
         if (debugLog)
         {
@@ -104,34 +164,73 @@ public class ElementStatusController : MonoBehaviour
         }
     }
 
-    private bool CanTriggerVaporize()
+    private IEnumerator BurningRoutine()
     {
-        if (!useReactionInternalCooldown)
-            return true;
+        while (hasFireStatus && fireStatusRemainingTime > 0f)
+        {
+            float deltaTime = Time.deltaTime;
 
-        return Time.time >= nextVaporizeAllowedTime;
+            fireStatusRemainingTime -= deltaTime;
+            fireStatusRemainingTime = Mathf.Max(0f, fireStatusRemainingTime);
+
+            burningTickTimer += deltaTime;
+
+            if (burningTickTimer >= currentBurningTickInterval)
+            {
+                burningTickTimer = 0f;
+
+                if (damageable != null && currentBurningTickDamage > 0)
+                {
+                    DamageInfo damageInfo = new DamageInfo
+                    {
+                        attacker = burningOwner,
+                        target = gameObject,
+                        damage = currentBurningTickDamage,
+                        knockback = 0f,
+                        hitPoint = transform.position,
+                        hitDirection = Vector3.zero,
+                        sourceAction = null,
+
+                        element = ElementType.Fire,
+                        canApplyElementStatus = false,
+
+                        skillMultiplier = 0f,
+                        damageBonus = 0f,
+                        reactionMultiplier = 1f,
+                        canCrit = false
+                    };
+
+                    damageable.TakeDamage(damageInfo);
+
+                    if (debugLog)
+                    {
+                        Debug.Log(
+                            $"[ElementStatusController] Burning tick damage = {currentBurningTickDamage}, " +
+                            $"remaining={fireStatusRemainingTime:F2}",
+                            this
+                        );
+                    }
+                }
+            }
+
+            yield return null;
+        }
+
+        ClearFireStatus(false);
     }
 
-    private void StartVaporizeCooldown()
-    {
-        if (!useReactionInternalCooldown)
-            return;
-
-        nextVaporizeAllowedTime = Time.time + vaporizeInternalCooldown;
-    }
-
-    private float GetVaporizeCooldownRemaining()
-    {
-        if (!useReactionInternalCooldown)
-            return 0f;
-
-        return Mathf.Max(0f, nextVaporizeAllowedTime - Time.time);
-    }
     public void ApplyWet(GameObject attacker, float duration)
     {
+        if (duration <= 0f)
+            return;
+
         isWet = true;
         wetOwner = attacker;
-        wetRemainingTime = Mathf.Max(wetRemainingTime, duration);
+
+        wetRemainingTime = Mathf.Max(
+            wetRemainingTime,
+            duration
+        );
 
         if (debugLog)
         {
@@ -144,6 +243,9 @@ public class ElementStatusController : MonoBehaviour
 
     public void ClearWetStatus()
     {
+        if (!isWet && wetRemainingTime <= 0f)
+            return;
+
         isWet = false;
         wetOwner = null;
         wetRemainingTime = 0f;
@@ -159,7 +261,6 @@ public class ElementStatusController : MonoBehaviour
 
     public DamageInfo ProcessIncomingElement(DamageInfo damageInfo)
     {
-        // Water 打到 Fire / Burning，触发蒸发，增强这一次 Water 伤害
         if (damageInfo.element == ElementType.Water && IsBurning())
         {
             if (!CanTriggerVaporize())
@@ -192,7 +293,6 @@ public class ElementStatusController : MonoBehaviour
             return damageInfo;
         }
 
-        // Fire 打到 Wet，触发蒸发，增强这一次 Fire 伤害
         if (damageInfo.element == ElementType.Fire && isWet)
         {
             if (!CanTriggerVaporize())
@@ -228,6 +328,30 @@ public class ElementStatusController : MonoBehaviour
         return damageInfo;
     }
 
+    private bool CanTriggerVaporize()
+    {
+        if (!useReactionInternalCooldown)
+            return true;
+
+        return Time.time >= nextVaporizeAllowedTime;
+    }
+
+    private void StartVaporizeCooldown()
+    {
+        if (!useReactionInternalCooldown)
+            return;
+
+        nextVaporizeAllowedTime = Time.time + vaporizeInternalCooldown;
+    }
+
+    private float GetVaporizeCooldownRemaining()
+    {
+        if (!useReactionInternalCooldown)
+            return 0f;
+
+        return Mathf.Max(0f, nextVaporizeAllowedTime - Time.time);
+    }
+
     private bool IsBurning()
     {
         return hasFireStatus;
@@ -242,74 +366,40 @@ public class ElementStatusController : MonoBehaviour
         }
     }
 
-    private IEnumerator BurningRoutine(
-        GameObject attacker,
-        float duration,
-        float tickInterval,
-        int tickDamage
-    )
-    {
-        float timer = duration;
-
-        while (timer > 0f)
-        {
-            yield return new WaitForSeconds(tickInterval);
-
-            timer -= tickInterval;
-            fireStatusRemainingTime = Mathf.Max(0f, timer);
-
-            if (damageable != null && tickDamage > 0)
-            {
-                DamageInfo damageInfo = new DamageInfo
-                {
-                    attacker = attacker,
-                    target = gameObject,
-                    damage = tickDamage,
-                    knockback = 0f,
-                    hitPoint = transform.position,
-                    hitDirection = Vector3.zero,
-                    sourceAction = null,
-
-                    element = ElementType.Fire,
-                    canApplyElementStatus = false,
-
-                    skillMultiplier = 0f,
-                    damageBonus = 0f,
-                    reactionMultiplier = 1f,
-                    canCrit = false
-                };
-
-                damageable.TakeDamage(damageInfo);
-
-                if (debugLog)
-                {
-                    Debug.Log(
-                        $"[ElementStatusController] Burning tick damage = {tickDamage}, " +
-                        $"remaining={fireStatusRemainingTime}",
-                        this
-                    );
-                }
-            }
-        }
-
-        ClearFireStatus();
-    }
-
     public void ClearFireStatus()
     {
+        ClearFireStatus(true);
+    }
+
+    private void ClearFireStatus(bool stopCoroutine)
+    {
+        if (stopCoroutine)
+        {
+            StopBurning();
+        }
+
         hasFireStatus = false;
         fireStatusRemainingTime = 0f;
-        burningCoroutine = null;
+        burningTickTimer = 0f;
+        burningOwner = null;
+
+        if (!stopCoroutine)
+        {
+            burningCoroutine = null;
+        }
 
         if (debugLog)
         {
-            Debug.Log($"[ElementStatusController] Fire status cleared on {gameObject.name}.", this);
+            Debug.Log(
+                $"[ElementStatusController] Fire status cleared on {gameObject.name}.",
+                this
+            );
         }
     }
 
     public void StopAllElementStatus()
     {
-        StopBurning();
         ClearFireStatus();
+        ClearWetStatus();
     }
 }

@@ -59,7 +59,7 @@ MonoBehaviour:
   waterTargetOffset: {x: 0, y: 1, z: 0}
   waterProjectileHitLayer:
     serializedVersion: 2
-    m_Bits: 2240
+    m_Bits: 2176
   waterIgnoreAttackerCollision: 1
   waterDestroyOnNonHitLayerCollision: 0
   waterUseBarrage: 1
