@@ -1,4 +1,6 @@
+using Unity.Cinemachine;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class PlayerCameraController : MonoBehaviour
 {
@@ -7,24 +9,37 @@ public class PlayerCameraController : MonoBehaviour
     [SerializeField] private bool detachTargetFromPlayer = true;
 
     [Header("Target Height Follow")]
-    [Tooltip("CameraTarget 相对 Player 的高度，例如 1.6 表示在角色头部附近")]
+    [Tooltip("CameraTarget height above the player.")]
     [SerializeField] private float targetHeightOffset = 1.6f;
 
-    [Tooltip("是否跟随 Player 的 Y 高度。上桥、上坡、下坡建议开启")]
+    [Tooltip("Follow player Y height. Keep this on for slopes, stairs, and jumping.")]
     [SerializeField] private bool followPlayerY = true;
 
     [SerializeField] private float yFollowSpeed = 12f;
 
     [Header("Look Settings")]
-    [SerializeField] private float mouseSensitivity = 180f;
+    [FormerlySerializedAs("mouseSensitivity")]
+    [SerializeField] private float horizontalMouseSensitivity = 180f;
+    [SerializeField] private float verticalMouseSensitivity = 120f;
+    [SerializeField] private float minPitch = -35f;
+    [SerializeField] private float maxPitch = 65f;
     [SerializeField] private bool lockCursor = true;
+
+    [Header("Zoom Settings")]
+    [SerializeField] private float zoomSpeed = 1.5f;
+    [SerializeField] private float minCameraDistance = 1.5f;
+    [SerializeField] private float maxCameraDistance = 6f;
+    [SerializeField] private float zoomLerpSpeed = 12f;
 
     private bool cameraInputEnabled = true;
     private float yaw;
+    private float pitch;
     private float currentTargetY;
+    private float targetCameraDistance;
 
     private bool initialized;
     private bool ownsDetachedTarget;
+    private CinemachineThirdPersonFollow thirdPersonFollow;
 
     public void Init(Transform target)
     {
@@ -57,7 +72,16 @@ public class PlayerCameraController : MonoBehaviour
         );
 
         yaw = transform.eulerAngles.y;
-        cameraTarget.rotation = Quaternion.Euler(0f, yaw, 0f);
+        pitch = cameraTarget.eulerAngles.x;
+        if (pitch > 180f)
+        {
+            pitch -= 360f;
+        }
+
+        pitch = Mathf.Clamp(pitch, minPitch, maxPitch);
+        cameraTarget.rotation = Quaternion.Euler(pitch, yaw, 0f);
+
+        CacheThirdPersonFollow();
 
         initialized = true;
 
@@ -79,6 +103,7 @@ public class PlayerCameraController : MonoBehaviour
 
         UpdateTargetPosition();
         UpdateTargetRotation();
+        UpdateZoom();
     }
 
     private void OnDestroy()
@@ -137,9 +162,58 @@ public class PlayerCameraController : MonoBehaviour
         }
 
         float mouseX = Input.GetAxis("Mouse X");
+        float mouseY = Input.GetAxis("Mouse Y");
 
-        yaw += mouseX * mouseSensitivity * Time.deltaTime;
+        yaw += mouseX * horizontalMouseSensitivity * Time.deltaTime;
+        pitch -= mouseY * verticalMouseSensitivity * Time.deltaTime;
+        pitch = Mathf.Clamp(pitch, minPitch, maxPitch);
 
-        cameraTarget.rotation = Quaternion.Euler(0f, yaw, 0f);
+        cameraTarget.rotation = Quaternion.Euler(pitch, yaw, 0f);
+    }
+
+    private void UpdateZoom()
+    {
+        if (thirdPersonFollow == null)
+        {
+            CacheThirdPersonFollow();
+        }
+
+        if (thirdPersonFollow == null)
+        {
+            return;
+        }
+
+        if (cameraInputEnabled)
+        {
+            float scroll = Input.GetAxis("Mouse ScrollWheel");
+            if (Mathf.Abs(scroll) > 0.0001f)
+            {
+                targetCameraDistance -= scroll * zoomSpeed;
+                targetCameraDistance = Mathf.Clamp(targetCameraDistance, minCameraDistance, maxCameraDistance);
+            }
+        }
+
+        thirdPersonFollow.CameraDistance = Mathf.Lerp(
+            thirdPersonFollow.CameraDistance,
+            targetCameraDistance,
+            zoomLerpSpeed * Time.deltaTime
+        );
+    }
+
+    private void CacheThirdPersonFollow()
+    {
+        thirdPersonFollow = GetComponentInChildren<CinemachineThirdPersonFollow>(true);
+
+        if (thirdPersonFollow == null)
+        {
+            Debug.LogWarning("[PlayerCameraController] CinemachineThirdPersonFollow not found in player children.");
+            return;
+        }
+
+        targetCameraDistance = Mathf.Clamp(
+            thirdPersonFollow.CameraDistance,
+            minCameraDistance,
+            maxCameraDistance
+        );
     }
 }
