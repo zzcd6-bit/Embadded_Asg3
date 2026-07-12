@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 
 [DisallowMultipleComponent]
 public class DropReward : MonoBehaviour
@@ -30,14 +31,18 @@ public class DropReward : MonoBehaviour
     [SerializeField, Min(0f)] private float spawnHeight = 0.3f;
     [SerializeField] private bool randomYaw = true;
 
-    [Header("Projectile")]
-    [SerializeField] private bool applyImpulse = true;
+    [Header("Initial Velocity")]
+    [FormerlySerializedAs("applyImpulse")]
+    [SerializeField] private bool applyInitialVelocity = true;
     [SerializeField] private bool addRigidbodyIfMissing;
-    [SerializeField, Min(0f)] private float minHorizontalImpulse = 1.5f;
-    [SerializeField, Min(0f)] private float maxHorizontalImpulse = 3f;
-    [SerializeField, Min(0f)] private float minUpwardImpulse = 2f;
-    [SerializeField, Min(0f)] private float maxUpwardImpulse = 4f;
-    [SerializeField, Min(0f)] private float maxTorqueImpulse = 4f;
+    [FormerlySerializedAs("minHorizontalImpulse")]
+    [SerializeField, Min(0f)] private float minHorizontalSpeed = 0f;
+    [FormerlySerializedAs("maxHorizontalImpulse")]
+    [SerializeField, Min(0f)] private float maxHorizontalSpeed = 0.15f;
+    [FormerlySerializedAs("minUpwardImpulse")]
+    [SerializeField, Min(0f)] private float minUpwardSpeed = 1.2f;
+    [FormerlySerializedAs("maxUpwardImpulse")]
+    [SerializeField, Min(0f)] private float maxUpwardSpeed = 1.8f;
 
     [Header("Events")]
     [SerializeField] private UnityEvent onDropped = new();
@@ -100,15 +105,15 @@ public class DropReward : MonoBehaviour
         Transform parent = parentDropsToScene ? null : transform;
         GameObject item = Instantiate(prefab, position, rotation, parent);
 
-        if (applyImpulse)
+        if (applyInitialVelocity)
         {
-            ApplyProjectileImpulse(item, origin);
+            ApplyInitialVelocity(item, origin);
         }
 
         return item;
     }
 
-    private void ApplyProjectileImpulse(GameObject item, Vector3 origin)
+    private void ApplyInitialVelocity(GameObject item, Vector3 origin)
     {
         Rigidbody body = item.GetComponent<Rigidbody>();
         if (body == null && addRigidbodyIfMissing)
@@ -131,27 +136,24 @@ public class DropReward : MonoBehaviour
 
         direction.Normalize();
 
-        float horizontalImpulse = UnityEngine.Random.Range(minHorizontalImpulse, Mathf.Max(minHorizontalImpulse, maxHorizontalImpulse));
-        float upwardImpulse = UnityEngine.Random.Range(minUpwardImpulse, Mathf.Max(minUpwardImpulse, maxUpwardImpulse));
-        Vector3 impulse = direction * horizontalImpulse + Vector3.up * upwardImpulse;
-        body.AddForce(impulse, ForceMode.Impulse);
-
-        if (maxTorqueImpulse > 0f)
-        {
-            body.AddTorque(UnityEngine.Random.insideUnitSphere * maxTorqueImpulse, ForceMode.Impulse);
-        }
+        float horizontalSpeed = UnityEngine.Random.Range(minHorizontalSpeed, Mathf.Max(minHorizontalSpeed, maxHorizontalSpeed));
+        float upwardSpeed = UnityEngine.Random.Range(minUpwardSpeed, Mathf.Max(minUpwardSpeed, maxUpwardSpeed));
+        body.isKinematic = false;
+        body.useGravity = true;
+        body.linearVelocity = direction * horizontalSpeed + Vector3.up * upwardSpeed;
+        body.angularVelocity = Vector3.zero;
     }
 
     private void OnValidate()
     {
-        if (maxHorizontalImpulse < minHorizontalImpulse)
+        if (maxHorizontalSpeed < minHorizontalSpeed)
         {
-            maxHorizontalImpulse = minHorizontalImpulse;
+            maxHorizontalSpeed = minHorizontalSpeed;
         }
 
-        if (maxUpwardImpulse < minUpwardImpulse)
+        if (maxUpwardSpeed < minUpwardSpeed)
         {
-            maxUpwardImpulse = minUpwardImpulse;
+            maxUpwardSpeed = minUpwardSpeed;
         }
     }
 }

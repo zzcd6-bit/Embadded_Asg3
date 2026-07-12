@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -28,6 +29,11 @@ public class Chest : MonoBehaviour, IReactable, IReactableStateNotifier, IGameSa
     [SerializeField] private string openTrigger = "Open";
     [SerializeField] private string openedBool = "IsOpen";
 
+    [Header("Opened Cleanup")]
+    [SerializeField, Min(0f)] private float destroyDelayAfterOpen = 3f;
+    [SerializeField] private bool fadeBeforeDestroy = true;
+    [SerializeField] private bool saveImmediatelyOnOpen = true;
+
     [Header("Events")]
     [SerializeField] private UnityEvent onUnlocked = new();
     [SerializeField] private UnityEvent onOpened = new();
@@ -46,6 +52,8 @@ public class Chest : MonoBehaviour, IReactable, IReactableStateNotifier, IGameSa
     public InteractionCategory Category => category;
     public Transform InteractionPoint => interactionPoint != null ? interactionPoint : transform;
 
+    private Coroutine openedCleanupRoutine;
+
     private void Reset()
     {
         dropReward = GetComponent<DropReward>();
@@ -56,6 +64,13 @@ public class Chest : MonoBehaviour, IReactable, IReactableStateNotifier, IGameSa
     {
         EnsureId();
         ResolveReferences();
+        if (WorldStateSaveController.IsChestOpened(chestId))
+        {
+            isOpen = true;
+            Destroy(gameObject);
+            return;
+        }
+
         ApplyAnimatorState();
     }
 
@@ -92,6 +107,8 @@ public class Chest : MonoBehaviour, IReactable, IReactableStateNotifier, IGameSa
         SpawnReward();
         onOpened?.Invoke();
         StateChanged?.Invoke(this);
+        SaveOpenedStateIfNeeded();
+        BeginOpenedCleanup(destroyDelayAfterOpen);
         return true;
     }
 
@@ -148,6 +165,139 @@ public class Chest : MonoBehaviour, IReactable, IReactableStateNotifier, IGameSa
         }
     }
 
+    private void SaveOpenedStateIfNeeded()
+    {
+        if (!saveImmediatelyOnOpen || PlayerSaveManager.Instance == null)
+        {
+            return;
+        }
+
+        PlayerSaveManager.Instance.SavePlayer();
+    }
+
+    private void BeginOpenedCleanup(float duration)
+    {
+        if (openedCleanupRoutine != null)
+        {
+            StopCoroutine(openedCleanupRoutine);
+        }
+
+        openedCleanupRoutine = StartCoroutine(OpenCleanupRoutine(duration));
+    }
+
+    private IEnumerator OpenCleanupRoutine(float duration)
+    {
+        if (duration <= 0f)
+        {
+            Destroy(gameObject);
+            yield break;
+        }
+
+        Renderer[] renderers = GetComponentsInChildren<Renderer>(true);
+        Material[] materials = PrepareRuntimeMaterials(renderers);
+
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float alpha = fadeBeforeDestroy ? Mathf.Clamp01(1f - elapsed / duration) : 1f;
+            SetMaterialsAlpha(materials, alpha);
+            yield return null;
+        }
+
+        Destroy(gameObject);
+    }
+
+    private static Material[] PrepareRuntimeMaterials(Renderer[] renderers)
+    {
+        if (renderers == null || renderers.Length == 0)
+        {
+            return Array.Empty<Material>();
+        }
+
+        var materials = new System.Collections.Generic.List<Material>();
+        for (int i = 0; i < renderers.Length; i++)
+        {
+            Material[] rendererMaterials = renderers[i].materials;
+            for (int j = 0; j < rendererMaterials.Length; j++)
+            {
+                Material material = rendererMaterials[j];
+                if (material == null)
+                {
+                    continue;
+                }
+
+                ConfigureTransparentMaterial(material);
+                materials.Add(material);
+            }
+        }
+
+        return materials.ToArray();
+    }
+
+    private static void ConfigureTransparentMaterial(Material material)
+    {
+        if (material.HasProperty("_Surface"))
+        {
+            material.SetFloat("_Surface", 1f);
+        }
+
+        if (material.HasProperty("_Mode"))
+        {
+            material.SetFloat("_Mode", 2f);
+        }
+
+        if (material.HasProperty("_Blend"))
+        {
+            material.SetFloat("_Blend", 0f);
+        }
+
+        if (material.HasProperty("_AlphaClip"))
+        {
+            material.SetFloat("_AlphaClip", 0f);
+        }
+
+        material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+        material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+        material.SetInt("_ZWrite", 0);
+        material.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+        material.DisableKeyword("_ALPHATEST_ON");
+        material.EnableKeyword("_ALPHABLEND_ON");
+        material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+        material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+    }
+
+    private static void SetMaterialsAlpha(Material[] materials, float alpha)
+    {
+        if (materials == null)
+        {
+            return;
+        }
+
+        for (int i = 0; i < materials.Length; i++)
+        {
+            Material material = materials[i];
+            if (material == null)
+            {
+                continue;
+            }
+
+            if (material.HasProperty("_BaseColor"))
+            {
+                Color color = material.GetColor("_BaseColor");
+                color.a = alpha;
+                material.SetColor("_BaseColor", color);
+            }
+
+            if (material.HasProperty("_Color"))
+            {
+                Color color = material.GetColor("_Color");
+                color.a = alpha;
+                material.SetColor("_Color", color);
+            }
+        }
+    }
+
     private void ResolveReferences()
     {
         if (dropReward == null)
@@ -199,6 +349,7 @@ public class Chest : MonoBehaviour, IReactable, IReactableStateNotifier, IGameSa
         isOpen = true;
         ApplyAnimatorState();
         StateChanged?.Invoke(this);
+        Destroy(gameObject);
     }
 
     private void EnsureId()

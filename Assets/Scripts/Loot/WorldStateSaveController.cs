@@ -57,6 +57,17 @@ public class WorldStateSaveController : MonoBehaviour, IGameSaveModule
         }
     }
 
+    public static bool IsChestOpened(string chestId)
+    {
+        if (string.IsNullOrWhiteSpace(chestId))
+            return false;
+
+        if (StaticOpenedChestIds.Contains(chestId))
+            return true;
+
+        return Instance != null && Instance.openedChestIds.Contains(chestId);
+    }
+
     public static void MarkPickupCollected(string pickupId)
     {
         if (string.IsNullOrWhiteSpace(pickupId))

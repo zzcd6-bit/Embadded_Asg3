@@ -56,7 +56,8 @@ public class InteractionRollBoxUI : MonoBehaviour
     [Header("Option Slider")]
     [SerializeField] private Scrollbar optionScrollbar;
     [SerializeField] private RectTransform sliderHandle;
-    [SerializeField] private float sliderBaseY;
+    [SerializeField] private bool useHalfScreenHeightAsSliderBaseY = true;
+    [SerializeField] private float sliderBaseYOffset;
     [SerializeField, Min(1f)] private float sliderLength = 260f;
 
     [Header("Option Template")]
@@ -206,7 +207,8 @@ public class InteractionRollBoxUI : MonoBehaviour
 
     private void SelectBySliderLocalY(float localY)
     {
-        float percent = 1f - Mathf.InverseLerp(sliderBaseY, sliderBaseY + sliderLength, localY);
+        float baseY = GetSliderBaseY();
+        float percent = 1f - Mathf.InverseLerp(baseY, baseY + sliderLength, localY);
         int index = Mathf.RoundToInt(percent * activeOptionCount);
         index = Mathf.Clamp(index, 0, activeOptionCount - 1);
 
@@ -238,10 +240,21 @@ public class InteractionRollBoxUI : MonoBehaviour
             return;
         }
 
+        float baseY = GetSliderBaseY();
         float percent = 1f - (float)currentSelectedIndex / activeOptionCount;
         Vector2 position = sliderHandle.anchoredPosition;
-        position.y = sliderBaseY + sliderLength * percent;
+        position.y = baseY + sliderLength * percent;
         sliderHandle.anchoredPosition = position;
+    }
+
+    private float GetSliderBaseY()
+    {
+        if (!useHalfScreenHeightAsSliderBaseY)
+        {
+            return sliderBaseYOffset;
+        }
+
+        return Screen.height * 0.5f + sliderBaseYOffset;
     }
 
     private void EnsureSliderReferences()
