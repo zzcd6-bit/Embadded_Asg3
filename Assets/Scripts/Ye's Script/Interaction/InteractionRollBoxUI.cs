@@ -206,7 +206,7 @@ public class InteractionRollBoxUI : MonoBehaviour
 
     private void SelectBySliderLocalY(float localY)
     {
-        float percent = Mathf.InverseLerp(sliderBaseY, sliderBaseY + sliderLength, localY);
+        float percent = 1f - Mathf.InverseLerp(sliderBaseY, sliderBaseY + sliderLength, localY);
         int index = Mathf.RoundToInt(percent * activeOptionCount);
         index = Mathf.Clamp(index, 0, activeOptionCount - 1);
 
@@ -238,7 +238,7 @@ public class InteractionRollBoxUI : MonoBehaviour
             return;
         }
 
-        float percent = (float)currentSelectedIndex / activeOptionCount;
+        float percent = 1f - (float)currentSelectedIndex / activeOptionCount;
         Vector2 position = sliderHandle.anchoredPosition;
         position.y = sliderBaseY + sliderLength * percent;
         sliderHandle.anchoredPosition = position;

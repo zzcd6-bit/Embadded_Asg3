@@ -99,5 +99,7 @@ public class PlayerTeleportService : MonoBehaviour
         {
             characterController.enabled = characterControllerWasEnabled;
         }
+
+        EventCenter.Instance.EventTrigger(E_EventType.E_Player_Teleported);
     }
 }

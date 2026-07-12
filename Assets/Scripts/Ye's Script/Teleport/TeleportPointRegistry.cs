@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [DisallowMultipleComponent]
-public class TeleportPointRegistry : MonoBehaviour
+public class TeleportPointRegistry : MonoBehaviour, IGameSaveModule
 {
     public static TeleportPointRegistry Instance { get; private set; }
 
@@ -26,6 +26,7 @@ public class TeleportPointRegistry : MonoBehaviour
 
     public TeleportPoint CurrentRespawnPoint => GetPoint(currentRespawnPointId) ?? defaultRespawnPoint;
     public TeleportPoint DefaultRespawnPoint => defaultRespawnPoint;
+    public string CurrentRespawnPointId => currentRespawnPointId;
 
     private void Awake()
     {
@@ -235,5 +236,38 @@ public class TeleportPointRegistry : MonoBehaviour
 
         currentRespawnPointId = respawnPointId;
         RebuildLookup();
+    }
+
+    public void CaptureGameSaveData(GameSaveData saveData)
+    {
+        if (saveData == null)
+            return;
+
+        if (saveData.teleport == null)
+        {
+            saveData.teleport = new TeleportSaveData();
+        }
+
+        saveData.teleport.registeredPointIds = ExportRegisteredPointIds();
+        saveData.teleport.currentRespawnPointId = currentRespawnPointId;
+    }
+
+    public void RestoreGameSaveData(GameSaveData saveData)
+    {
+        if (saveData == null || saveData.teleport == null)
+            return;
+
+        ImportRegisteredPointIds(
+            saveData.teleport.registeredPointIds,
+            saveData.teleport.currentRespawnPointId
+        );
+
+        for (int i = 0; i < scenePoints.Count; i++)
+        {
+            if (scenePoints[i] != null)
+            {
+                scenePoints[i].RefreshInteractionState();
+            }
+        }
     }
 }

@@ -3,8 +3,12 @@ using UnityEngine;
 using UnityEngine.Events;
 
 [DisallowMultipleComponent]
-public class PickupItem : MonoBehaviour, IReactable, IReactableStateNotifier
+public class PickupItem : MonoBehaviour, IReactable, IReactableStateNotifier, IGameSaveModule
 {
+    [Header("Identity")]
+    [SerializeField] private string pickupId;
+    [SerializeField] private bool persistCollectedState = true;
+
     [Header("Interaction")]
     [SerializeField] private string optionName = "Pick Up";
     [SerializeField] private InteractionCategory category = InteractionCategory.Pickup;
@@ -21,6 +25,7 @@ public class PickupItem : MonoBehaviour, IReactable, IReactableStateNotifier
     public event Action<PickupItem> Collected;
 
     public bool IsCollected { get; private set; }
+    public string PickupId => pickupId;
     public UnityEvent<GameObject> OnCollected => onCollected;
 
     public string OptionName => optionName;
@@ -30,6 +35,11 @@ public class PickupItem : MonoBehaviour, IReactable, IReactableStateNotifier
     public bool CanInteract(GameObject interactor)
     {
         return collectable && !IsCollected && isActiveAndEnabled && gameObject.activeInHierarchy;
+    }
+
+    private void Awake()
+    {
+        EnsureId();
     }
 
     public void Interact(GameObject interactor)
@@ -45,6 +55,11 @@ public class PickupItem : MonoBehaviour, IReactable, IReactableStateNotifier
         }
 
         IsCollected = true;
+        if (persistCollectedState)
+        {
+            WorldStateSaveController.MarkPickupCollected(pickupId);
+        }
+
         onCollected?.Invoke(collector);
         Collected?.Invoke(this);
         StateChanged?.Invoke(this);
@@ -89,4 +104,48 @@ public class PickupItem : MonoBehaviour, IReactable, IReactableStateNotifier
     {
         StateChanged?.Invoke(this);
     }
+
+    public void CaptureGameSaveData(GameSaveData saveData)
+    {
+        if (!persistCollectedState || saveData == null || !IsCollected || string.IsNullOrWhiteSpace(pickupId))
+            return;
+
+        if (saveData.worldState == null)
+        {
+            saveData.worldState = new WorldStateSaveData();
+        }
+
+        if (!saveData.worldState.collectedPickupIds.Contains(pickupId))
+        {
+            saveData.worldState.collectedPickupIds.Add(pickupId);
+        }
+    }
+
+    public void RestoreGameSaveData(GameSaveData saveData)
+    {
+        if (!persistCollectedState || saveData == null || saveData.worldState == null || string.IsNullOrWhiteSpace(pickupId))
+            return;
+
+        if (!saveData.worldState.collectedPickupIds.Contains(pickupId))
+            return;
+
+        IsCollected = true;
+        gameObject.SetActive(false);
+        StateChanged?.Invoke(this);
+    }
+
+    private void EnsureId()
+    {
+        if (string.IsNullOrWhiteSpace(pickupId))
+        {
+            pickupId = gameObject.scene.name + "/" + gameObject.name;
+        }
+    }
+
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        EnsureId();
+    }
+#endif
 }

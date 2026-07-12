@@ -13,24 +13,17 @@ public class TimedPickupSpawner : MonoBehaviour
     [SerializeField] private bool spawnImmediatelyIfNeverSpawned = true;
 
     [Header("Respawn Time")]
-    [SerializeField, Min(1f)] private float respawnSeconds = 60f;
-    [SerializeField, Min(0.1f)] private float checkInterval = 1f;
-    [SerializeField] private bool persistWithPlayerPrefs = true;
+    [SerializeField, Min(60f)] private float respawnSeconds = 10800f;
     [SerializeField] private string spawnerId;
 
     [Header("Events")]
     [SerializeField] private UnityEvent<GameObject> onSpawned = new();
 
-    private const string PrefsPrefix = "TimedPickupSpawner.NextRespawnUtc.";
-
-    private double nextRespawnUtcSeconds = -1d;
-    private float nextCheckTime;
     private PickupItem subscribedPickup;
 
+    public string SpawnerId => spawnerId;
     public GameObject CurrentPickup => currentPickup;
     public UnityEvent<GameObject> OnSpawned => onSpawned;
-
-    private string PrefsKey => PrefsPrefix + spawnerId;
 
     private void Awake()
     {
@@ -39,34 +32,18 @@ public class TimedPickupSpawner : MonoBehaviour
             spawnPoint = transform;
         }
 
-        LoadNextRespawnTime();
         SubscribeToCurrentPickup();
     }
 
     private void OnEnable()
     {
+        GameTimeRefreshManager.Instance?.RegisterSpawner(this);
         SubscribeToCurrentPickup();
     }
 
     private void Start()
     {
-        TrySpawnIfReady();
-    }
-
-    private void Update()
-    {
-        if (Time.unscaledTime < nextCheckTime)
-        {
-            return;
-        }
-
-        nextCheckTime = Time.unscaledTime + checkInterval;
-
-        if (currentPickup == null && nextRespawnUtcSeconds < 0d)
-        {
-            ScheduleNextRespawn();
-        }
-
+        ResolveManager()?.RegisterSpawner(this);
         TrySpawnIfReady();
     }
 
@@ -77,7 +54,12 @@ public class TimedPickupSpawner : MonoBehaviour
             return false;
         }
 
-        if (!ShouldSpawnNow())
+        GameTimeRefreshManager manager = ResolveManager();
+        bool shouldSpawn = manager == null
+            ? spawnImmediatelyIfNeverSpawned
+            : manager.ShouldSpawnNow(spawnerId, spawnImmediatelyIfNeverSpawned);
+
+        if (!shouldSpawn)
         {
             return false;
         }
@@ -101,8 +83,7 @@ public class TimedPickupSpawner : MonoBehaviour
             origin.rotation,
             spawnedParent);
 
-        nextRespawnUtcSeconds = -1d;
-        ClearStoredRespawnTime();
+        ResolveManager()?.ClearRefresh(spawnerId);
         SubscribeToCurrentPickup();
         onSpawned?.Invoke(currentPickup);
         return currentPickup;
@@ -112,23 +93,14 @@ public class TimedPickupSpawner : MonoBehaviour
     {
         UnsubscribeFromCurrentPickup();
         currentPickup = null;
-        ScheduleNextRespawn();
+        ResolveManager()?.ScheduleRefresh(spawnerId, respawnSeconds);
     }
 
-    private bool ShouldSpawnNow()
+    public void ClearRefreshCache()
     {
-        if (nextRespawnUtcSeconds < 0d)
-        {
-            return spawnImmediatelyIfNeverSpawned;
-        }
-
-        return GetUtcNowSeconds() >= nextRespawnUtcSeconds;
-    }
-
-    private void ScheduleNextRespawn()
-    {
-        nextRespawnUtcSeconds = GetUtcNowSeconds() + Mathf.Max(1f, respawnSeconds);
-        SaveNextRespawnTime();
+        ResolveManager()?.ClearRefresh(spawnerId);
+        ClearLegacyPlayerPrefsCache();
+        TrySpawnIfReady();
     }
 
     private void HandlePickupCollected(PickupItem pickup)
@@ -166,50 +138,34 @@ public class TimedPickupSpawner : MonoBehaviour
         }
     }
 
-    private void LoadNextRespawnTime()
+    private GameTimeRefreshManager ResolveManager()
     {
-        if (!persistWithPlayerPrefs || string.IsNullOrWhiteSpace(spawnerId))
+        if (GameTimeRefreshManager.Instance != null)
         {
-            nextRespawnUtcSeconds = -1d;
-            return;
+            return GameTimeRefreshManager.Instance;
         }
 
-        string value = PlayerPrefs.GetString(PrefsKey, string.Empty);
-        if (double.TryParse(value, out double storedValue))
+        GameTimeRefreshManager manager = FindAnyObjectByType<GameTimeRefreshManager>();
+        if (manager != null)
         {
-            nextRespawnUtcSeconds = storedValue;
+            return manager;
         }
+
+        return new GameObject("GameTimeRefreshManager").AddComponent<GameTimeRefreshManager>();
     }
 
-    private void SaveNextRespawnTime()
+    private void ClearLegacyPlayerPrefsCache()
     {
-        if (!persistWithPlayerPrefs || string.IsNullOrWhiteSpace(spawnerId))
-        {
+        if (string.IsNullOrWhiteSpace(spawnerId))
             return;
-        }
 
-        PlayerPrefs.SetString(PrefsKey, nextRespawnUtcSeconds.ToString(System.Globalization.CultureInfo.InvariantCulture));
+        PlayerPrefs.DeleteKey("TimedPickupSpawner.NextRespawnUtc." + spawnerId);
         PlayerPrefs.Save();
-    }
-
-    private void ClearStoredRespawnTime()
-    {
-        if (!persistWithPlayerPrefs || string.IsNullOrWhiteSpace(spawnerId))
-        {
-            return;
-        }
-
-        PlayerPrefs.DeleteKey(PrefsKey);
-        PlayerPrefs.Save();
-    }
-
-    private static double GetUtcNowSeconds()
-    {
-        return DateTimeOffset.UtcNow.ToUnixTimeSeconds();
     }
 
     private void OnDisable()
     {
+        GameTimeRefreshManager.Instance?.UnregisterSpawner(this);
         UnsubscribeFromCurrentPickup();
     }
 
@@ -221,14 +177,9 @@ public class TimedPickupSpawner : MonoBehaviour
             spawnerId = Guid.NewGuid().ToString("N");
         }
 
-        if (respawnSeconds < 1f)
+        if (respawnSeconds < 60f)
         {
-            respawnSeconds = 1f;
-        }
-
-        if (checkInterval < 0.1f)
-        {
-            checkInterval = 0.1f;
+            respawnSeconds = 60f;
         }
     }
 #endif

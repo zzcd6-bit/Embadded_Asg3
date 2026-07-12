@@ -3,8 +3,11 @@ using UnityEngine;
 using UnityEngine.Events;
 
 [DisallowMultipleComponent]
-public class Chest : MonoBehaviour, IReactable, IReactableStateNotifier
+public class Chest : MonoBehaviour, IReactable, IReactableStateNotifier, IGameSaveModule
 {
+    [Header("Identity")]
+    [SerializeField] private string chestId;
+
     [Header("Interaction")]
     [SerializeField] private string openOptionName = "Open Chest";
     [SerializeField] private string lockedOptionName = "Locked Chest";
@@ -34,6 +37,7 @@ public class Chest : MonoBehaviour, IReactable, IReactableStateNotifier
 
     public bool CanOpen => canOpen;
     public bool IsOpen => isOpen;
+    public string ChestId => chestId;
     public UnityEvent OnUnlocked => onUnlocked;
     public UnityEvent OnOpened => onOpened;
     public UnityEvent OnOpenFailed => onOpenFailed;
@@ -50,6 +54,7 @@ public class Chest : MonoBehaviour, IReactable, IReactableStateNotifier
 
     private void Awake()
     {
+        EnsureId();
         ResolveReferences();
         ApplyAnimatorState();
     }
@@ -82,6 +87,7 @@ public class Chest : MonoBehaviour, IReactable, IReactableStateNotifier
         }
 
         isOpen = true;
+        WorldStateSaveController.MarkChestOpened(chestId);
         ApplyAnimatorState();
         SpawnReward();
         onOpened?.Invoke();
@@ -164,4 +170,49 @@ public class Chest : MonoBehaviour, IReactable, IReactableStateNotifier
     {
         StateChanged?.Invoke(this);
     }
+
+    public void CaptureGameSaveData(GameSaveData saveData)
+    {
+        if (saveData == null || !isOpen || string.IsNullOrWhiteSpace(chestId))
+            return;
+
+        if (saveData.worldState == null)
+        {
+            saveData.worldState = new WorldStateSaveData();
+        }
+
+        if (!saveData.worldState.openedChestIds.Contains(chestId))
+        {
+            saveData.worldState.openedChestIds.Add(chestId);
+        }
+    }
+
+    public void RestoreGameSaveData(GameSaveData saveData)
+    {
+        if (saveData == null || saveData.worldState == null || string.IsNullOrWhiteSpace(chestId))
+            return;
+
+        bool shouldBeOpen = saveData.worldState.openedChestIds.Contains(chestId);
+        if (!shouldBeOpen)
+            return;
+
+        isOpen = true;
+        ApplyAnimatorState();
+        StateChanged?.Invoke(this);
+    }
+
+    private void EnsureId()
+    {
+        if (string.IsNullOrWhiteSpace(chestId))
+        {
+            chestId = gameObject.scene.name + "/" + gameObject.name;
+        }
+    }
+
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        EnsureId();
+    }
+#endif
 }
