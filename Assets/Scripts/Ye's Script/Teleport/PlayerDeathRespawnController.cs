@@ -15,7 +15,7 @@ public class PlayerDeathRespawnController : MonoBehaviour
     [SerializeField] private bool autoRespawn = true;
     [SerializeField] private float respawnDelay = 1.5f;
     [SerializeField] private bool fullHealOnRespawn = true;
-    [SerializeField] private bool fullRestoreInkOnRespawn;
+    [SerializeField] private bool fullRestoreInkOnRespawn = true;
 
     private Coroutine respawnRoutine;
 

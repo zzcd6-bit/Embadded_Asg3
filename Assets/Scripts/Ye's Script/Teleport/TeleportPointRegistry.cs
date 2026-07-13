@@ -18,6 +18,11 @@ public class TeleportPointRegistry : MonoBehaviour, IGameSaveModule
     [Header("Registered Point Ids")]
     [SerializeField] private List<string> registeredPointIds = new List<string>();
 
+    [Header("Debug Memory")]
+    [SerializeField] private bool enableClearMemoryHotkey = true;
+    [SerializeField] private KeyCode clearMemoryKey = KeyCode.P;
+    [SerializeField] private bool clearSaveCacheWithHotkey = true;
+
     private readonly Dictionary<string, TeleportPoint> pointMap = new Dictionary<string, TeleportPoint>();
     private readonly HashSet<string> registeredIds = new HashSet<string>();
 
@@ -50,6 +55,19 @@ public class TeleportPointRegistry : MonoBehaviour, IGameSaveModule
         if (Instance == this)
         {
             Instance = null;
+        }
+    }
+
+    private void Update()
+    {
+        if (!enableClearMemoryHotkey || !Input.GetKeyDown(clearMemoryKey))
+            return;
+
+        ClearTeleportMemory();
+
+        if (clearSaveCacheWithHotkey && PlayerSaveManager.Instance != null)
+        {
+            PlayerSaveManager.Instance.ClearSaveCache();
         }
     }
 
@@ -213,6 +231,64 @@ public class TeleportPointRegistry : MonoBehaviour, IGameSaveModule
         return false;
     }
 
+    public bool TryTeleportTo(string pointId, bool requireRegistered = true, bool setAsRespawnPoint = true)
+    {
+        TeleportPoint point = GetPoint(pointId);
+        return TryTeleportTo(point, requireRegistered, setAsRespawnPoint);
+    }
+
+    public bool TryTeleportTo(TeleportPoint point, bool requireRegistered = true, bool setAsRespawnPoint = true)
+    {
+        if (point == null)
+            return false;
+
+        RegisterScenePoint(point);
+
+        if (!string.IsNullOrWhiteSpace(point.PointId))
+        {
+            pointMap[point.PointId] = point;
+        }
+
+        if (requireRegistered && !IsRegistered(point))
+            return false;
+
+        return point.TeleportPlayerHere(setAsRespawnPoint);
+    }
+
+    public bool TryTeleportToNextRegistered(TeleportPoint fromPoint = null)
+    {
+        if (!TryGetNextRegisteredPoint(fromPoint, out TeleportPoint nextPoint))
+            return false;
+
+        return TryTeleportTo(nextPoint, true, true);
+    }
+
+    public bool TryRegisterPoint(string pointId, bool setAsRespawnPoint = true)
+    {
+        return RegisterPoint(GetPoint(pointId), setAsRespawnPoint);
+    }
+
+    public void ClearTeleportMemory()
+    {
+        registeredPointIds.Clear();
+        registeredIds.Clear();
+        currentRespawnPointId = string.Empty;
+        RefreshAllPointInteractionStates();
+
+        Debug.Log("[TeleportPointRegistry] Teleport memory cleared.", this);
+    }
+
+    public void RefreshAllPointInteractionStates()
+    {
+        for (int i = 0; i < scenePoints.Count; i++)
+        {
+            if (scenePoints[i] != null)
+            {
+                scenePoints[i].RefreshInteractionState();
+            }
+        }
+    }
+
     public List<string> ExportRegisteredPointIds()
     {
         return new List<string>(registeredPointIds);
@@ -236,6 +312,7 @@ public class TeleportPointRegistry : MonoBehaviour, IGameSaveModule
 
         currentRespawnPointId = respawnPointId;
         RebuildLookup();
+        RefreshAllPointInteractionStates();
     }
 
     public void CaptureGameSaveData(GameSaveData saveData)
@@ -262,12 +339,6 @@ public class TeleportPointRegistry : MonoBehaviour, IGameSaveModule
             saveData.teleport.currentRespawnPointId
         );
 
-        for (int i = 0; i < scenePoints.Count; i++)
-        {
-            if (scenePoints[i] != null)
-            {
-                scenePoints[i].RefreshInteractionState();
-            }
-        }
+        RefreshAllPointInteractionStates();
     }
 }

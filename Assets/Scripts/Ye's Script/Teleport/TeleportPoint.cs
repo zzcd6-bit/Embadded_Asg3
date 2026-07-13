@@ -122,6 +122,11 @@ public class TeleportPoint : MonoBehaviour, IReactable, IReactableStateNotifier
             registry?.SetRespawnPoint(this);
         }
 
+        if (resourceController != null)
+        {
+            resourceController.Revive(true, true);
+        }
+
         return true;
     }
 

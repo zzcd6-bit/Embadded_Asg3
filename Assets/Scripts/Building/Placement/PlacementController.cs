@@ -20,6 +20,10 @@ public class PlacementController : MonoBehaviour
     [SerializeField] private Vector2 screenAnchorViewport = new(0.5f, 0.58f);
     [SerializeField] private bool alignRotationToCamera = true;
 
+    [Header("Bridge Anchor Focus")]
+    [SerializeField] private bool focusAnchorWhenBridgeHasGap = true;
+    [SerializeField, Min(0f)] private float bridgeHeightLayerTolerance = 0.75f;
+
     [Header("Validation")]
     [SerializeField] private float placementCheckInterval = 0.1f;
 
@@ -50,6 +54,7 @@ public class PlacementController : MonoBehaviour
     private readonly List<Vector2Int> validationCells = new();
     private readonly List<Vector2Int> anchorStartCells = new();
     private readonly List<Vector2Int> anchorEndCells = new();
+    private readonly List<Vector2Int> bridgeFootprintCells = new();
 
     public bool IsPlacing => previewController != null && previewController.HasPreview;
 
@@ -409,6 +414,7 @@ public class PlacementController : MonoBehaviour
         }
 
         currentPivotCell = gridPlacementSystem.WorldToPivotCell(worldPosition, currentItem.Size, currentRotationSteps);
+        ApplyBridgeAnchorFocusIfNeeded(worldPosition);
         currentPlacementPosition = gridPlacementSystem.PivotCellToWorld(currentPivotCell, currentItem.Size, currentRotationSteps);
         currentRotation = Quaternion.Euler(0f, currentRotation.eulerAngles.y, 0f);
 
@@ -421,6 +427,226 @@ public class PlacementController : MonoBehaviour
         hasPlacementPosition = true;
         previewController.SetTransform(currentPlacementPosition, currentRotation);
         return true;
+    }
+
+    private void ApplyBridgeAnchorFocusIfNeeded(Vector3 focusWorldPosition)
+    {
+        if (!focusAnchorWhenBridgeHasGap || !UsesAnchorSurfaceRule())
+        {
+            return;
+        }
+
+        GetAnchorSideCells(currentPivotCell, anchorStartCells, anchorEndCells);
+        bool startAnchorValid = IsAnchorSideValid(anchorStartCells);
+        bool endAnchorValid = IsAnchorSideValid(anchorEndCells);
+        if (!BridgeFootprintHasGapOrInvalidSurface(startAnchorValid, endAnchorValid))
+        {
+            return;
+        }
+
+        if (!TryChooseBridgeFocusAnchor(startAnchorValid, endAnchorValid, out bool useStartAnchor))
+        {
+            return;
+        }
+
+        List<Vector2Int> focusAnchorCells = useStartAnchor ? anchorStartCells : anchorEndCells;
+        if (!TryGetCellCenter(focusAnchorCells, out Vector2 currentAnchorCenter))
+        {
+            return;
+        }
+
+        Vector2Int desiredAnchorCell = gridPlacementSystem.WorldToCell(focusWorldPosition);
+        Vector2Int currentAnchorCell = new(
+            Mathf.RoundToInt(currentAnchorCenter.x),
+            Mathf.RoundToInt(currentAnchorCenter.y)
+        );
+
+        currentPivotCell += desiredAnchorCell - currentAnchorCell;
+    }
+
+    private bool BridgeFootprintHasGapOrInvalidSurface(bool startAnchorValid, bool endAnchorValid)
+    {
+        if (surfaceClassifier == null)
+        {
+            return false;
+        }
+
+        if (!TryGetBridgeReferenceHeights(startAnchorValid, endAnchorValid, out float startHeight, out float endHeight))
+        {
+            return true;
+        }
+
+        bridgeFootprintCells.Clear();
+        bridgeFootprintCells.AddRange(gridPlacementSystem.GetOccupiedCells(currentPivotCell, currentItem.Size, currentRotationSteps));
+        if (bridgeFootprintCells.Count == 0)
+        {
+            return true;
+        }
+
+        Vector2Int rotatedSize = GridPlacementSystem.GetRotatedSize(currentItem.Size, currentRotationSteps);
+        bool lengthUsesX = rotatedSize.x >= rotatedSize.y;
+        GetFootprintAxisRange(bridgeFootprintCells, lengthUsesX, out int minAxis, out int maxAxis);
+        float axisSpan = Mathf.Max(1, maxAxis - minAxis);
+
+        for (int i = 0; i < bridgeFootprintCells.Count; i++)
+        {
+            Vector2Int cell = bridgeFootprintCells[i];
+            int axisValue = lengthUsesX ? cell.x : cell.y;
+            float t = Mathf.Clamp01((axisValue - minAxis) / axisSpan);
+            float expectedHeight = Mathf.Lerp(startHeight, endHeight, t);
+
+            if (!surfaceClassifier.TryGetCellSurface(cell, out CellSurfaceInfo info)
+                || !info.HasSurface
+                || !info.IsFullyOnSurface
+                || info.HasSplit)
+            {
+                return true;
+            }
+
+            if (Mathf.Abs(info.RepresentativeY - expectedHeight) > bridgeHeightLayerTolerance)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private bool TryGetBridgeReferenceHeights(bool startAnchorValid, bool endAnchorValid, out float startHeight, out float endHeight)
+    {
+        startHeight = 0f;
+        endHeight = 0f;
+
+        bool hasStartHeight = startAnchorValid && TryGetAverageGroundY(anchorStartCells, out startHeight);
+        bool hasEndHeight = endAnchorValid && TryGetAverageGroundY(anchorEndCells, out endHeight);
+
+        if (hasStartHeight && hasEndHeight)
+        {
+            return true;
+        }
+
+        if (hasStartHeight)
+        {
+            endHeight = startHeight;
+            return true;
+        }
+
+        if (hasEndHeight)
+        {
+            startHeight = endHeight;
+            return true;
+        }
+
+        return false;
+    }
+
+    private bool TryChooseBridgeFocusAnchor(bool startAnchorValid, bool endAnchorValid, out bool useStartAnchor)
+    {
+        useStartAnchor = true;
+
+        if (startAnchorValid && !endAnchorValid)
+        {
+            return true;
+        }
+
+        if (!startAnchorValid && endAnchorValid)
+        {
+            useStartAnchor = false;
+            return true;
+        }
+
+        if (!startAnchorValid && !endAnchorValid)
+        {
+            return false;
+        }
+
+        Vector3 cameraPosition = ActiveCamera != null ? ActiveCamera.transform.position : currentPlacementPosition;
+        float startDistance = TryGetWorldCenter(anchorStartCells, out Vector3 startCenter)
+            ? Vector3.SqrMagnitude(startCenter - cameraPosition)
+            : float.MaxValue;
+        float endDistance = TryGetWorldCenter(anchorEndCells, out Vector3 endCenter)
+            ? Vector3.SqrMagnitude(endCenter - cameraPosition)
+            : float.MaxValue;
+
+        useStartAnchor = startDistance <= endDistance;
+        return true;
+    }
+
+    private bool TryGetAverageGroundY(List<Vector2Int> cells, out float averageY)
+    {
+        averageY = 0f;
+        if (cells == null || cells.Count == 0)
+        {
+            return false;
+        }
+
+        float sum = 0f;
+        int count = 0;
+        for (int i = 0; i < cells.Count; i++)
+        {
+            if (!TryGetCellHighestGroundY(cells[i], out float groundY))
+            {
+                continue;
+            }
+
+            sum += groundY;
+            count++;
+        }
+
+        if (count == 0)
+        {
+            return false;
+        }
+
+        averageY = sum / count;
+        return true;
+    }
+
+    private bool TryGetWorldCenter(List<Vector2Int> cells, out Vector3 center)
+    {
+        center = Vector3.zero;
+        if (cells == null || cells.Count == 0)
+        {
+            return false;
+        }
+
+        for (int i = 0; i < cells.Count; i++)
+        {
+            center += gridPlacementSystem.CellToWorld(cells[i]);
+        }
+
+        center /= cells.Count;
+        return true;
+    }
+
+    private static bool TryGetCellCenter(List<Vector2Int> cells, out Vector2 center)
+    {
+        center = Vector2.zero;
+        if (cells == null || cells.Count == 0)
+        {
+            return false;
+        }
+
+        for (int i = 0; i < cells.Count; i++)
+        {
+            center += cells[i];
+        }
+
+        center /= cells.Count;
+        return true;
+    }
+
+    private static void GetFootprintAxisRange(List<Vector2Int> cells, bool useXAxis, out int minAxis, out int maxAxis)
+    {
+        minAxis = int.MaxValue;
+        maxAxis = int.MinValue;
+
+        for (int i = 0; i < cells.Count; i++)
+        {
+            int axisValue = useXAxis ? cells[i].x : cells[i].y;
+            minAxis = Mathf.Min(minAxis, axisValue);
+            maxAxis = Mathf.Max(maxAxis, axisValue);
+        }
     }
 
     private bool UsesAnchorSurfaceRule()
@@ -690,6 +916,11 @@ public class PlacementController : MonoBehaviour
 
     private void GetAnchorSideCells(List<Vector2Int> startCells, List<Vector2Int> endCells)
     {
+        GetAnchorSideCells(currentPivotCell, startCells, endCells);
+    }
+
+    private void GetAnchorSideCells(Vector2Int pivotCell, List<Vector2Int> startCells, List<Vector2Int> endCells)
+    {
         startCells.Clear();
         endCells.Clear();
         if (currentItem == null || gridPlacementSystem == null)
@@ -698,7 +929,7 @@ public class PlacementController : MonoBehaviour
         }
 
         IReadOnlyList<Vector2Int> occupiedCells = gridPlacementSystem.GetOccupiedCells(
-            currentPivotCell,
+            pivotCell,
             currentItem.Size,
             currentRotationSteps
         );

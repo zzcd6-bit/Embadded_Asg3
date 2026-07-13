@@ -10,6 +10,11 @@ public class PlayerResourceController : MonoBehaviour
     [SerializeField] private PlayerDamageReceiver damageReceiver;
     [SerializeField] private PlayerInkPouchController inkPouchController;
 
+    [Header("Debug Hotkeys")]
+    [SerializeField] private bool enableDebugHotkeys = true;
+    [SerializeField] private int debugHpStep = 10;
+    [SerializeField] private int debugInkStep = 10;
+
     public event Action<int, int> HpChanged;
     public event Action<int, int> InkChanged;
     public event Action Revived;
@@ -18,6 +23,8 @@ public class PlayerResourceController : MonoBehaviour
     private int lastMaxHp = -1;
     private int lastInk = -1;
     private int lastMaxInk = -1;
+
+    private bool directDeathEventSent;
 
     public int CurrentHp => damageReceiver != null ? damageReceiver.CurrentHp : 0;
     public int MaxHp => damageReceiver != null ? damageReceiver.MaxHp : 0;
@@ -63,6 +70,7 @@ public class PlayerResourceController : MonoBehaviour
 
     private void Update()
     {
+        HandleDebugHotkeys();
         DetectExternalResourceChanges();
     }
 
@@ -99,21 +107,48 @@ public class PlayerResourceController : MonoBehaviour
         if (damageReceiver == null)
             return;
 
+        int oldHp = CurrentHp;
+
         damageReceiver.SetHp(currentHp, maxHp);
         NotifyHpChanged();
+
+        if (oldHp > 0 && CurrentHp <= 0)
+        {
+            TriggerDirectDeathEvents();
+        }
+        else if (CurrentHp > 0)
+        {
+            directDeathEventSent = false;
+        }
     }
 
-    public void HealHp(int amount)
+    public void ChangeHp(int amount)
     {
         if (damageReceiver == null)
         {
             ResolveReferences();
         }
 
-        if (damageReceiver == null || amount <= 0)
+        if (damageReceiver == null || amount == 0)
             return;
 
         SetHp(CurrentHp + amount, MaxHp);
+    }
+
+    public void HealHp(int amount)
+    {
+        if (amount <= 0)
+            return;
+
+        ChangeHp(amount);
+    }
+
+    public void ReduceHp(int amount)
+    {
+        if (amount <= 0)
+            return;
+
+        ChangeHp(-amount);
     }
 
     public void FullHeal()
@@ -143,18 +178,45 @@ public class PlayerResourceController : MonoBehaviour
         NotifyInkChanged();
     }
 
-    public void RestoreInk(int amount)
+    public void ChangeInk(int amount)
     {
         if (inkPouchController == null)
         {
             ResolveReferences();
         }
 
-        if (inkPouchController == null || amount <= 0)
+        if (inkPouchController == null || amount == 0)
             return;
 
-        inkPouchController.RestoreInk(amount);
-        NotifyInkChanged();
+        SetInk(CurrentInk + amount, MaxInk);
+    }
+
+    public void RestoreInk(int amount)
+    {
+        if (amount <= 0)
+            return;
+
+        ChangeInk(amount);
+    }
+
+    public bool TryConsumeInk(int amount)
+    {
+        if (amount <= 0)
+            return true;
+
+        if (CurrentInk < amount)
+            return false;
+
+        ChangeInk(-amount);
+        return true;
+    }
+
+    public void ReduceInk(int amount)
+    {
+        if (amount <= 0)
+            return;
+
+        ChangeInk(-amount);
     }
 
     public void FullRestoreInk()
@@ -212,6 +274,75 @@ public class PlayerResourceController : MonoBehaviour
     private void OnPlayerDamaged(CharacterDamagedEventInfo eventInfo)
     {
         NotifyHpChanged();
+    }
+
+    private void TriggerDirectDeathEvents()
+    {
+        if (directDeathEventSent)
+            return;
+
+        directDeathEventSent = true;
+
+        DamageInfo sourceDamageInfo = new DamageInfo
+        {
+            attacker = null,
+            target = gameObject,
+            damage = 0,
+            finalDamage = 0,
+            hitPoint = transform.position,
+            hitDirection = Vector3.zero
+        };
+
+        EventCenter.Instance.EventTrigger(
+            E_EventType.E_Player_Damaged,
+            new CharacterDamagedEventInfo
+            {
+                attacker = null,
+                target = gameObject,
+                damage = 0,
+                hitPoint = transform.position,
+                hitDirection = Vector3.zero,
+                isDead = true,
+                sourceDamageInfo = sourceDamageInfo
+            }
+        );
+
+        EventCenter.Instance.EventTrigger(
+            E_EventType.E_Player_Dead,
+            new CharacterDeadEventInfo
+            {
+                killer = null,
+                deadTarget = gameObject,
+                deathPosition = transform.position,
+                sourceDamageInfo = sourceDamageInfo
+            }
+        );
+    }
+
+    private void HandleDebugHotkeys()
+    {
+        if (!enableDebugHotkeys)
+            return;
+
+        if (Input.GetKeyDown(KeyCode.LeftBracket))
+        {
+            ReduceHp(debugHpStep);
+        }
+
+        if (Input.GetKeyDown(KeyCode.RightBracket))
+        {
+            HealHp(debugHpStep);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Minus))
+        {
+            ReduceInk(debugInkStep);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Equals))
+        {
+            RestoreInk(debugInkStep);
+        }
     }
 
     private void DetectExternalResourceChanges()
