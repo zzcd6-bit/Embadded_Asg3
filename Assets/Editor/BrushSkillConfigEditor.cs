@@ -12,6 +12,9 @@ public class BrushSkillConfigEditor : Editor
 
     private SerializedProperty inkCost;
 
+    private SerializedProperty useSkillCooldown;
+    private SerializedProperty skillCooldown;
+
     private SerializedProperty baseDamage;
     private SerializedProperty knockback;
     private SerializedProperty element;
@@ -90,6 +93,9 @@ public class BrushSkillConfigEditor : Editor
         fallbackDistance = serializedObject.FindProperty("fallbackDistance");
 
         inkCost = serializedObject.FindProperty("inkCost");
+
+        useSkillCooldown = serializedObject.FindProperty("useSkillCooldown");
+        skillCooldown = serializedObject.FindProperty("skillCooldown");
 
         baseDamage = serializedObject.FindProperty("baseDamage");
         knockback = serializedObject.FindProperty("knockback");
@@ -216,6 +222,24 @@ public class BrushSkillConfigEditor : Editor
         EditorGUILayout.PropertyField(canCrit, new GUIContent("是否可暴击"));
     }
 
+    private void DrawCooldownSettings()
+    {
+        DrawTitle("技能冷却");
+
+        EditorGUILayout.PropertyField(
+            useSkillCooldown,
+            new GUIContent("启用技能 CD")
+        );
+
+        if (useSkillCooldown.boolValue)
+        {
+            EditorGUILayout.PropertyField(
+                skillCooldown,
+                new GUIContent("CD 时间")
+            );
+        }
+    }
+
     private void DrawSlashSettings()
     {
         DrawTitle("Slash 专属设置");
@@ -225,6 +249,8 @@ public class BrushSkillConfigEditor : Editor
 
     private void DrawFireSettings()
     {
+        DrawCooldownSettings();
+
         DrawTitle("Fire 范围伤害");
         EditorGUILayout.PropertyField(fireDamageRadius, new GUIContent("火焰范围半径"));
 
@@ -246,6 +272,8 @@ public class BrushSkillConfigEditor : Editor
 
     private void DrawWaterSettings()
     {
+        DrawCooldownSettings();
+
         DrawTitle("Water 光环设置");
         EditorGUILayout.PropertyField(waterAuraDuration, new GUIContent("水光环持续时间"));
 

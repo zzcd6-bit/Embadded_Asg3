@@ -342,6 +342,17 @@ public class FireBrushSkill : BrushSkillBase
         );
     }
 
+    protected override float GetCooldown()
+    {
+        if (config == null)
+            return 0f;
+
+        if (!config.useSkillCooldown)
+            return 0f;
+
+        return config.skillCooldown;
+    }
+
     protected override int GetInkCost()
     {
         if (config == null)

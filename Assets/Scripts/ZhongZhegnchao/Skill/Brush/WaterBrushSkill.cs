@@ -21,6 +21,17 @@ public class WaterBrushSkill : BrushSkillBase
         return config.inkCost;
     }
 
+    protected override float GetCooldown()
+    {
+        if (config == null)
+            return 0f;
+
+        if (!config.useSkillCooldown)
+            return 0f;
+
+        return config.skillCooldown;
+    }
+
     protected override void Execute(
         BrushGestureResult result,
         BrushCastContext context

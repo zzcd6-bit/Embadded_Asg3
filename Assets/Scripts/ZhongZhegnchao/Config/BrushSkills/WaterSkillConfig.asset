@@ -19,6 +19,8 @@ MonoBehaviour:
   rayDistance: 200
   fallbackDistance: 12
   inkCost: 1
+  useSkillCooldown: 0
+  skillCooldown: 3
   baseDamage: 1
   knockback: 0
   element: 3

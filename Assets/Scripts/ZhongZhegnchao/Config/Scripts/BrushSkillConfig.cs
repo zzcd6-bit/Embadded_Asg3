@@ -17,6 +17,12 @@ public class BrushSkillConfig : ScriptableObject
     [Header("墨囊消耗")]
     public int inkCost = 1;
 
+    [Header("技能冷却")]
+    public bool useSkillCooldown = false;
+
+    [Tooltip("技能冷却时间，单位：秒")]
+    public float skillCooldown = 3f;
+
     [Header("通用伤害设置")]
     public int baseDamage = 1;
     public float knockback = 0f;

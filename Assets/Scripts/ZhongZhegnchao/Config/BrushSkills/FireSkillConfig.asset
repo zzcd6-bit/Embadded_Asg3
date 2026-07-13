@@ -19,6 +19,8 @@ MonoBehaviour:
   rayDistance: 200
   fallbackDistance: 12
   inkCost: 3
+  useSkillCooldown: 0
+  skillCooldown: 10
   baseDamage: 3
   knockback: 0
   element: 2
@@ -41,6 +43,44 @@ MonoBehaviour:
   infusionBurningDuration: 5
   infusionBurningTickInterval: 0.3
   infusionBurningTickDamage: 1
+  waterAuraDuration: 8
+  waterUsePool: 1
+  waterProjectilePoolName: WaterProjectile
+  waterProjectilePrefab: {fileID: 0}
+  waterShootInterval: 0.6
+  waterSearchRange: 20
+  waterProjectileDamage: 8
+  waterProjectileKnockback: 1
+  wetDuration: 5
+  waterUseArcHoming: 1
+  waterProjectileSpeed: 15
+  waterProjectileLifeTime: 5
+  waterArcHeight: 2
+  waterRotateSpeed: 12
+  waterReachDistance: 0.45
+  waterTargetOffset: {x: 0, y: 1, z: 0}
+  waterProjectileHitLayer:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  waterIgnoreAttackerCollision: 1
+  waterDestroyOnNonHitLayerCollision: 0
+  waterUseBarrage: 1
+  waterProjectileCountPerBurst: 5
+  waterBarrageAngle: 45
+  waterBarrageSpawnRadius: 0.35
+  waterBarrageVerticalStep: 0.12
+  waterDistributeTargets: 1
+  waterUseRandomBarrage: 1
+  waterBurstDelayMin: 0.02
+  waterBurstDelayMax: 0.12
+  waterRandomSpawnRadius: 0.45
+  waterRandomTargetOffsetRadius: 0.8
+  waterArcSideOffsetMin: -1.2
+  waterArcSideOffsetMax: 1.2
+  waterArcHeightRandomMin: -0.5
+  waterArcHeightRandomMax: 0.8
+  waterSpeedRandomMin: -2
+  waterSpeedRandomMax: 2
   bridgeTriggerLayer:
     serializedVersion: 2
     m_Bits: 0

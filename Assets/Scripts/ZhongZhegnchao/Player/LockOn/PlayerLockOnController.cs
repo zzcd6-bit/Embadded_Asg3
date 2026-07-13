@@ -92,8 +92,6 @@ public class PlayerLockOnController : MonoBehaviour
         EnemyWhitebox.OnAnyEnemyDead -= OnEnemyDead;
 
         UnbindInput();
-
-        ClearTargetSilently();
     }
 
     private void ResolveLockOnCameraTargetGroup()

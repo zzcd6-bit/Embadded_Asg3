@@ -2802,6 +2802,8 @@ MonoBehaviour:
   canvas: {fileID: 975806891}
   canvasRect: {fileID: 975806892}
   worldCamera: {fileID: 1964026415}
+  usePool: 1
+  popupPoolName: Prefabs/DamageNumberPopup
   popupPrefab: {fileID: 7646272298148075419, guid: b1eecad67921ce444a643e708001bb7e, type: 3}
   randomStartOffset: {x: 0, y: 0}
   clampToCanvas: 1
@@ -3428,6 +3430,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerSaveManager
   playerSaveController: {fileID: 219517348}
+  saveModules: []
   saveFolderName: Saves
   saveFileName: player_save.json
   saveKey: 289
@@ -4056,7 +4059,6 @@ MonoBehaviour:
   lineColor: {r: 0.2, g: 0.95, b: 0.85, a: 0.42}
   occupiedCellColor: {r: 1, g: 0.12, b: 0.08, a: 0.5}
   previewCellColor: {r: 1, g: 0.85, b: 0.12, a: 0.5}
-  splitCellColor: {r: 1, g: 0.45, b: 0.05, a: 0.45}
 --- !u!1 &1661278353
 GameObject:
   m_ObjectHideFlags: 0

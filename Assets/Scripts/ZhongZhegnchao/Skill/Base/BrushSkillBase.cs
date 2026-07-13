@@ -17,11 +17,31 @@ public abstract class BrushSkillBase : MonoBehaviour
     [Header("墨囊消耗限制")]
     public bool requireInkCost = true;
 
-    private IBrushSkillCostReceiver skillCostReceiver;
+    [Header("Debug")]
+    public bool debugLog = true;
 
+    private IBrushSkillCostReceiver skillCostReceiver;
     private IBrushSkillUnlockReceiver skillUnlockReceiver;
 
+    private float nextUseAllowedTime;
+
     protected abstract BrushSkillType SkillType { get; }
+
+    public float CooldownRemaining
+    {
+        get
+        {
+            return Mathf.Max(0f, nextUseAllowedTime - Time.unscaledTime);
+        }
+    }
+
+    public bool IsCoolingDown
+    {
+        get
+        {
+            return CooldownRemaining > 0f;
+        }
+    }
 
     protected virtual void Awake()
     {
@@ -58,6 +78,83 @@ public abstract class BrushSkillBase : MonoBehaviour
             E_EventType.E_Brush_GestureRecognized,
             OnGestureRecognized
         );
+    }
+
+    private void OnGestureRecognized(BrushGestureResult result)
+    {
+        if (result == null)
+            return;
+
+        if (result.score < minScore)
+            return;
+
+        if (result.skillType != SkillType)
+            return;
+
+        if (!CanUseUnlockedSkill())
+            return;
+
+        // 重点：先检查 CD，再扣墨囊
+        if (!CanUseCooldown())
+            return;
+
+        if (!TryPayInkCost())
+            return;
+
+        BrushCastContext context = null;
+
+        if (castContextBuilder != null)
+        {
+            context = castContextBuilder.Build(result, caster);
+        }
+
+        Execute(result, context);
+
+        StartCooldown();
+    }
+
+    private bool CanUseCooldown()
+    {
+        float cooldown = Mathf.Max(0f, GetCooldown());
+
+        if (cooldown <= 0f)
+            return true;
+
+        if (Time.unscaledTime >= nextUseAllowedTime)
+            return true;
+
+        if (debugLog)
+        {
+            Debug.Log(
+                $"[BrushSkillBase] Skill is cooling down: {SkillType}, Remaining={CooldownRemaining:F2}s",
+                this
+            );
+        }
+
+        return false;
+    }
+
+    private void StartCooldown()
+    {
+        float cooldown = Mathf.Max(0f, GetCooldown());
+
+        if (cooldown <= 0f)
+            return;
+
+        nextUseAllowedTime = Time.unscaledTime + cooldown;
+
+        if (debugLog)
+        {
+            Debug.Log(
+                $"[BrushSkillBase] Cooldown started: {SkillType}, CD={cooldown:F2}s",
+                this
+            );
+        }
+    }
+
+    protected virtual float GetCooldown()
+    {
+        return 0f;
     }
 
     private void ResolveSkillUnlockReceiver()
@@ -127,33 +224,6 @@ public abstract class BrushSkillBase : MonoBehaviour
         }
 
         return true;
-    }
-
-    private void OnGestureRecognized(BrushGestureResult result)
-    {
-        if (result == null)
-            return;
-
-        if (result.score < minScore)
-            return;
-
-        if (result.skillType != SkillType)
-            return;
-
-        if (!CanUseUnlockedSkill())
-            return;
-
-        if (!TryPayInkCost())
-            return;
-
-        BrushCastContext context = null;
-
-        if (castContextBuilder != null)
-        {
-            context = castContextBuilder.Build(result, caster);
-        }
-
-        Execute(result, context);
     }
 
     private void ResolveSkillCostReceiver()
