@@ -66,6 +66,7 @@ public enum E_EventType
     #region New Player Combat Events
     E_Player_Damaged,
     E_Player_Dead,
+    E_Player_Teleported,
     #endregion
 
     #region Enemy

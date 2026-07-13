@@ -1,18 +1,20 @@
-using System.IO;
+锘縰sing System.IO;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerSaveManager : MonoBehaviour
 {
     public static PlayerSaveManager Instance { get; private set; }
 
-    [Header("存档对象")]
+    [Header("Save Targets")]
     public PlayerSaveController playerSaveController;
+    public MonoBehaviour[] saveModules;
 
-    [Header("文件设置")]
+    [Header("File Settings")]
     public string saveFolderName = "Saves";
     public string saveFileName = "player_save.json";
 
-    [Header("测试按键")]
+    [Header("Test Keys")]
     public KeyCode saveKey = KeyCode.F8;
     public KeyCode loadKey = KeyCode.F9;
 
@@ -49,6 +51,9 @@ public class PlayerSaveManager : MonoBehaviour
         {
             playerSaveController = FindObjectOfType<PlayerSaveController>();
         }
+
+        EnsureDefaultSaveModules();
+        RefreshSaveModules();
     }
 
     private void Update()
@@ -66,14 +71,7 @@ public class PlayerSaveManager : MonoBehaviour
 
     public void SavePlayer()
     {
-        if (playerSaveController == null)
-        {
-            Debug.LogWarning("[PlayerSaveManager] PlayerSaveController is missing.", this);
-            return;
-        }
-
-        PlayerSaveData saveData = playerSaveController.CapturePlayerSaveData();
-
+        GameSaveData saveData = CaptureGameSaveData();
         string json = JsonUtility.ToJson(saveData, true);
 
         if (!Directory.Exists(SaveFolderPath))
@@ -85,7 +83,7 @@ public class PlayerSaveManager : MonoBehaviour
 
         if (debugLog)
         {
-            Debug.Log($"[PlayerSaveManager] Player saved to: {SaveFilePath}", this);
+            Debug.Log($"[PlayerSaveManager] Game saved to: {SaveFilePath}", this);
         }
     }
 
@@ -97,26 +95,120 @@ public class PlayerSaveManager : MonoBehaviour
             return;
         }
 
-        if (playerSaveController == null)
-        {
-            Debug.LogWarning("[PlayerSaveManager] PlayerSaveController is missing.", this);
-            return;
-        }
-
         string json = File.ReadAllText(SaveFilePath);
-
-        PlayerSaveData saveData = JsonUtility.FromJson<PlayerSaveData>(json);
-
-        playerSaveController.RestorePlayerSaveData(saveData);
+        GameSaveData saveData = ReadSaveJson(json);
+        RestoreGameSaveData(saveData);
 
         if (debugLog)
         {
-            Debug.Log($"[PlayerSaveManager] Player loaded from: {SaveFilePath}", this);
+            Debug.Log($"[PlayerSaveManager] Game loaded from: {SaveFilePath}", this);
         }
     }
 
     public string GetSaveFilePath()
     {
         return SaveFilePath;
+    }
+
+    private static GameSaveData ReadSaveJson(string json)
+    {
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            return new GameSaveData();
+        }
+
+        if (json.Contains("\"version\""))
+        {
+            return JsonUtility.FromJson<GameSaveData>(json);
+        }
+
+        return new GameSaveData
+        {
+            player = JsonUtility.FromJson<PlayerSaveData>(json)
+        };
+    }
+
+    public GameSaveData CaptureGameSaveData()
+    {
+        RefreshSaveModules();
+
+        GameSaveData saveData = new GameSaveData
+        {
+            sceneName = SceneManager.GetActiveScene().name
+        };
+
+        if (playerSaveController != null)
+        {
+            saveData.player = playerSaveController.CapturePlayerSaveData();
+        }
+
+        for (int i = 0; i < saveModules.Length; i++)
+        {
+            if (saveModules[i] is IGameSaveModule module)
+            {
+                module.CaptureGameSaveData(saveData);
+            }
+        }
+
+        return saveData;
+    }
+
+    public void RestoreGameSaveData(GameSaveData saveData)
+    {
+        if (saveData == null)
+        {
+            Debug.LogWarning("[PlayerSaveManager] Game save data is null.", this);
+            return;
+        }
+
+        RefreshSaveModules();
+
+        if (playerSaveController != null && saveData.player != null)
+        {
+            playerSaveController.RestorePlayerSaveData(saveData.player);
+        }
+
+        for (int i = 0; i < saveModules.Length; i++)
+        {
+            if (saveModules[i] is IGameSaveModule module)
+            {
+                module.RestoreGameSaveData(saveData);
+            }
+        }
+    }
+
+    public void ClearSaveCache()
+    {
+        if (File.Exists(SaveFilePath))
+        {
+            File.Delete(SaveFilePath);
+        }
+
+        if (debugLog)
+        {
+            Debug.Log($"[PlayerSaveManager] Save cache cleared. Path={SaveFilePath}", this);
+        }
+    }
+
+    private void RefreshSaveModules()
+    {
+        saveModules = FindObjectsOfType<MonoBehaviour>(true);
+    }
+
+    private void EnsureDefaultSaveModules()
+    {
+        WorldStateSaveController.EnsureInstance();
+
+        if (FindAnyObjectByType<PlacementCommitter>() != null
+            && FindAnyObjectByType<BuildingSaveController>() == null)
+        {
+            new GameObject("BuildingSaveController").AddComponent<BuildingSaveController>();
+        }
+
+        if (FindAnyObjectByType<TimedPickupSpawner>(FindObjectsInactive.Include) != null
+            && FindAnyObjectByType<GameTimeRefreshManager>() == null)
+        {
+            new GameObject("GameTimeRefreshManager").AddComponent<GameTimeRefreshManager>();
+        }
     }
 }

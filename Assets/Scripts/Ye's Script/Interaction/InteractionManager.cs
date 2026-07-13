@@ -64,6 +64,7 @@ public class InteractionManager : MonoBehaviour
         {
             rollBoxUI.OptionClicked += HandleOptionClicked;
             rollBoxUI.OptionHovered += HandleOptionHovered;
+            rollBoxUI.OptionSliderSelected += HandleOptionSliderSelected;
         }
     }
 
@@ -79,6 +80,7 @@ public class InteractionManager : MonoBehaviour
         {
             rollBoxUI.OptionClicked -= HandleOptionClicked;
             rollBoxUI.OptionHovered -= HandleOptionHovered;
+            rollBoxUI.OptionSliderSelected -= HandleOptionSliderSelected;
         }
 
         UnsubscribeAllReactables();
@@ -307,6 +309,11 @@ public class InteractionManager : MonoBehaviour
     {
         SelectByIndex(index, false);
         ExecuteSelected();
+    }
+
+    private void HandleOptionSliderSelected(int index)
+    {
+        SelectByIndex(index, true);
     }
 
     private void SelectByIndex(int index, bool scrollIntoView)

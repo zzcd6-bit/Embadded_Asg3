@@ -51,11 +51,20 @@ public class PlacementCommitter : MonoBehaviour
 
         gridPlacementSystem.OccupyCells(pivotCell, item.Size, rotationSteps, building);
         ApplyNavMeshBuildSettings(building, item);
+        EnsurePlayerPlacedMarker(building);
         EnsureWorldEditButton(building);
         EnsureDeleteReactable(building);
         EnsureInteractionCollider(building);
         AddColliderGuard(building);
         ScheduleNavMeshRebuild();
+    }
+
+    private static void EnsurePlayerPlacedMarker(BuildingInstance building)
+    {
+        if (building.GetComponent<PlayerPlacedBuildingMarker>() == null)
+        {
+            building.gameObject.AddComponent<PlayerPlacedBuildingMarker>();
+        }
     }
 
     //Restores an edited building to its original transform and grid cells.

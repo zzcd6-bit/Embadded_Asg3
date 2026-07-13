@@ -9,6 +9,9 @@ public enum PlacementSurfaceRule
 [CreateAssetMenu(menuName = "Building/Buildable Item", fileName = "BuildableItem")]
 public class BuildableItemData : ScriptableObject
 {
+    [Header("Identity")]
+    [SerializeField] private string itemId;
+
     [Header("Display")]
     [SerializeField] private string displayName = "New Building";
     [SerializeField] private Sprite icon;
@@ -26,6 +29,7 @@ public class BuildableItemData : ScriptableObject
     [Header("Economy")]
     [SerializeField] private int cost;
 
+    public string ItemId => string.IsNullOrWhiteSpace(itemId) ? name : itemId;
     public string DisplayName => string.IsNullOrWhiteSpace(displayName) ? name : displayName;
     public Sprite Icon => icon;
     public string Description => description;
@@ -37,4 +41,14 @@ public class BuildableItemData : ScriptableObject
     public float PlacementYOffset => placementYOffset;
     public bool ContributesWalkableNavMesh => contributesWalkableNavMesh;
     public int Cost => Mathf.Max(0, cost);
+
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        if (string.IsNullOrWhiteSpace(itemId))
+        {
+            itemId = name;
+        }
+    }
+#endif
 }

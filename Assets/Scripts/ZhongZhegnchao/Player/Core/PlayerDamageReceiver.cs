@@ -31,6 +31,7 @@ public class PlayerDamageReceiver : MonoBehaviour, IDamageable
     {
         maxHp = Mathf.Max(1, newMaxHp);
         currentHp = Mathf.Clamp(newCurrentHp, 0, maxHp);
+        isDead = currentHp <= 0;
     }
 
     private void Awake()
