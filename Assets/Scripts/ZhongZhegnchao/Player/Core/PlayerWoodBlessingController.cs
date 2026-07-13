@@ -63,14 +63,11 @@ public class PlayerWoodBlessingController : MonoBehaviour
             woodRoutine = null;
         }
 
-        if (healVfxRecycleRoutine != null)
-        {
-            StopCoroutine(healVfxRecycleRoutine);
-            healVfxRecycleRoutine = null;
-        }
+        StopHealVfxRecycleRoutine();
 
         RecycleHealVfx();
         RecycleShieldVfx();
+
         UnbindShieldEvents();
     }
 
@@ -207,6 +204,7 @@ public class PlayerWoodBlessingController : MonoBehaviour
 
     private void PlayHealVfxOnce(BrushSkillConfig config)
     {
+        StopHealVfxRecycleRoutine();
         RecycleHealVfx();
 
         GameObject vfxObject = SpawnVfxObject(
@@ -424,51 +422,40 @@ public class PlayerWoodBlessingController : MonoBehaviour
 
     private void RecycleHealVfx()
     {
-        if (activeHealVfx == null)
-            return;
-
         GameObject vfxObject = activeHealVfx;
+        bool fromPool = activeHealVfxFromPool;
 
         activeHealVfx = null;
-
-        if (activeHealVfxFromPool)
-        {
-            vfxObject.transform.SetParent(null);
-            PoolMgr.Instance.PushObj(vfxObject);
-        }
-        else
-        {
-            Destroy(vfxObject);
-        }
-
         activeHealVfxFromPool = false;
+
+        if (!IsAlive(vfxObject))
+            return;
+
+        PushOrDestroyVfx(
+            vfxObject,
+            fromPool
+        );
     }
 
     private void RecycleShieldVfx()
     {
-        if (activeShieldVfx == null)
-            return;
-
         GameObject vfxObject = activeShieldVfx;
+        bool fromPool = activeShieldVfxFromPool;
 
         activeShieldVfx = null;
-
-        if (activeShieldVfxFromPool)
-        {
-            vfxObject.transform.SetParent(null);
-            PoolMgr.Instance.PushObj(vfxObject);
-        }
-        else
-        {
-            Destroy(vfxObject);
-        }
-
         activeShieldVfxFromPool = false;
 
-        // ÐÂÔö£ºÖØÖÃ¸úËæ×´Ì¬
         shieldVfxFollowPlayerPosition = false;
         shieldVfxWorldOffset = Vector3.zero;
         shieldVfxFixedWorldRotation = Quaternion.identity;
+
+        if (!IsAlive(vfxObject))
+            return;
+
+        PushOrDestroyVfx(
+            vfxObject,
+            fromPool
+        );
     }
 
     private void OnShieldCleared()
@@ -525,6 +512,40 @@ public class PlayerWoodBlessingController : MonoBehaviour
                 healReceiver = receiver;
                 return;
             }
+        }
+    }
+
+    private bool IsAlive(GameObject obj)
+    {
+        return !ReferenceEquals(obj, null) && obj != null;
+    }
+
+    private void StopHealVfxRecycleRoutine()
+    {
+        if (healVfxRecycleRoutine != null)
+        {
+            StopCoroutine(healVfxRecycleRoutine);
+            healVfxRecycleRoutine = null;
+        }
+    }
+
+    private void PushOrDestroyVfx(
+        GameObject vfxObject,
+        bool fromPool
+    )
+    {
+        if (!IsAlive(vfxObject))
+            return;
+
+        vfxObject.transform.SetParent(null, true);
+
+        if (fromPool)
+        {
+            PoolMgr.Instance.PushObj(vfxObject);
+        }
+        else
+        {
+            Destroy(vfxObject);
         }
     }
 }

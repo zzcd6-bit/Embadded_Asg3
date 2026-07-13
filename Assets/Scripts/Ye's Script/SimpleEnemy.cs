@@ -68,7 +68,7 @@ public class SimpleEnemy : MonoBehaviour
     [SerializeField] private bool enableLogs;
 
     private NavMeshAgent agent;
-    private EnemyHealth health;
+    private EnemyWhitebox health;
     private EnemyState state;
     private EnemyPatrolNode currentNode;
     private Vector3 homePosition;
@@ -86,9 +86,17 @@ public class SimpleEnemy : MonoBehaviour
         if (animator == null)
             animator = GetComponentInChildren<Animator>();
 
-        health = GetComponent<EnemyHealth>();
+        health = GetComponent<EnemyWhitebox>();
+
         if (health == null)
-            health = GetComponentInChildren<EnemyHealth>();
+        {
+            health = GetComponentInChildren<EnemyWhitebox>();
+        }
+
+        if (health == null)
+        {
+            health = GetComponentInParent<EnemyWhitebox>();
+        }
 
         homePosition = transform.position;
         homeRotation = transform.rotation;
@@ -133,6 +141,11 @@ public class SimpleEnemy : MonoBehaviour
 
     public void OnDamaged(Transform attacker)
     {
+        OnDamaged(attacker, true);
+    }
+
+    public void OnDamaged(Transform attacker, bool applyKnockback)
+    {
         if (state == EnemyState.Dead)
             return;
 
@@ -141,7 +154,11 @@ public class SimpleEnemy : MonoBehaviour
         else
             ResolvePlayer();
 
-        ApplyKnockback(attacker);
+        if (applyKnockback)
+        {
+            ApplyKnockback(attacker);
+        }
+
         EnterAttack();
     }
 

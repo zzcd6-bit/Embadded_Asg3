@@ -178,6 +178,37 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineHardLookAt
   LookAtOffset: {x: 0, y: 0, z: 0}
+--- !u!1 &5192622941783547617
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8263279031209517386}
+  m_Layer: 3
+  m_Name: Number_Point
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8263279031209517386
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5192622941783547617}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7856182803000044564}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8711962937741669046
 GameObject:
   m_ObjectHideFlags: 0
@@ -201,6 +232,8 @@ GameObject:
   - component: {fileID: 1137316859447328085}
   - component: {fileID: 2635472896341656605}
   - component: {fileID: 208053203136394069}
+  - component: {fileID: 7077421209326253301}
+  - component: {fileID: 9194434917462506763}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -225,6 +258,8 @@ Transform:
   - {fileID: 4016404615006289008}
   - {fileID: 6495622177737450036}
   - {fileID: 3964615168832499923}
+  - {fileID: 9023195378453207658}
+  - {fileID: 8263279031209517386}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!143 &8043345172028202198
@@ -526,6 +561,70 @@ MonoBehaviour:
   waterAuraObject: {fileID: 9009018693799760511, guid: 3e92f366e6460d5448af3142caff0716, type: 3}
   spawnPoint: {fileID: 3964615168832499923}
   debugLog: 1
+--- !u!114 &7077421209326253301
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8711962937741669046}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7c185907279873459e8fe083553e5db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerShieldController
+  hasShield: 0
+  currentShieldValue: 0
+  shieldRemainingTime: 0
+  debugLog: 1
+--- !u!114 &9194434917462506763
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8711962937741669046}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22828f39e2455464294eec9a4a0add7b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerWoodBlessingController
+  playerRoot: {fileID: 7856182803000044564}
+  vfxRoot: {fileID: 9023195378453207658}
+  healNumberAnchor: {fileID: 8263279031209517386}
+  shieldController: {fileID: 7077421209326253301}
+  debugLog: 1
+--- !u!1 &9168769259887215454
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9023195378453207658}
+  m_Layer: 3
+  m_Name: Wood_Point
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9023195378453207658
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9168769259887215454}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7856182803000044564}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &4011621375534348566
 PrefabInstance:
   m_ObjectHideFlags: 0

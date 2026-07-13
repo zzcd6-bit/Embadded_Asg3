@@ -3,7 +3,7 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public class DeathDropBridge : MonoBehaviour
 {
-    [SerializeField] private EnemyHealth enemyHealth;
+    [SerializeField] private EnemyWhitebox enemyHealth;
     [SerializeField] private DropReward dropReward;
     [SerializeField] private bool dropOnlyOnce = true;
 
@@ -11,7 +11,7 @@ public class DeathDropBridge : MonoBehaviour
 
     private void Reset()
     {
-        enemyHealth = GetComponentInParent<EnemyHealth>();
+        enemyHealth = GetComponentInParent<EnemyWhitebox>();
         dropReward = GetComponent<DropReward>();
     }
 
@@ -51,7 +51,7 @@ public class DeathDropBridge : MonoBehaviour
     {
         if (enemyHealth == null)
         {
-            enemyHealth = GetComponentInParent<EnemyHealth>();
+            enemyHealth = GetComponentInParent<EnemyWhitebox>();
         }
 
         if (dropReward == null)
