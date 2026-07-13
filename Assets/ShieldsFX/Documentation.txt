@@ -1,0 +1,7 @@
+Documentation here: https://tvitchi-vfx.gitbook.io/shieldsfx/
+
+How to use? 
+1.Place the mesh on the map.
+2.Create a material with the shader graph in ShieldsFX/Core/Shader Graph.
+3.Customize the material according to your preferences.
+4.Apply the material to the mesh.

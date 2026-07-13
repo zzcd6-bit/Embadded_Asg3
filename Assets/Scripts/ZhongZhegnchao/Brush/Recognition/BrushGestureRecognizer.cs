@@ -305,6 +305,9 @@ public class BrushGestureRecognizer : MonoBehaviour
             case "bridge":
                 return BrushSkillType.Bridge;
 
+            case "wood":
+                return BrushSkillType.Wood;
+
             default:
                 return BrushSkillType.None;
         }

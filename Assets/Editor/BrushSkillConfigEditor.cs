@@ -80,6 +80,30 @@ public class BrushSkillConfigEditor : Editor
     private SerializedProperty waterSpeedRandomMin;
     private SerializedProperty waterSpeedRandomMax;
 
+    private SerializedProperty woodEffectDuration;
+
+    private SerializedProperty woodHealAmountPerTick;
+    private SerializedProperty woodHealTickInterval;
+
+    private SerializedProperty woodHealVfxUsePool;
+    private SerializedProperty woodHealVfxPoolName;
+    private SerializedProperty woodHealVfxPrefab;
+    private SerializedProperty woodHealVfxLocalOffset;
+    private SerializedProperty woodHealVfxParentToPlayer;
+    private SerializedProperty woodHealVfxRecycleDelay;
+
+    private SerializedProperty woodShieldVfxUsePool;
+    private SerializedProperty woodShieldVfxPoolName;
+    private SerializedProperty woodShieldVfxPrefab;
+    private SerializedProperty woodShieldVfxLocalOffset;
+    private SerializedProperty woodShieldVfxParentToPlayer;
+    private SerializedProperty woodShieldVfxForceLoop;
+
+    private SerializedProperty woodGrantShield;
+    private SerializedProperty woodShieldAmount;
+    private SerializedProperty woodShieldDuration;
+    private SerializedProperty woodRefreshShieldWhenReapply;
+
     private SerializedProperty bridgeTriggerLayer;
     private SerializedProperty bridgeCastRadius;
     private SerializedProperty bridgeActiveDuration;
@@ -162,6 +186,30 @@ public class BrushSkillConfigEditor : Editor
         waterSpeedRandomMin = serializedObject.FindProperty("waterSpeedRandomMin");
         waterSpeedRandomMax = serializedObject.FindProperty("waterSpeedRandomMax");
 
+        woodEffectDuration = serializedObject.FindProperty("woodEffectDuration");
+
+        woodHealAmountPerTick = serializedObject.FindProperty("woodHealAmountPerTick");
+        woodHealTickInterval = serializedObject.FindProperty("woodHealTickInterval");
+
+        woodHealVfxUsePool = serializedObject.FindProperty("woodHealVfxUsePool");
+        woodHealVfxPoolName = serializedObject.FindProperty("woodHealVfxPoolName");
+        woodHealVfxPrefab = serializedObject.FindProperty("woodHealVfxPrefab");
+        woodHealVfxLocalOffset = serializedObject.FindProperty("woodHealVfxLocalOffset");
+        woodHealVfxParentToPlayer = serializedObject.FindProperty("woodHealVfxParentToPlayer");
+        woodHealVfxRecycleDelay = serializedObject.FindProperty("woodHealVfxRecycleDelay");
+
+        woodShieldVfxUsePool = serializedObject.FindProperty("woodShieldVfxUsePool");
+        woodShieldVfxPoolName = serializedObject.FindProperty("woodShieldVfxPoolName");
+        woodShieldVfxPrefab = serializedObject.FindProperty("woodShieldVfxPrefab");
+        woodShieldVfxLocalOffset = serializedObject.FindProperty("woodShieldVfxLocalOffset");
+        woodShieldVfxParentToPlayer = serializedObject.FindProperty("woodShieldVfxParentToPlayer");
+        woodShieldVfxForceLoop = serializedObject.FindProperty("woodShieldVfxForceLoop");
+
+        woodGrantShield = serializedObject.FindProperty("woodGrantShield");
+        woodShieldAmount = serializedObject.FindProperty("woodShieldAmount");
+        woodShieldDuration = serializedObject.FindProperty("woodShieldDuration");
+        woodRefreshShieldWhenReapply = serializedObject.FindProperty("woodRefreshShieldWhenReapply");
+
         bridgeTriggerLayer = serializedObject.FindProperty("bridgeTriggerLayer");
         bridgeCastRadius = serializedObject.FindProperty("bridgeCastRadius");
         bridgeActiveDuration = serializedObject.FindProperty("bridgeActiveDuration");
@@ -191,6 +239,10 @@ public class BrushSkillConfigEditor : Editor
 
             case BrushSkillType.Water:
                 DrawWaterSettings();
+                break;
+
+            case BrushSkillType.Wood:
+                DrawWoodSettings();
                 break;
 
             case BrushSkillType.Bridge:
@@ -341,6 +393,59 @@ public class BrushSkillConfigEditor : Editor
         }
     }
 
+    private void DrawWoodSettings()
+    {
+        DrawCooldownSettings();
+
+        DrawTitle("Wood 基础设置");
+        EditorGUILayout.PropertyField(woodEffectDuration, new GUIContent("技能持续时间"));
+
+        DrawTitle("Wood 回血设置");
+        EditorGUILayout.PropertyField(woodHealAmountPerTick, new GUIContent("每跳回血量"));
+        EditorGUILayout.PropertyField(woodHealTickInterval, new GUIContent("回血间隔"));
+
+        DrawTitle("Wood 治疗 VFX 设置");
+        EditorGUILayout.PropertyField(woodHealVfxUsePool, new GUIContent("使用对象池"));
+
+        if (woodHealVfxUsePool.boolValue)
+        {
+            EditorGUILayout.PropertyField(woodHealVfxPoolName, new GUIContent("治疗 VFX 池名称 / Resources 路径"));
+        }
+        else
+        {
+            EditorGUILayout.PropertyField(woodHealVfxPrefab, new GUIContent("治疗 VFX Prefab"));
+        }
+
+        EditorGUILayout.PropertyField(woodHealVfxLocalOffset, new GUIContent("治疗 VFX 本地偏移"));
+        EditorGUILayout.PropertyField(woodHealVfxParentToPlayer, new GUIContent("治疗 VFX 是否跟随 Player"));
+        EditorGUILayout.PropertyField(woodHealVfxRecycleDelay, new GUIContent("治疗 VFX 回收延迟"));
+
+        DrawTitle("Wood 护盾 VFX 设置");
+        EditorGUILayout.PropertyField(woodShieldVfxUsePool, new GUIContent("使用对象池"));
+
+        if (woodShieldVfxUsePool.boolValue)
+        {
+            EditorGUILayout.PropertyField(woodShieldVfxPoolName, new GUIContent("护盾 VFX 池名称 / Resources 路径"));
+        }
+        else
+        {
+            EditorGUILayout.PropertyField(woodShieldVfxPrefab, new GUIContent("护盾 VFX Prefab"));
+        }
+
+        EditorGUILayout.PropertyField(woodShieldVfxLocalOffset, new GUIContent("护盾 VFX 本地偏移"));
+        EditorGUILayout.PropertyField(woodShieldVfxParentToPlayer, new GUIContent("护盾 VFX 是否跟随 Player 位置"));
+        EditorGUILayout.PropertyField(woodShieldVfxForceLoop, new GUIContent("护盾 VFX 强制循环"));
+
+        DrawTitle("Wood 护盾设置");
+        EditorGUILayout.PropertyField(woodGrantShield, new GUIContent("是否给予护盾"));
+
+        if (woodGrantShield.boolValue)
+        {
+            EditorGUILayout.PropertyField(woodShieldAmount, new GUIContent("护盾值"));
+            EditorGUILayout.PropertyField(woodShieldDuration, new GUIContent("护盾持续时间"));
+            EditorGUILayout.PropertyField(woodRefreshShieldWhenReapply, new GUIContent("重复释放是否刷新护盾"));
+        }
+    }
     private void DrawBridgeSettings()
     {
         DrawTitle("Bridge 专属设置");

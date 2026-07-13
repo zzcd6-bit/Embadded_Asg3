@@ -278,4 +278,30 @@ public class DamageNumberSpawner : MonoBehaviour
             obj.SetActive(false);
         }
     }
+
+    public void ShowHealNumber(
+    int healAmount,
+    Vector3 worldPosition
+)
+    {
+        DamageNumberPopup popup = GetPopup();
+
+        if (popup == null)
+            return;
+
+        bool positionValid = SetupPopupPosition(
+            popup,
+            worldPosition
+        );
+
+        if (!positionValid)
+        {
+            RecyclePopup(popup.gameObject);
+            return;
+        }
+
+        EnsurePopupActive(popup);
+
+        popup.InitHeal(healAmount);
+    }
 }

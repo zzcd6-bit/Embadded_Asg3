@@ -1,0 +1,104 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-1764659328572606688
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 10
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Character Standard Shield 3
+  m_Shader: {fileID: -6465566751694194690, guid: 9ab918bf7924a1248bab980a34487353, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords:
+  - _GRADIENT_AXIS_Y
+  - _GRADIENT_SPACE_WORLD
+  - _TRIPLANAR_SPACE_OBJECT
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses:
+  - MOTIONVECTORS
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _Displacement_Texture:
+        m_Texture: {fileID: 2800000, guid: d79980899a0ffca4096b8cd2277679d5, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Dissolve_Texture:
+        m_Texture: {fileID: 2800000, guid: fdd0a30f220ab0b43be8590d6876555c, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Guide_Texture:
+        m_Texture: {fileID: 2800000, guid: 277e1ef47d776d2499904f1a5438c859, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_Lightmaps:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_LightmapsInd:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_ShadowMasks:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _Color_Position: 0.5
+    - _Deph_Hardness: 1
+    - _Deph_Width: 0
+    - _Displacement_Texture_Tilling: 1
+    - _Displacement_power: 3
+    - _Displacment_Scrolling: 0
+    - _Dissolve_Amount: 0.043
+    - _Dissolve_Tilling: 0.29
+    - _Dissolve_Triplanar_UV_s: 1
+    - _Edge_Width: 0.256
+    - _Frensel_On_Texture: 0
+    - _Frensel_Power: 0.88
+    - _GRADIENT_AXIS: 1
+    - _GRADIENT_SPACE: 0
+    - _Invert_Texture: 0
+    - _QueueControl: 0
+    - _QueueOffset: 0
+    - _Scrolling: 0
+    - _Shell_Size: 0.1
+    - _TRIPLANAR_SPACE: 1
+    - _Texture_Opacity: 1
+    - _Tilling: 0.65
+    - _Use_Displacement: 0
+    - _Use_Gradient: 0
+    - _Use_Triplanar_UV_s: 1
+    m_Colors:
+    - _Deph_Color: {r: 0.7490197, g: 0, b: 0, a: 0}
+    - _Displacement_Direction: {r: 0, g: 1, b: 0, a: 0}
+    - _Displacement_Scrolling_Speed: {r: 0, g: 0, b: 0, a: 0}
+    - _Edge_Color: {r: 0, g: 1.7652464, b: 4, a: 0}
+    - _Frensel_Color: {r: 0.56470597, g: 1.486483, b: 1.9607843, a: 0}
+    - _Scrolling_Speed: {r: 0, g: 0, b: 0, a: 0}
+    - _Texture_Color_1: {r: 0, g: 0.46060735, b: 0.5019608, a: 0}
+    - _Texture_Color_2: {r: 0.06150281, g: 1, b: 0, a: 0}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1

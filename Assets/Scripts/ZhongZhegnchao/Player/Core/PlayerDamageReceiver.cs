@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [DisallowMultipleComponent]
-public class PlayerDamageReceiver : MonoBehaviour, IDamageable
+public class PlayerDamageReceiver : MonoBehaviour, IDamageable, IHealable
 {
     [Header("HP")]
     [SerializeField] private int maxHp = 100;
@@ -142,6 +142,31 @@ public class PlayerDamageReceiver : MonoBehaviour, IDamageable
         // 2. 播放死亡动画
         // 3. 打开 GameOver UI
         // 4. 后续这些都可以通过 E_Player_Dead 的监听器处理
+    }
+
+    public int Heal(int amount)
+    {
+        amount = Mathf.Max(0, amount);
+
+        if (amount <= 0)
+            return 0;
+
+        int oldHp = currentHp;
+
+        currentHp = Mathf.Min(
+            currentHp + amount,
+            maxHp
+        );
+
+        int actualHeal = currentHp - oldHp;
+
+        if (actualHeal > 0)
+        {
+            // 如果你有 HP UI，在这里刷新
+            // UpdateHpUI();
+        }
+
+        return actualHeal;
     }
 
     public void ResetHp()

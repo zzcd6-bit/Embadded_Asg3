@@ -31,6 +31,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 7856182803000044564}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1106064275447191491
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3964615168832499923}
+  m_Layer: 3
+  m_Name: Spawn_Point
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3964615168832499923
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1106064275447191491}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.03, z: -0.389}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7856182803000044564}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3131388404295523530
 GameObject:
   m_ObjectHideFlags: 0
@@ -58,8 +89,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3131388404295523530}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.14286985, y: -0.08162862, z: 0.0118242735, w: 0.98629874}
-  m_LocalPosition: {x: 0.5000001, y: 2.579, z: -2.9999995}
+  m_LocalRotation: {x: 0.14286982, y: -0.08162859, z: 0.011824268, w: 0.98629874}
+  m_LocalPosition: {x: 0.5, y: 2.579, z: -3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -129,7 +160,7 @@ MonoBehaviour:
     Enabled: 1
     CollisionFilter:
       serializedVersion: 2
-      m_Bits: 64
+      m_Bits: 2048
     IgnoreTag: 
     CameraRadius: 0.2
     DampingIntoCollision: 0
@@ -158,6 +189,18 @@ GameObject:
   - component: {fileID: 7856182803000044564}
   - component: {fileID: 8043345172028202198}
   - component: {fileID: 3662745343256671668}
+  - component: {fileID: 7349654309238769771}
+  - component: {fileID: 1785180408008667298}
+  - component: {fileID: 8289351068557653306}
+  - component: {fileID: 7669014016826536082}
+  - component: {fileID: 351238505609193419}
+  - component: {fileID: 5932185986845760001}
+  - component: {fileID: 7860042217002967190}
+  - component: {fileID: 4633971732814453607}
+  - component: {fileID: 8581579328898955018}
+  - component: {fileID: 1137316859447328085}
+  - component: {fileID: 2635472896341656605}
+  - component: {fileID: 208053203136394069}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -181,6 +224,7 @@ Transform:
   - {fileID: 5847647705263456484}
   - {fileID: 4016404615006289008}
   - {fileID: 6495622177737450036}
+  - {fileID: 3964615168832499923}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!143 &8043345172028202198
@@ -269,6 +313,219 @@ MonoBehaviour:
   references:
     version: 2
     RefIds: []
+--- !u!114 &7349654309238769771
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8711962937741669046}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3caf13947c240004080eaf3cd8bbf310, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ActionPlayerController
+  playerActionSetKey: Assets/Scripts/ZhongZhegnchao/Config/Action/Fire
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  playerActionSet: {fileID: 11400000, guid: 79905e40acdb84049acee67dacc76707, type: 2}
+  useEditorLocalActionSet: 1
+  editorLocalActionSet: {fileID: 0}
+  editorLocalActionSetPath: Assets/HotUpdate/GameAssets/Config/Combat/Player_ActionSet.asset
+--- !u!114 &1785180408008667298
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8711962937741669046}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c3dd4097599c99458555eea21ed6a2b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerElementInfusion
+  isFireInfused: 0
+  fireDamageMultiplier: 1.5
+  fireApplyBurningOnHit: 1
+  fireBurningDuration: 5
+  fireBurningTickInterval: 1
+  fireBurningTickDamage: 1
+  debugLog: 1
+--- !u!114 &8289351068557653306
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8711962937741669046}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93a7c3df945442141b9a6a1697a478e5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterCombatStats
+  attackPower: 10
+  defense: 0
+  damageBonus: 0
+  critRate: 0.1
+  critDamage: 1.5
+  physicalDamageBonus: 0
+  fireDamageBonus: 0
+  waterDamageBonus: 0
+  iceDamageBonus: 0
+  thunderDamageBonus: 0
+  earthDamageBonus: 0
+  physicalResistance: 0
+  fireResistance: 0
+  waterResistance: 0
+  iceResistance: 0
+  thunderResistance: 0
+  earthResistance: 0
+--- !u!114 &7669014016826536082
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8711962937741669046}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 692bce8e1b9f2a84593cfd2df2bcb123, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerBrushSkillInventory
+  defaultUnlockedSkills: 01000000
+  unlockedSkills: 
+  debugLog: 1
+--- !u!114 &351238505609193419
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8711962937741669046}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96f54db5aa5317640970a01580963fcf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerSaveController
+  damageReceiver: {fileID: 5932185986845760001}
+  skillInventory: {fileID: 7669014016826536082}
+  inkPouchController: {fileID: 0}
+  playerRoot: {fileID: 7856182803000044564}
+  characterController: {fileID: 8043345172028202198}
+  playerRigidbody: {fileID: 0}
+  debugLog: 1
+--- !u!114 &5932185986845760001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8711962937741669046}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3b02d74094f73242ac814cb171b5236, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerDamageReceiver
+  maxHp: 100
+  currentHp: 100
+  debugLog: 1
+--- !u!114 &7860042217002967190
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8711962937741669046}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1aab3b9cb62a1064c82bb1891a3bd01a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerInkPouchController
+  config: {fileID: 11400000, guid: 975f637e3db06d343bf98eb008e9e35b, type: 2}
+  currentInk: 0
+  maxInk: 0
+  debugLog: 1
+--- !u!114 &4633971732814453607
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8711962937741669046}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eaf9ec0f5ae72ff43ad4f7b74ab62c88, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ActionPlayer
+  animancer: {fileID: 8915031168164348362}
+  logHitWithoutDamageable: 0
+  animationController: {fileID: 0}
+  inputReceiver: {fileID: 0}
+  actionConfigSet: {fileID: 0}
+  locomotion: {fileID: 0}
+  elementInfusion: {fileID: 0}
+--- !u!114 &8581579328898955018
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8711962937741669046}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2df254259310e164db8bb3485ab1c2e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerFireActionSetSwitcher
+  elementInfusion: {fileID: 1785180408008667298}
+  actionPlayer: {fileID: 4633971732814453607}
+  combatActionManager: {fileID: 1137316859447328085}
+  combatInputHandler: {fileID: 2635472896341656605}
+  normalActionSet: {fileID: 11400000, guid: 79905e40acdb84049acee67dacc76707, type: 2}
+  fireActionSet: {fileID: 11400000, guid: 00d9f499628ed8f408174f09cb217324, type: 2}
+  restoreNormalActionSetWhenFireEnd: 1
+  debugLog: 1
+--- !u!114 &1137316859447328085
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8711962937741669046}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb9550106d12bbc488d2c17a1a8c2998, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CombatActionManager
+  initialActions: []
+  logCombo: 0
+--- !u!114 &2635472896341656605
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8711962937741669046}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb01d7ce7d678c6439e1b7c6afe5e132, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerCombatInputHandler
+--- !u!114 &208053203136394069
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8711962937741669046}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5c62f3b53030914aac8b7dcffe87dd2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerWaterAuraShooter
+  waterAuraObject: {fileID: 9009018693799760511, guid: 3e92f366e6460d5448af3142caff0716, type: 3}
+  spawnPoint: {fileID: 3964615168832499923}
+  debugLog: 1
 --- !u!1001 &4011621375534348566
 PrefabInstance:
   m_ObjectHideFlags: 0

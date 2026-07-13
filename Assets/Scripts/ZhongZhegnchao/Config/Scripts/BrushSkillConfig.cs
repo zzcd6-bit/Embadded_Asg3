@@ -115,6 +115,35 @@ public class BrushSkillConfig : ScriptableObject
     public float waterSpeedRandomMin = -2f;
     public float waterSpeedRandomMax = 2f;
 
+    [Header("Wood 专属设置")]
+    public float woodEffectDuration = 8f;
+
+    [Header("Wood 回血设置")]
+    public int woodHealAmountPerTick = 5;
+    public float woodHealTickInterval = 1f;
+
+    [Header("Wood 治疗 VFX 设置")]
+    public bool woodHealVfxUsePool = true;
+    public string woodHealVfxPoolName = "Prefabs/WoodHealVFX";
+    public GameObject woodHealVfxPrefab;
+    public Vector3 woodHealVfxLocalOffset = Vector3.zero;
+    public bool woodHealVfxParentToPlayer = true;
+    public float woodHealVfxRecycleDelay = 2f;
+
+    [Header("Wood 护盾 VFX 设置")]
+    public bool woodShieldVfxUsePool = true;
+    public string woodShieldVfxPoolName = "Prefabs/WoodShieldVFX";
+    public GameObject woodShieldVfxPrefab;
+    public Vector3 woodShieldVfxLocalOffset = Vector3.zero;
+    public bool woodShieldVfxParentToPlayer = true;
+    public bool woodShieldVfxForceLoop = true;
+
+    [Header("Wood 护盾设置")]
+    public bool woodGrantShield = true;
+    public int woodShieldAmount = 30;
+    public float woodShieldDuration = 8f;
+    public bool woodRefreshShieldWhenReapply = true;
+
     [Header("Bridge 专属设置")]
     public LayerMask bridgeTriggerLayer;
     public float bridgeCastRadius = 0.6f;

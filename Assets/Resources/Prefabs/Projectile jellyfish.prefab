@@ -29360,9 +29360,13 @@ MonoBehaviour:
   detachedLifeTime: 1
   hitLayer:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 2176
   ignoreAttackerCollision: 1
   destroyOnNonHitLayerCollision: 0
+  runtimeArcSideOffset: 0
+  runtimeArcHeightOffset: 0
+  runtimeSpeedOffset: 0
+  runtimeTargetOffset: {x: 0, y: 0, z: 0}
 --- !u!108 &3828118822299913465
 Light:
   m_ObjectHideFlags: 0

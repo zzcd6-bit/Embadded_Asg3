@@ -15,6 +15,10 @@ public class DamageNumberPopup : MonoBehaviour
     public float moveUpDistance = 80f;
     public float scalePunch = 1.25f;
 
+    [Header("Heal Text")]
+    public string healPrefix = "+";
+    public Color healColor = new Color(0.35f, 1f, 0.35f, 1f);
+
     [Header("Text")]
     public string criticalPrefix = "CRIT ";
     public string vaporizeSuffix = " Vaporize";
@@ -196,5 +200,40 @@ public class DamageNumberPopup : MonoBehaviour
         {
             gameObject.SetActive(false);
         }
+    }
+
+    public void InitHeal(int healAmount)
+    {
+        if (playRoutine != null)
+        {
+            StopCoroutine(playRoutine);
+            playRoutine = null;
+        }
+
+        if (rectTransform == null)
+            rectTransform = GetComponent<RectTransform>();
+
+        if (canvasGroup == null)
+            canvasGroup = GetComponent<CanvasGroup>();
+
+        if (damageText == null)
+            damageText = GetComponentInChildren<TMPro.TextMeshProUGUI>(true);
+
+        startAnchoredPosition = rectTransform.anchoredPosition;
+        transform.localScale = startScale;
+
+        if (canvasGroup != null)
+        {
+            canvasGroup.alpha = 1f;
+        }
+
+        if (damageText != null)
+        {
+            damageText.enabled = true;
+            damageText.text = healPrefix + healAmount.ToString();
+            damageText.color = healColor;
+        }
+
+        playRoutine = StartCoroutine(PlayRoutine());
     }
 }
