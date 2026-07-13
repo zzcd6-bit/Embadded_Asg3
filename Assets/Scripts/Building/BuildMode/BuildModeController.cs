@@ -129,9 +129,9 @@ public class BuildModeController : MonoBehaviour
 
         EventCenter.Instance.EventTrigger<bool>(E_EventType.E_Player_ControlEnable, !enabled);
         EventCenter.Instance.EventTrigger<bool>(E_EventType.E_Player_CombatEnable, !enabled);
-        EventCenter.Instance.EventTrigger<bool>(E_EventType.E_Camera_InputEnable, !enabled);
-        Cursor.lockState = enabled ? CursorLockMode.None : CursorLockMode.Locked;
-        Cursor.visible = enabled;
+        EventCenter.Instance.EventTrigger<bool>(E_EventType.E_Camera_InputEnable, true);
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
 
         if (gridVisual != null)
         {

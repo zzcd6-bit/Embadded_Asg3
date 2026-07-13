@@ -16,6 +16,9 @@ public class PlacementController : MonoBehaviour
     [SerializeField] private LayerMask groundLayer = ~0;
     [SerializeField] private float raycastDistance = 500f;
     [SerializeField] private bool ignorePointerOverUI = true;
+    [SerializeField] private bool useScreenAnchorRaycast = true;
+    [SerializeField] private Vector2 screenAnchorViewport = new(0.5f, 0.58f);
+    [SerializeField] private bool alignRotationToCamera = true;
 
     [Header("Validation")]
     [SerializeField] private float placementCheckInterval = 0.1f;
@@ -35,6 +38,7 @@ public class PlacementController : MonoBehaviour
     private Vector3 currentPlacementPosition;
     private Vector2Int currentPivotCell;
     private int currentRotationSteps;
+    private int manualRotationOffsetSteps;
     private bool hasPlacementPosition;
     private float nextPlacementCheckTime;
     private int placementStartedFrame = -1;
@@ -141,6 +145,7 @@ public class PlacementController : MonoBehaviour
         currentItem = item;
         currentRotation = Quaternion.identity;
         currentRotationSteps = 0;
+        manualRotationOffsetSteps = 0;
         BeginPlacementSession();
         previewController.CreateNewPreview(item);
         UpdatePreviewPosition();
@@ -159,6 +164,7 @@ public class PlacementController : MonoBehaviour
         currentItem = building.Item;
         currentPivotCell = building.PivotCell;
         currentRotationSteps = building.RotationSteps;
+        manualRotationOffsetSteps = NormalizeRotationSteps(currentRotationSteps - GetCameraRotationSteps());
         currentRotation = Quaternion.Euler(0f, building.transform.eulerAngles.y, 0f);
         currentPlacementPosition = building.transform.position;
         originalPivotCell = building.PivotCell;
@@ -218,11 +224,17 @@ public class PlacementController : MonoBehaviour
 
     public void RotatePreview()
     {
-        currentRotation *= Quaternion.Euler(0f, 90f, 0f);
-        currentRotation = Quaternion.Euler(0f, currentRotation.eulerAngles.y, 0f);
-        currentRotationSteps = (currentRotationSteps + 1) % 4;
-        previewController.SetTransform(currentPlacementPosition, currentRotation);
-        AlignCurrentPlacementToGround();
+        manualRotationOffsetSteps = NormalizeRotationSteps(manualRotationOffsetSteps + 1);
+        UpdatePlacementRotationFromCamera();
+
+        if (hasPlacementPosition && gridPlacementSystem != null && currentItem != null)
+        {
+            currentPivotCell = gridPlacementSystem.WorldToPivotCell(currentPlacementPosition, currentItem.Size, currentRotationSteps);
+            currentPlacementPosition = gridPlacementSystem.PivotCellToWorld(currentPivotCell, currentItem.Size, currentRotationSteps);
+            AlignCurrentPlacementToGround();
+            previewController.SetTransform(currentPlacementPosition, currentRotation);
+        }
+
         ValidateCurrentPlacement(true);
     }
 
@@ -288,13 +300,20 @@ public class PlacementController : MonoBehaviour
             return;
         }
 
-        if (ignorePointerOverUI && EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+        if (!useScreenAnchorRaycast
+            && ignorePointerOverUI
+            && EventSystem.current != null
+            && EventSystem.current.IsPointerOverGameObject())
         {
             return;
         }
 
-        Vector3 mousePosition = Input.mousePosition;
-        Ray ray = ActiveCamera.ScreenPointToRay(mousePosition);
+        UpdatePlacementRotationFromCamera();
+
+        Ray ray = useScreenAnchorRaycast
+            ? ActiveCamera.ViewportPointToRay(new Vector3(screenAnchorViewport.x, screenAnchorViewport.y, 0f))
+            : ActiveCamera.ScreenPointToRay(Input.mousePosition);
+
         if (Physics.Raycast(ray, out RaycastHit hit, raycastDistance, groundLayer, QueryTriggerInteraction.Ignore))
         {
             if (!TrySetPreviewPositionFromWorld(hit.point))
@@ -351,6 +370,33 @@ public class PlacementController : MonoBehaviour
     private static bool IsPointerOverUI()
     {
         return EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
+    }
+
+    private void UpdatePlacementRotationFromCamera()
+    {
+        if (!alignRotationToCamera || ActiveCamera == null)
+        {
+            currentRotation = Quaternion.Euler(0f, currentRotation.eulerAngles.y, 0f);
+            return;
+        }
+
+        currentRotationSteps = NormalizeRotationSteps(GetCameraRotationSteps() + manualRotationOffsetSteps);
+        currentRotation = Quaternion.Euler(0f, currentRotationSteps * 90f, 0f);
+    }
+
+    private int GetCameraRotationSteps()
+    {
+        if (ActiveCamera == null)
+        {
+            return 0;
+        }
+
+        return NormalizeRotationSteps(Mathf.RoundToInt(ActiveCamera.transform.eulerAngles.y / 90f));
+    }
+
+    private static int NormalizeRotationSteps(int steps)
+    {
+        return (steps % 4 + 4) % 4;
     }
 
     private bool TrySetPreviewPositionFromWorld(Vector3 worldPosition)
@@ -725,6 +771,7 @@ public class PlacementController : MonoBehaviour
         hasPlacementPosition = false;
         currentRotation = Quaternion.identity;
         currentRotationSteps = 0;
+        manualRotationOffsetSteps = 0;
         previewController.ClearReferences();
     }
 }
