@@ -21,43 +21,171 @@ public class FireBrushSkill : BrushSkillBase
     [Header("Debug")]
     public bool drawDebug = true;
 
-    protected override void Execute(BrushGestureResult result, BrushCastContext context)
+    protected override void Execute(
+     BrushGestureResult result,
+     BrushCastContext context
+ )
     {
         if (config == null)
         {
-            Debug.LogWarning("[FireBrushSkill] Config is missing.");
+            Debug.LogWarning(
+                "[FireBrushSkill] Config is missing."
+            );
+
             return;
         }
 
         if (config.skillType != BrushSkillType.Fire)
         {
-            Debug.LogWarning("[FireBrushSkill] Wrong config skill type.");
+            Debug.LogWarning(
+                "[FireBrushSkill] Wrong config skill type."
+            );
+
             return;
         }
 
         if (context == null)
         {
-            Debug.LogWarning("[FireBrushSkill] BrushCastContext is null.");
+            Debug.LogWarning(
+                "[FireBrushSkill] BrushCastContext is null."
+            );
+
             return;
         }
 
-        List<VisibleFireTarget> visibleTargets = FindVisibleEnemyTargets();
+        int sceneReactionCount =
+            ApplyFireToVisibleSceneElements(context);
 
-        if (visibleTargets.Count <= 0)
+        List<VisibleFireTarget> visibleTargets =
+            FindVisibleEnemyTargets();
+
+        if (visibleTargets.Count <= 0 &&
+            sceneReactionCount <= 0)
         {
-            Debug.Log("[FireBrushSkill] No enemy visible on screen.");
+            Debug.Log(
+                "[FireBrushSkill] " +
+                "No valid enemy or scene element visible."
+            );
+
             return;
         }
 
-        ApplyFireToVisibleTargets(visibleTargets, context);
-        ApplyFireInfusionToPlayer(context);
+        if (visibleTargets.Count > 0)
+        {
+            ApplyFireToVisibleTargets(
+                visibleTargets,
+                context
+            );
+
+            ApplyFireInfusionToPlayer(context);
+        }
 
         if (drawDebug)
         {
             Debug.Log(
-                $"[FireBrushSkill] Fire applied to visible enemies. Count = {visibleTargets.Count}"
+                $"[FireBrushSkill] " +
+                $"EnemyCount={visibleTargets.Count}, " +
+                $"SceneReactionCount={sceneReactionCount}"
             );
         }
+    }
+
+    private int ApplyFireToVisibleSceneElements(
+    BrushCastContext context
+)
+    {
+        if (config == null)
+            return 0;
+
+        if (!config.enableSceneElementInteraction)
+            return 0;
+
+        if (config.sceneElementLayer.value == 0)
+            return 0;
+
+        Camera cameraToUse = GetWorldCamera();
+
+        if (cameraToUse == null)
+            return 0;
+
+        Collider[] colliders = Physics.OverlapSphere(
+            cameraToUse.transform.position,
+            config.rayDistance,
+            config.sceneElementLayer,
+            QueryTriggerInteraction.Collide
+        );
+
+        HashSet<IBrushSceneElementReactable>
+            addedReactables =
+                new HashSet<
+                    IBrushSceneElementReactable>();
+
+        GameObject attackerObject =
+            context != null &&
+            context.caster != null
+                ? context.caster
+                : gameObject;
+
+        int reactionCount = 0;
+
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            Collider col = colliders[i];
+
+            if (col == null)
+                continue;
+
+            if (!IsColliderOnScreen(
+                    col,
+                    cameraToUse
+                ))
+            {
+                continue;
+            }
+
+            IBrushSceneElementReactable reactable =
+                col.GetComponent<
+                    IBrushSceneElementReactable>();
+
+            if (reactable == null)
+            {
+                reactable = col
+                    .GetComponentInParent<
+                        IBrushSceneElementReactable>();
+            }
+
+            if (reactable == null)
+            {
+                reactable = col
+                    .GetComponentInChildren<
+                        IBrushSceneElementReactable>();
+            }
+
+            if (reactable == null)
+                continue;
+
+            if (addedReactables.Contains(reactable))
+                continue;
+
+            addedReactables.Add(reactable);
+
+            if (!reactable.CanReactTo(
+                    BrushSkillType.Fire
+                ))
+            {
+                continue;
+            }
+
+            if (reactable.TryReact(
+                    BrushSkillType.Fire,
+                    attackerObject
+                ))
+            {
+                reactionCount++;
+            }
+        }
+
+        return reactionCount;
     }
 
     private List<VisibleFireTarget> FindVisibleEnemyTargets()

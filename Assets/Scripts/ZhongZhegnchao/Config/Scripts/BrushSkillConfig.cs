@@ -14,6 +14,10 @@ public class BrushSkillConfig : ScriptableObject
     public float rayDistance = 200f;
     public float fallbackDistance = 12f;
 
+    [Header("场景元素交互")]
+    public bool enableSceneElementInteraction = true;
+    public LayerMask sceneElementLayer;
+
     [Header("墨囊消耗")]
     public int inkCost = 1;
 

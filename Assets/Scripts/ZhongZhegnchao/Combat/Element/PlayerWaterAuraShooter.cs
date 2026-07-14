@@ -144,7 +144,8 @@ public class PlayerWaterAuraShooter : MonoBehaviour
             ? projectileCount
             : 1;
 
-        List<Transform> targets = FindEnemyTargets(targetSearchCount);
+        List<Transform> targets =
+    FindWaterTargets(targetSearchCount);
 
         if (targets.Count == 0)
             return;
@@ -217,22 +218,37 @@ public class PlayerWaterAuraShooter : MonoBehaviour
         }
     }
 
-    private List<Transform> FindEnemyTargets(int maxCount)
+    private List<Transform> FindWaterTargets(
+    int maxCount
+)
     {
-        List<Transform> result = new List<Transform>();
-        List<TargetRecord> records = new List<TargetRecord>();
+        List<Transform> result =
+            new List<Transform>();
+
+        List<TargetRecord> records =
+            new List<TargetRecord>();
 
         if (activeConfig == null)
             return result;
 
+        int searchLayer =
+            activeConfig.targetLayer.value;
+
+        if (activeConfig.enableSceneElementInteraction)
+        {
+            searchLayer |=
+                activeConfig.sceneElementLayer.value;
+        }
+
         Collider[] hits = Physics.OverlapSphere(
             transform.position,
             activeConfig.waterSearchRange,
-            activeConfig.targetLayer,
+            searchLayer,
             QueryTriggerInteraction.Collide
         );
 
-        HashSet<Transform> addedTargets = new HashSet<Transform>();
+        HashSet<Transform> addedTargets =
+            new HashSet<Transform>();
 
         for (int i = 0; i < hits.Length; i++)
         {
@@ -241,34 +257,74 @@ public class PlayerWaterAuraShooter : MonoBehaviour
             if (col == null)
                 continue;
 
-            EnemyWhitebox enemy = col.GetComponent<EnemyWhitebox>();
+            Transform targetTransform = null;
 
-            if (enemy == null)
-                enemy = col.GetComponentInParent<EnemyWhitebox>();
+            IBrushSceneElementReactable sceneReactable =
+                FindSceneElementReactable(col);
 
-            if (enemy == null)
-                enemy = col.GetComponentInChildren<EnemyWhitebox>();
+            bool isWaterSceneTarget =
+                sceneReactable != null &&
+                sceneReactable.CanReactTo(
+                    BrushSkillType.Water
+                );
 
-            if (enemy != null && enemy.IsDead)
-                continue;
-
-            IDamageable damageable = col.GetComponent<IDamageable>();
-
-            if (damageable == null)
-                damageable = col.GetComponentInParent<IDamageable>();
-
-            if (damageable == null)
-                damageable = col.GetComponentInChildren<IDamageable>();
-
-            if (damageable == null)
-                continue;
-
-            Transform targetTransform = col.transform;
-
-            if (enemy != null)
+            if (isWaterSceneTarget)
             {
-                targetTransform = enemy.transform;
+                targetTransform =
+                    sceneReactable.ReactionTarget;
             }
+            else
+            {
+                EnemyWhitebox enemy =
+                    col.GetComponent<EnemyWhitebox>();
+
+                if (enemy == null)
+                {
+                    enemy = col
+                        .GetComponentInParent<
+                            EnemyWhitebox>();
+                }
+
+                if (enemy == null)
+                {
+                    enemy = col
+                        .GetComponentInChildren<
+                            EnemyWhitebox>();
+                }
+
+                if (enemy != null && enemy.IsDead)
+                    continue;
+
+                IDamageable damageable =
+                    col.GetComponent<IDamageable>();
+
+                if (damageable == null)
+                {
+                    damageable = col
+                        .GetComponentInParent<
+                            IDamageable>();
+                }
+
+                if (damageable == null)
+                {
+                    damageable = col
+                        .GetComponentInChildren<
+                            IDamageable>();
+                }
+
+                if (damageable == null)
+                    continue;
+
+                targetTransform = col.transform;
+
+                if (enemy != null)
+                {
+                    targetTransform = enemy.transform;
+                }
+            }
+
+            if (targetTransform == null)
+                continue;
 
             if (addedTargets.Contains(targetTransform))
                 continue;
@@ -280,18 +336,24 @@ public class PlayerWaterAuraShooter : MonoBehaviour
                 targetTransform.position
             );
 
-            records.Add(new TargetRecord
-            {
-                target = targetTransform,
-                distance = distance
-            });
+            records.Add(
+                new TargetRecord
+                {
+                    target = targetTransform,
+                    distance = distance
+                }
+            );
         }
 
         records.Sort(
-            (a, b) => a.distance.CompareTo(b.distance)
+            (a, b) =>
+                a.distance.CompareTo(b.distance)
         );
 
-        int count = Mathf.Min(maxCount, records.Count);
+        int count = Mathf.Min(
+            maxCount,
+            records.Count
+        );
 
         for (int i = 0; i < count; i++)
         {
@@ -299,6 +361,35 @@ public class PlayerWaterAuraShooter : MonoBehaviour
         }
 
         return result;
+    }
+
+    private IBrushSceneElementReactable
+    FindSceneElementReactable(
+        Component component
+    )
+    {
+        if (component == null)
+            return null;
+
+        IBrushSceneElementReactable reactable =
+            component.GetComponent<
+                IBrushSceneElementReactable>();
+
+        if (reactable == null)
+        {
+            reactable = component
+                .GetComponentInParent<
+                    IBrushSceneElementReactable>();
+        }
+
+        if (reactable == null)
+        {
+            reactable = component
+                .GetComponentInChildren<
+                    IBrushSceneElementReactable>();
+        }
+
+        return reactable;
     }
 
     private Vector3 GetRandomBarrageSpawnPosition(
@@ -363,70 +454,107 @@ public class PlayerWaterAuraShooter : MonoBehaviour
 
         HS_ProjectileMover mover = projectileObj.GetComponent<HS_ProjectileMover>();
 
-        if (mover == null)
-        {
-            mover = projectileObj.GetComponentInChildren<HS_ProjectileMover>();
-        }
-
         if (mover != null)
         {
-            mover.OnRecycleRequested = RecycleWaterProjectile;
+            IBrushSceneElementReactable sceneReactable =
+                FindSceneElementReactable(target);
+
+            bool isSceneElementTarget =
+                activeConfig.enableSceneElementInteraction &&
+                sceneReactable != null &&
+                sceneReactable.CanReactTo(
+                    BrushSkillType.Water
+                );
+
+            mover.OnRecycleRequested =
+                RecycleWaterProjectile;
+
             mover.ApplyWaterConfig(activeConfig);
 
             mover.Init(
-                    gameObject,
-                    target,
-                    activeConfig.waterProjectileDamage,
-                    activeConfig.waterProjectileKnockback,
-                    activeConfig.wetDuration
-                );
+                gameObject,
+                target,
+                activeConfig.waterProjectileDamage,
+                activeConfig.waterProjectileKnockback,
+                activeConfig.wetDuration
+            );
+
+            float sideOffset = 0f;
+            float heightOffset = 0f;
+            float speedOffset = 0f;
+
+            Vector3 extraTargetOffset =
+                isSceneElementTarget
+                    ? -activeConfig.waterTargetOffset
+                    : Vector3.zero;
 
             if (activeConfig.waterUseRandomBarrage)
             {
-                float sideOffset = Random.Range(
+                sideOffset = Random.Range(
                     activeConfig.waterArcSideOffsetMin,
                     activeConfig.waterArcSideOffsetMax
                 );
 
-                float heightOffset = Random.Range(
+                heightOffset = Random.Range(
                     activeConfig.waterArcHeightRandomMin,
                     activeConfig.waterArcHeightRandomMax
                 );
 
-                float speedOffset = Random.Range(
+                speedOffset = Random.Range(
                     activeConfig.waterSpeedRandomMin,
                     activeConfig.waterSpeedRandomMax
                 );
 
-                Vector3 randomTargetOffset = Random.insideUnitSphere *
-                                             activeConfig.waterRandomTargetOffsetRadius;
+                if (!isSceneElementTarget)
+                {
+                    extraTargetOffset =
+                        Random.insideUnitSphere *
+                        activeConfig
+                            .waterRandomTargetOffsetRadius;
 
-                randomTargetOffset.y = Mathf.Abs(randomTargetOffset.y) * 0.6f;
-
-                mover.SetRuntimeArcVariation(
-                    sideOffset,
-                    heightOffset,
-                    speedOffset,
-                    randomTargetOffset
-                );
-
-                mover.RefreshArcData();
+                    extraTargetOffset.y =
+                        Mathf.Abs(extraTargetOffset.y) *
+                        0.6f;
+                }
             }
-            else
+
+            mover.SetRuntimeArcVariation(
+                sideOffset,
+                heightOffset,
+                speedOffset,
+                extraTargetOffset
+            );
+
+            mover.RefreshArcData();
+
+            WaterProjectileSceneInteractionRelay relay =
+                projectileObj.GetComponent<
+                    WaterProjectileSceneInteractionRelay>();
+
+            if (isSceneElementTarget)
             {
-                mover.Init(
+                if (relay == null)
+                {
+                    relay = projectileObj.AddComponent<
+                        WaterProjectileSceneInteractionRelay>();
+                }
+
+                relay.Init(
                     gameObject,
                     target,
-                    activeConfig.waterProjectileDamage,
-                    activeConfig.waterProjectileKnockback,
-                    activeConfig.wetDuration
+                    activeConfig.waterReachDistance
                 );
+            }
+            else if (relay != null)
+            {
+                relay.Clear();
             }
         }
         else
         {
             Debug.LogWarning(
-                "[PlayerWaterAuraShooter] HS_ProjectileMover not found on water projectile.",
+                "[PlayerWaterAuraShooter] " +
+                "HS_ProjectileMover not found on water projectile.",
                 projectileObj
             );
         }

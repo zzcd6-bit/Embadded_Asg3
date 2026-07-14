@@ -10,6 +10,9 @@ public class BrushSkillConfigEditor : Editor
     private SerializedProperty rayDistance;
     private SerializedProperty fallbackDistance;
 
+    private SerializedProperty enableSceneElementInteraction;
+    private SerializedProperty sceneElementLayer;
+
     private SerializedProperty inkCost;
 
     private SerializedProperty useSkillCooldown;
@@ -115,6 +118,16 @@ public class BrushSkillConfigEditor : Editor
         targetLayer = serializedObject.FindProperty("targetLayer");
         rayDistance = serializedObject.FindProperty("rayDistance");
         fallbackDistance = serializedObject.FindProperty("fallbackDistance");
+
+        enableSceneElementInteraction =
+    serializedObject.FindProperty(
+        "enableSceneElementInteraction"
+    );
+
+        sceneElementLayer =
+            serializedObject.FindProperty(
+                "sceneElementLayer"
+            );
 
         inkCost = serializedObject.FindProperty("inkCost");
 
@@ -256,9 +269,35 @@ public class BrushSkillConfigEditor : Editor
     private void DrawCommonSettings()
     {
         DrawTitle("通用检测设置");
-        EditorGUILayout.PropertyField(targetLayer, new GUIContent("目标 Layer"));
-        EditorGUILayout.PropertyField(rayDistance, new GUIContent("射线 / 搜索距离"));
-        EditorGUILayout.PropertyField(fallbackDistance, new GUIContent("默认释放距离"));
+        EditorGUILayout.PropertyField(
+    targetLayer,
+    new GUIContent("目标 Layer")
+);
+
+        EditorGUILayout.PropertyField(
+            rayDistance,
+            new GUIContent("射线 / 搜索距离")
+        );
+
+        EditorGUILayout.PropertyField(
+            fallbackDistance,
+            new GUIContent("默认释放距离")
+        );
+
+        DrawTitle("场景元素交互");
+
+        EditorGUILayout.PropertyField(
+            enableSceneElementInteraction,
+            new GUIContent("启用场景元素交互")
+        );
+
+        if (enableSceneElementInteraction.boolValue)
+        {
+            EditorGUILayout.PropertyField(
+                sceneElementLayer,
+                new GUIContent("场景元素 Layer")
+            );
+        }
 
         DrawTitle("墨囊消耗");
         EditorGUILayout.PropertyField(inkCost, new GUIContent("墨囊消耗"));

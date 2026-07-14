@@ -18,6 +18,10 @@ MonoBehaviour:
     m_Bits: 128
   rayDistance: 200
   fallbackDistance: 12
+  enableSceneElementInteraction: 1
+  sceneElementLayer:
+    serializedVersion: 2
+    m_Bits: 65536
   inkCost: 3
   useSkillCooldown: 0
   skillCooldown: 10
@@ -81,6 +85,25 @@ MonoBehaviour:
   waterArcHeightRandomMax: 0.8
   waterSpeedRandomMin: -2
   waterSpeedRandomMax: 2
+  woodEffectDuration: 8
+  woodHealAmountPerTick: 5
+  woodHealTickInterval: 1
+  woodHealVfxUsePool: 1
+  woodHealVfxPoolName: Prefabs/WoodHealVFX
+  woodHealVfxPrefab: {fileID: 0}
+  woodHealVfxLocalOffset: {x: 0, y: 0, z: 0}
+  woodHealVfxParentToPlayer: 1
+  woodHealVfxRecycleDelay: 2
+  woodShieldVfxUsePool: 1
+  woodShieldVfxPoolName: Prefabs/WoodShieldVFX
+  woodShieldVfxPrefab: {fileID: 0}
+  woodShieldVfxLocalOffset: {x: 0, y: 0, z: 0}
+  woodShieldVfxParentToPlayer: 1
+  woodShieldVfxForceLoop: 1
+  woodGrantShield: 1
+  woodShieldAmount: 30
+  woodShieldDuration: 8
+  woodRefreshShieldWhenReapply: 1
   bridgeTriggerLayer:
     serializedVersion: 2
     m_Bits: 0
