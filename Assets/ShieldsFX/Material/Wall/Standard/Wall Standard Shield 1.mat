@@ -93,6 +93,7 @@ Material:
     - _Dissolve_Tilling: 0.13
     - _Dissolve_Triplanar_UV_s: 1
     - _DstBlend: 10
+    - _DstBlendAlpha: 10
     - _Edge_Gradient_Power: 1
     - _Edge_Gradient_Width: 4
     - _Edge_Width: 0.092
@@ -105,6 +106,7 @@ Material:
     - _QueueOffset: 0
     - _Scrolling: 1
     - _SrcBlend: 5
+    - _SrcBlendAlpha: 1
     - _Surface: 1
     - _TRIPLANAR_SPACE: 0
     - _Texture_Opacity: 2.34

@@ -843,6 +843,7 @@ GameObject:
   - component: {fileID: 248848590}
   - component: {fileID: 248848591}
   - component: {fileID: 248848592}
+  - component: {fileID: 248848593}
   m_Layer: 0
   m_Name: BrushSystem
   m_TagString: Untagged
@@ -1066,10 +1067,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BrushGestureTemplateRecorder
   recognizer: {fileID: 248848584}
-  templateName: Wood
+  templateName: Wind
   saveNextStrokeKey: 286
   reloadTemplatesKey: 287
-  customGestureFolderName: GestureTemplates/Wood
+  customGestureFolderName: GestureTemplates/Wind
   minPointCount: 6
   reloadRecognizerAfterSave: 1
   keepWaitingIfInvalidStroke: 1
@@ -1152,6 +1153,25 @@ MonoBehaviour:
   debugLog: 1
   config: {fileID: 11400000, guid: 1a59258ca879d3745912f2b3153b83b9, type: 2}
   woodBlessingController: {fileID: 219517359}
+--- !u!114 &248848593
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 248848576}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 318c0b86752de7748ac46763d0d80b20, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WindBrushSkill
+  minScore: 0.65
+  castContextBuilder: {fileID: 248848585}
+  caster: {fileID: 219517335}
+  requireUnlockedSkill: 1
+  requireInkCost: 1
+  debugLog: 1
+  config: {fileID: 11400000, guid: b6ec41f346948be47bb13d00d33be271, type: 2}
 --- !u!1 &292878643
 GameObject:
   m_ObjectHideFlags: 0
@@ -1971,6 +1991,8 @@ MonoBehaviour:
     m_Bits: 4294967295
   knockbackCollisionSkin: 0.05
   stopKnockbackOnObstacle: 1
+  canMove: 1
+  debugMovementControl: 0
   debugLog: 1
 --- !u!114 &611657352
 MonoBehaviour:
@@ -2618,6 +2640,8 @@ MonoBehaviour:
     m_Bits: 67648
   knockbackCollisionSkin: 0.05
   stopKnockbackOnObstacle: 1
+  canMove: 1
+  debugMovementControl: 0
   debugLog: 1
 --- !u!114 &718873964
 MonoBehaviour:
@@ -2921,6 +2945,175 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 320192466}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &907863190
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 907863196}
+  - component: {fileID: 907863195}
+  - component: {fileID: 907863194}
+  - component: {fileID: 907863193}
+  - component: {fileID: 907863192}
+  - component: {fileID: 907863191}
+  m_Layer: 14
+  m_Name: WindSkillPickup
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &907863191
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 907863190}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbdd1aed931af1148bfb78aeaadc530c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BrushSkillUnlockUnityEventAdapter
+  skillType: 6
+  skillInventory: {fileID: 219517337}
+  disableObjectAfterUnlock: 1
+  destroyObjectAfterUnlock: 0
+  debugLog: 1
+--- !u!114 &907863192
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 907863190}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7509ad1e08e512a438c32642b6bacbb6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ReactableObject
+  optionName: Learn Wind Skill
+  category: 2
+  interactionPoint: {fileID: 0}
+  interactable: 1
+  disableAfterInteraction: 0
+  onInteract:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 907863191}
+        m_TargetAssemblyTypeName: BrushSkillUnlockUnityEventAdapter, Assembly-CSharp
+        m_MethodName: UnlockSkill
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  onSelected:
+    m_PersistentCalls:
+      m_Calls: []
+  onDeselected:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!135 &907863193
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 907863190}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!23 &907863194
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 907863190}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &907863195
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 907863190}
+  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &907863196
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 907863190}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -8.35, y: 0.66364, z: -13.93}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &947385706
 GameObject:
@@ -3404,6 +3597,8 @@ MonoBehaviour:
     m_Bits: 67648
   knockbackCollisionSkin: 0.05
   stopKnockbackOnObstacle: 1
+  canMove: 1
+  debugMovementControl: 0
   debugLog: 1
 --- !u!65 &1029940142
 BoxCollider:
@@ -4962,7 +5157,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 520485569}
   m_HandleRect: {fileID: 520485567}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -6284,6 +6479,7 @@ SceneRoots:
   - {fileID: 160430386}
   - {fileID: 195665193}
   - {fileID: 947385711}
+  - {fileID: 907863196}
   - {fileID: 1638622795}
   - {fileID: 1661278355}
   - {fileID: 1192432517}

@@ -649,6 +649,9 @@ public class BrushRecognitionResultPanel : BasePanel
             case BrushSkillType.Bridge:
                 return "Bridge";
 
+            case BrushSkillType.Wind:
+                return "Wind";
+
             default:
                 return "Unknown";
         }

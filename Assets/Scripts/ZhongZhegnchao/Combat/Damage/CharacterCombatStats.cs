@@ -24,6 +24,7 @@ public class CharacterCombatStats : MonoBehaviour
     public float iceDamageBonus = 0f;
     public float thunderDamageBonus = 0f;
     public float earthDamageBonus = 0f;
+    public float windDamageBonus = 0f;
 
     [Header("Element Resistance")]
     [Tooltip("0.2 means reduce this element damage by 20%.")]
@@ -33,6 +34,7 @@ public class CharacterCombatStats : MonoBehaviour
     public float iceResistance = 0f;
     public float thunderResistance = 0f;
     public float earthResistance = 0f;
+    public float windResistance = 0f;
 
     public float GetElementDamageBonus(ElementType element)
     {
@@ -55,6 +57,9 @@ public class CharacterCombatStats : MonoBehaviour
 
             case ElementType.Earth:
                 return earthDamageBonus;
+
+            case ElementType.Wind:
+                return windDamageBonus;
 
             default:
                 return 0f;
@@ -82,6 +87,9 @@ public class CharacterCombatStats : MonoBehaviour
 
             case ElementType.Earth:
                 return earthResistance;
+
+            case ElementType.Wind:
+                return windResistance;
 
             default:
                 return 0f;

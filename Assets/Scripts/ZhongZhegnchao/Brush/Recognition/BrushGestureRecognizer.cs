@@ -440,6 +440,9 @@ public class BrushGestureRecognizer : MonoBehaviour
             case "wood":
                 return BrushSkillType.Wood;
 
+            case "wind":
+                return BrushSkillType.Wind;
+
             default:
                 return BrushSkillType.None;
         }

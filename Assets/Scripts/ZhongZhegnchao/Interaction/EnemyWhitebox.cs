@@ -43,6 +43,13 @@ public class EnemyWhitebox : MonoBehaviour, IDamageable
     [SerializeField]
     private bool stopKnockbackOnObstacle = true;
 
+    [Header("ÒÆ¶¯¿ØÖÆ")]
+    [SerializeField]
+    private bool canMove = true;
+
+    [SerializeField]
+    private bool debugMovementControl = false;
+
     [Header("Debug")]
     public bool debugLog = true;
 
@@ -60,9 +67,36 @@ public class EnemyWhitebox : MonoBehaviour, IDamageable
     private Rigidbody enemyRigidbody;
     private NavMeshAgent navMeshAgent;
 
+    private int windPullControlCount;
+    private bool canMoveBeforeWind;
+
     public bool IsDead
     {
         get { return isDead; }
+    }
+
+    public bool CanMove
+    {
+        get
+        {
+            return canMove && !isDead;
+        }
+    }
+
+    public bool IsWindPullActive
+    {
+        get
+        {
+            return windPullControlCount > 0;
+        }
+    }
+
+    public bool IsBeingKnockedBack
+    {
+        get
+        {
+            return knockbackCoroutine != null;
+        }
     }
 
     public int CurrentHealth
@@ -85,6 +119,37 @@ public class EnemyWhitebox : MonoBehaviour, IDamageable
         get { return maxHp; }
     }
 
+    public void SetCanMove(bool value)
+    {
+        canMove = value;
+
+        bool actualCanMove =
+            canMove && !isDead;
+
+        if (simpleEnemy != null)
+        {
+            simpleEnemy.enabled =
+                actualCanMove;
+        }
+
+        if (navMeshAgent != null &&
+            navMeshAgent.enabled &&
+            navMeshAgent.isOnNavMesh)
+        {
+            navMeshAgent.isStopped =
+                !actualCanMove;
+        }
+
+        if (debugMovementControl)
+        {
+            Debug.Log(
+                $"[EnemyWhitebox] " +
+                $"CanMove={CanMove}",
+                this
+            );
+        }
+    }
+
     private void Awake()
     {
         maxHp = Mathf.Max(1, maxHp);
@@ -101,6 +166,26 @@ public class EnemyWhitebox : MonoBehaviour, IDamageable
         isDead = currentHp <= 0;
 
         ResolveReferences();
+    }
+
+    private void LateUpdate()
+    {
+        if (CanMove)
+            return;
+
+        if (isDead)
+            return;
+
+        if (navMeshAgent == null)
+            return;
+
+        if (!navMeshAgent.enabled ||
+            !navMeshAgent.isOnNavMesh)
+        {
+            return;
+        }
+
+        navMeshAgent.isStopped = true;
     }
 
     private void ResolveReferences()
@@ -244,6 +329,9 @@ public class EnemyWhitebox : MonoBehaviour, IDamageable
     private void NotifySimpleEnemyDamaged(DamageInfo calculatedDamage)
     {
         if (!notifySimpleEnemyOnDamaged)
+            return;
+
+        if (!CanMove)
             return;
 
         if (simpleEnemy == null)
@@ -780,6 +868,57 @@ public class EnemyWhitebox : MonoBehaviour, IDamageable
         {
             Destroy(gameObject, destroyDelay);
         }
+    }
+
+    public void SetWindPullActive(bool active)
+    {
+        if (active)
+        {
+            if (windPullControlCount == 0)
+            {
+                canMoveBeforeWind = canMove;
+
+                SetCanMove(false);
+            }
+
+            windPullControlCount++;
+
+            return;
+        }
+
+        if (windPullControlCount <= 0)
+            return;
+
+        windPullControlCount--;
+
+        if (windPullControlCount > 0)
+            return;
+
+        SetCanMove(canMoveBeforeWind);
+    }
+
+    public void ApplyWindPullMove(
+    Vector3 desiredMove
+)
+    {
+        if (isDead)
+            return;
+
+        if (!IsWindPullActive)
+            return;
+
+        bool hitObstacle;
+
+        Vector3 safeMove =
+            GetSafeKnockbackMove(
+                desiredMove,
+                out hitObstacle
+            );
+
+        if (safeMove.sqrMagnitude <= 0.000001f)
+            return;
+
+        ApplyKnockbackMove(safeMove);
     }
 
 #if UNITY_EDITOR

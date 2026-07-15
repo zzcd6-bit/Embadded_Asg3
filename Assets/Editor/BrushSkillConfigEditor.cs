@@ -111,6 +111,26 @@ public class BrushSkillConfigEditor : Editor
     private SerializedProperty bridgeCastRadius;
     private SerializedProperty bridgeActiveDuration;
 
+    private SerializedProperty windFieldPoolName;
+    private SerializedProperty windSpawnDistance;
+    private SerializedProperty windSpawnYOffset;
+    private SerializedProperty windFieldDuration;
+
+    private SerializedProperty windCenterTickInterval;
+
+    private SerializedProperty windPullRadius;
+    private SerializedProperty windPullSpeed;
+    private SerializedProperty windCenterRadius;
+
+    private SerializedProperty windFireColor;
+    private SerializedProperty windWaterColor;
+
+    private SerializedProperty windSpreadFireDuration;
+    private SerializedProperty windSpreadFireTickInterval;
+    private SerializedProperty windSpreadFireTickDamage;
+
+    private SerializedProperty windSpreadWetDuration;
+
     private void OnEnable()
     {
         skillType = serializedObject.FindProperty("skillType");
@@ -226,6 +246,76 @@ public class BrushSkillConfigEditor : Editor
         bridgeTriggerLayer = serializedObject.FindProperty("bridgeTriggerLayer");
         bridgeCastRadius = serializedObject.FindProperty("bridgeCastRadius");
         bridgeActiveDuration = serializedObject.FindProperty("bridgeActiveDuration");
+
+        windFieldPoolName =
+    serializedObject.FindProperty(
+        "windFieldPoolName"
+    );
+
+        windSpawnDistance =
+            serializedObject.FindProperty(
+                "windSpawnDistance"
+            );
+
+        windSpawnYOffset =
+            serializedObject.FindProperty(
+                "windSpawnYOffset"
+            );
+
+        windFieldDuration =
+            serializedObject.FindProperty(
+                "windFieldDuration"
+            );
+
+        windPullRadius =
+            serializedObject.FindProperty(
+                "windPullRadius"
+            );
+
+        windPullSpeed =
+            serializedObject.FindProperty(
+                "windPullSpeed"
+            );
+
+        windCenterRadius =
+            serializedObject.FindProperty(
+                "windCenterRadius"
+            );
+
+        windFireColor =
+            serializedObject.FindProperty(
+                "windFireColor"
+            );
+
+        windWaterColor =
+            serializedObject.FindProperty(
+                "windWaterColor"
+            );
+
+        windSpreadFireDuration =
+            serializedObject.FindProperty(
+                "windSpreadFireDuration"
+            );
+
+        windSpreadFireTickInterval =
+            serializedObject.FindProperty(
+                "windSpreadFireTickInterval"
+            );
+
+        windSpreadFireTickDamage =
+            serializedObject.FindProperty(
+                "windSpreadFireTickDamage"
+            );
+
+        windSpreadWetDuration =
+            serializedObject.FindProperty(
+                "windSpreadWetDuration"
+            );
+
+        windCenterTickInterval =
+    serializedObject.FindProperty(
+        "windCenterTickInterval"
+    );
     }
 
     public override void OnInspectorGUI()
@@ -260,6 +350,10 @@ public class BrushSkillConfigEditor : Editor
 
             case BrushSkillType.Bridge:
                 DrawBridgeSettings();
+                break;
+
+            case BrushSkillType.Wind:
+                DrawWindSettings();
                 break;
         }
 
@@ -493,9 +587,98 @@ public class BrushSkillConfigEditor : Editor
         EditorGUILayout.PropertyField(bridgeActiveDuration, new GUIContent("桥持续时间"));
     }
 
+    private void DrawWindSettings()
+    {
+        DrawCooldownSettings();
+
+        DrawTitle("Wind 风场生成");
+
+        EditorGUILayout.PropertyField(
+            windFieldPoolName,
+            new GUIContent("风场对象池路径")
+        );
+
+        EditorGUILayout.PropertyField(
+            windSpawnDistance,
+            new GUIContent("镜头前生成距离")
+        );
+
+        EditorGUILayout.PropertyField(
+            windSpawnYOffset,
+            new GUIContent("生成 Y 偏移")
+        );
+
+        EditorGUILayout.PropertyField(
+            windFieldDuration,
+            new GUIContent("风场持续时间")
+        );
+
+        DrawTitle("Wind 拉拽");
+
+        EditorGUILayout.PropertyField(
+            windPullRadius,
+            new GUIContent("拉拽范围")
+        );
+
+        EditorGUILayout.PropertyField(
+            windPullSpeed,
+            new GUIContent("拉拽速度")
+        );
+
+        EditorGUILayout.PropertyField(
+            windCenterRadius,
+            new GUIContent("风场中心判定半径")
+        );
+
+        DrawTitle("Wind 中心持续伤害");
+
+        EditorGUILayout.PropertyField(
+            windCenterTickInterval,
+            new GUIContent("持续伤害间隔")
+        );
+
+        DrawTitle("Wind 扩散颜色");
+
+        EditorGUILayout.PropertyField(
+            windFireColor,
+            new GUIContent("Fire 染色")
+        );
+
+        EditorGUILayout.PropertyField(
+            windWaterColor,
+            new GUIContent("Water 染色")
+        );
+
+        DrawTitle("Wind Fire 扩散");
+
+        EditorGUILayout.PropertyField(
+            windSpreadFireDuration,
+            new GUIContent("Fire 状态持续时间")
+        );
+
+        EditorGUILayout.PropertyField(
+            windSpreadFireTickInterval,
+            new GUIContent("燃烧间隔")
+        );
+
+        EditorGUILayout.PropertyField(
+            windSpreadFireTickDamage,
+            new GUIContent("燃烧每跳伤害")
+        );
+
+        DrawTitle("Wind Water 扩散");
+
+        EditorGUILayout.PropertyField(
+            windSpreadWetDuration,
+            new GUIContent("Wet 状态持续时间")
+        );
+    }
+
     private void DrawTitle(string title)
     {
         EditorGUILayout.Space(8);
         EditorGUILayout.LabelField(title, EditorStyles.boldLabel);
     }
+
+
 }

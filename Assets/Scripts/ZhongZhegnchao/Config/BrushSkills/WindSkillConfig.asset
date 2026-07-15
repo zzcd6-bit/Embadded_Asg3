@@ -1,0 +1,125 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 157e104f06a7d42458986dbfade863bc, type: 3}
+  m_Name: WindSkillConfig
+  m_EditorClassIdentifier: Assembly-CSharp::BrushSkillConfig
+  skillType: 6
+  targetLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  rayDistance: 200
+  fallbackDistance: 12
+  enableSceneElementInteraction: 0
+  sceneElementLayer:
+    serializedVersion: 2
+    m_Bits: 65536
+  inkCost: 3
+  useSkillCooldown: 0
+  skillCooldown: 10
+  baseDamage: 3
+  knockback: 0
+  element: 5
+  canApplyElementStatus: 1
+  skillMultiplier: 1.2
+  damageBonus: 0
+  reactionMultiplier: 1
+  canCrit: 0
+  slashSphereRadius: 1.5
+  slashSampleCount: 12
+  fireDamageRadius: 3
+  applyBurning: 1
+  burningDuration: 5
+  burningTickInterval: 0.3
+  burningTickDamage: 1
+  applyInfusionToPlayer: 1
+  infusionDuration: 20
+  infusionDamageMultiplier: 1.5
+  infusionApplyBurningOnHit: 1
+  infusionBurningDuration: 5
+  infusionBurningTickInterval: 0.3
+  infusionBurningTickDamage: 1
+  waterAuraDuration: 8
+  waterUsePool: 1
+  waterProjectilePoolName: WaterProjectile
+  waterProjectilePrefab: {fileID: 0}
+  waterShootInterval: 0.6
+  waterSearchRange: 20
+  waterProjectileDamage: 8
+  waterProjectileKnockback: 1
+  wetDuration: 5
+  waterUseArcHoming: 1
+  waterProjectileSpeed: 15
+  waterProjectileLifeTime: 5
+  waterArcHeight: 2
+  waterRotateSpeed: 12
+  waterReachDistance: 0.45
+  waterTargetOffset: {x: 0, y: 1, z: 0}
+  waterProjectileHitLayer:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  waterIgnoreAttackerCollision: 1
+  waterDestroyOnNonHitLayerCollision: 0
+  waterUseBarrage: 1
+  waterProjectileCountPerBurst: 5
+  waterBarrageAngle: 45
+  waterBarrageSpawnRadius: 0.35
+  waterBarrageVerticalStep: 0.12
+  waterDistributeTargets: 1
+  waterUseRandomBarrage: 1
+  waterBurstDelayMin: 0.02
+  waterBurstDelayMax: 0.12
+  waterRandomSpawnRadius: 0.45
+  waterRandomTargetOffsetRadius: 0.8
+  waterArcSideOffsetMin: -1.2
+  waterArcSideOffsetMax: 1.2
+  waterArcHeightRandomMin: -0.5
+  waterArcHeightRandomMax: 0.8
+  waterSpeedRandomMin: -2
+  waterSpeedRandomMax: 2
+  woodEffectDuration: 8
+  woodHealAmountPerTick: 5
+  woodHealTickInterval: 1
+  woodHealVfxUsePool: 1
+  woodHealVfxPoolName: Prefabs/WoodHealVFX
+  woodHealVfxPrefab: {fileID: 0}
+  woodHealVfxLocalOffset: {x: 0, y: 0, z: 0}
+  woodHealVfxParentToPlayer: 1
+  woodHealVfxRecycleDelay: 2
+  woodShieldVfxUsePool: 1
+  woodShieldVfxPoolName: Prefabs/WoodShieldVFX
+  woodShieldVfxPrefab: {fileID: 0}
+  woodShieldVfxLocalOffset: {x: 0, y: 0, z: 0}
+  woodShieldVfxParentToPlayer: 1
+  woodShieldVfxForceLoop: 1
+  woodGrantShield: 1
+  woodShieldAmount: 30
+  woodShieldDuration: 8
+  woodRefreshShieldWhenReapply: 1
+  bridgeTriggerLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  bridgeCastRadius: 0.6
+  bridgeActiveDuration: 8
+  windFieldPoolName: Prefabs/WindFieldVFX
+  windSpawnDistance: 13
+  windSpawnYOffset: 1
+  windFieldDuration: 10
+  windPullRadius: 8
+  windPullSpeed: 10
+  windCenterRadius: 0.8
+  windCenterTickInterval: 0.5
+  windFireColor: {r: 1, g: 0.2, b: 0.05, a: 1}
+  windWaterColor: {r: 0.1, g: 0.55, b: 1, a: 1}
+  windSpreadFireDuration: 5
+  windSpreadFireTickInterval: 1
+  windSpreadFireTickDamage: 3
+  windSpreadWetDuration: 5
