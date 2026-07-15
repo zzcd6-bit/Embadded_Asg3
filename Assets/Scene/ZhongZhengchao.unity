@@ -742,6 +742,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8711962937741669046, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
       insertIndex: -1
       addedObject: {fileID: 219517375}
+    - targetCorrespondingSourceObject: {fileID: 8711962937741669046, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 219517377}
   m_SourcePrefab: {fileID: 100100000, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
 --- !u!1 &219517335 stripped
 GameObject:
@@ -892,9 +895,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCharacterStatsController
   config: {fileID: 11400000, guid: 7eda24b07b11b9241a5a92cc53bfe9f4, type: 2}
   currentLevel: 1
+  currentExperience: 0
   combatStats: {fileID: 219517372}
   damageReceiver: {fileID: 219517364}
   inkPouchController: {fileID: 219517363}
+  debugLog: 1
+--- !u!114 &219517377
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 219517335}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85488ab63390f4247b95ad578f2423de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerLevelUpUIFeedback
+  statsController: {fileID: 219517376}
   debugLog: 1
 --- !u!1 &248848576
 GameObject:
@@ -1178,7 +1196,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e7384bf6640c864c8e1b36e1c3331fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WaterBrushSkill
-  minScore: 0.9
+  minScore: 0.65
   castContextBuilder: {fileID: 248848585}
   caster: {fileID: 219517335}
   requireUnlockedSkill: 1
@@ -2055,6 +2073,7 @@ MonoBehaviour:
   fullHealDuration: 3
   destroyOnDeath: 0
   destroyDelay: 2
+  experienceReward: 100
   simpleEnemy: {fileID: 611657354}
   notifySimpleEnemyOnDamaged: 1
   letSimpleEnemyApplyOwnKnockback: 0
@@ -2704,6 +2723,7 @@ MonoBehaviour:
   fullHealDuration: 3
   destroyOnDeath: 0
   destroyDelay: 2
+  experienceReward: 20
   simpleEnemy: {fileID: 0}
   notifySimpleEnemyOnDamaged: 1
   letSimpleEnemyApplyOwnKnockback: 0
@@ -3719,6 +3739,7 @@ MonoBehaviour:
   fullHealDuration: 3
   destroyOnDeath: 0
   destroyDelay: 2
+  experienceReward: 20
   simpleEnemy: {fileID: 0}
   notifySimpleEnemyOnDamaged: 1
   letSimpleEnemyApplyOwnKnockback: 0

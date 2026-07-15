@@ -1,6 +1,7 @@
 using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CharacterProfilePanel : BasePanel
 {
@@ -14,6 +15,13 @@ public class CharacterProfilePanel : BasePanel
 
     [SerializeField]
     private TMP_Text inkValueText;
+
+    [Header("Experience")]
+    [SerializeField]
+    private Image experienceFillImage;
+
+    [SerializeField]
+    private TMP_Text experienceValueText;
 
     [Header("Offensive Stats")]
     [SerializeField]
@@ -56,7 +64,8 @@ public class CharacterProfilePanel : BasePanel
     [SerializeField]
     private TMP_Text windResistanceValueText;
 
-    private PlayerCharacterStatsController statsController;
+    private PlayerCharacterStatsController
+        statsController;
 
     private Action closeCallback;
 
@@ -81,12 +90,22 @@ public class CharacterProfilePanel : BasePanel
     {
         Unbind();
 
-        statsController = controller;
-        closeCallback = onClose;
+        statsController =
+            controller;
+
+        closeCallback =
+            onClose;
 
         if (statsController != null)
         {
-            statsController.StatsChanged += Refresh;
+            statsController.StatsChanged +=
+                Refresh;
+
+            statsController.ExperienceChanged +=
+                OnExperienceChanged;
+
+            statsController.LevelChanged +=
+                OnLevelChanged;
         }
 
         Refresh();
@@ -96,11 +115,33 @@ public class CharacterProfilePanel : BasePanel
     {
         if (statsController != null)
         {
-            statsController.StatsChanged -= Refresh;
+            statsController.StatsChanged -=
+                Refresh;
+
+            statsController.ExperienceChanged -=
+                OnExperienceChanged;
+
+            statsController.LevelChanged -=
+                OnLevelChanged;
         }
 
         statsController = null;
         closeCallback = null;
+    }
+
+    private void OnExperienceChanged(
+        int currentExperience,
+        int experienceToNextLevel
+    )
+    {
+        RefreshExperience();
+    }
+
+    private void OnLevelChanged(
+        int newLevel
+    )
+    {
+        Refresh();
     }
 
     private void Refresh()
@@ -128,16 +169,24 @@ public class CharacterProfilePanel : BasePanel
             inkPouch
         );
 
-        RefreshOffensiveStats(combatStats);
+        RefreshExperience();
 
-        RefreshDefensiveStats(combatStats);
+        RefreshOffensiveStats(
+            combatStats
+        );
+
+        RefreshDefensiveStats(
+            combatStats
+        );
     }
 
     private void RefreshCharacterInfo()
     {
         SetText(
             levelValueText,
-            statsController.CurrentLevel.ToString()
+            statsController
+                .CurrentLevel
+                .ToString()
         );
     }
 
@@ -178,6 +227,58 @@ public class CharacterProfilePanel : BasePanel
                 "-"
             );
         }
+    }
+
+    private void RefreshExperience()
+    {
+        if (statsController == null)
+            return;
+
+        if (statsController.IsMaxLevel)
+        {
+            if (experienceFillImage != null)
+            {
+                experienceFillImage.fillAmount =
+                    1f;
+            }
+
+            SetText(
+                experienceValueText,
+                "MAX"
+            );
+
+            return;
+        }
+
+        int currentExperience =
+            statsController.CurrentExperience;
+
+        int requiredExperience =
+            statsController.ExperienceToNextLevel;
+
+        float fillAmount = 0f;
+
+        if (requiredExperience > 0)
+        {
+            fillAmount =
+                currentExperience /
+                (float)requiredExperience;
+        }
+
+        fillAmount =
+            Mathf.Clamp01(fillAmount);
+
+        if (experienceFillImage != null)
+        {
+            experienceFillImage.fillAmount =
+                fillAmount;
+        }
+
+        SetText(
+            experienceValueText,
+            $"{currentExperience}/" +
+            $"{requiredExperience}"
+        );
     }
 
     private void RefreshOffensiveStats(

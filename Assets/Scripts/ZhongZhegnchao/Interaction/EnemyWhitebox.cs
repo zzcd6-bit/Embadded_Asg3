@@ -20,6 +20,10 @@ public class EnemyWhitebox : MonoBehaviour, IDamageable
     [SerializeField] private bool destroyOnDeath = false;
     [SerializeField] private float destroyDelay = 2f;
 
+    [Header("Reward")]
+    [SerializeField]
+    private int experienceReward = 20;
+
     [Header("SimpleEnemy Bridge")]
     [SerializeField] private SimpleEnemy simpleEnemy;
     [SerializeField] private bool notifySimpleEnemyOnDamaged = true;
@@ -52,6 +56,7 @@ public class EnemyWhitebox : MonoBehaviour, IDamageable
 
     [Header("Debug")]
     public bool debugLog = true;
+
 
     private bool isDead;
     private bool inCombat;
@@ -117,6 +122,17 @@ public class EnemyWhitebox : MonoBehaviour, IDamageable
     public int MaxHp
     {
         get { return maxHp; }
+    }
+
+    public int ExperienceReward
+    {
+        get
+        {
+            return Mathf.Max(
+                0,
+                experienceReward
+            );
+        }
     }
 
     public void SetCanMove(bool value)
@@ -938,6 +954,11 @@ public class EnemyWhitebox : MonoBehaviour, IDamageable
 
         if (destroyDelay < 0f)
             destroyDelay = 0f;
+
+        if (experienceReward < 0)
+        {
+            experienceReward = 0;
+        }
     }
 #endif
 }

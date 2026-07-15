@@ -11,6 +11,13 @@ public class PlayerCharacterStatsConfig :
     [Min(1)]
     public int maxLevel = 100;
 
+    [Header("Experience")]
+    [Min(1)]
+    public int levelOneExperienceRequirement = 100;
+
+    [Min(0)]
+    public int experienceRequirementIncreasePerLevel = 25;
+
     [Header("Level 1 Base Stats")]
     public CharacterBaseStats levelOneStats =
         new CharacterBaseStats();
@@ -91,5 +98,38 @@ public class PlayerCharacterStatsConfig :
             Mathf.Max(1f, result.critDamage);
 
         return result;
+    }
+
+    public int GetExperienceRequiredForLevel(
+        int level
+    )
+    {
+        int safeMaxLevel =
+            Mathf.Max(1, maxLevel);
+
+        int finalLevel =
+            Mathf.Clamp(
+                level,
+                1,
+                safeMaxLevel
+            );
+
+        if (finalLevel >= safeMaxLevel)
+        {
+            return 0;
+        }
+
+        int gainedLevels =
+            finalLevel - 1;
+
+        int requiredExperience =
+            levelOneExperienceRequirement +
+            experienceRequirementIncreasePerLevel *
+            gainedLevels;
+
+        return Mathf.Max(
+            1,
+            requiredExperience
+        );
     }
 }

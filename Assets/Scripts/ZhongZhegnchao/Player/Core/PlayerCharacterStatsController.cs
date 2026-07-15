@@ -3,7 +3,8 @@ using UnityEngine;
 
 [DisallowMultipleComponent]
 public class PlayerCharacterStatsController :
-    MonoBehaviour
+    MonoBehaviour,
+    IExperienceReceiver
 {
     [Header("Config")]
     [SerializeField]
@@ -13,6 +14,11 @@ public class PlayerCharacterStatsController :
     [SerializeField]
     [Min(1)]
     private int currentLevel = 1;
+
+    [Header("Runtime Experience")]
+    [SerializeField]
+    [Min(0)]
+    private int currentExperience = 0;
 
     [Header("References")]
     [SerializeField]
@@ -30,6 +36,10 @@ public class PlayerCharacterStatsController :
 
     public event Action StatsChanged;
 
+    public event Action<int, int> ExperienceChanged;
+
+    public event Action<int> LevelChanged;
+
     public int CurrentLevel
     {
         get { return currentLevel; }
@@ -42,6 +52,36 @@ public class PlayerCharacterStatsController :
             return config != null
                 ? Mathf.Max(1, config.maxLevel)
                 : currentLevel;
+        }
+    }
+
+    public int CurrentExperience
+    {
+        get { return currentExperience; }
+    }
+
+    public int ExperienceToNextLevel
+    {
+        get
+        {
+            if (IsMaxLevel)
+                return 0;
+
+            if (config == null)
+                return 0;
+
+            return config
+                .GetExperienceRequiredForLevel(
+                    currentLevel
+                );
+        }
+    }
+
+    public bool IsMaxLevel
+    {
+        get
+        {
+            return currentLevel >= MaxLevel;
         }
     }
 
@@ -67,12 +107,24 @@ public class PlayerCharacterStatsController :
         ResolveReferences();
     }
 
+    private void OnEnable()
+    {
+        EnemyWhitebox.OnAnyEnemyDead +=
+            OnAnyEnemyDead;
+    }
+
     private void Start()
     {
         if (!IsInitialized)
         {
             Init();
         }
+    }
+
+    private void OnDisable()
+    {
+        EnemyWhitebox.OnAnyEnemyDead -=
+            OnAnyEnemyDead;
     }
 
     public bool Init(
@@ -126,15 +178,22 @@ public class PlayerCharacterStatsController :
                 MaxLevel
             );
 
-        ApplyLevelStats(false);
+        ClampExperience();
 
         IsInitialized = true;
+
+        ApplyLevelStats(false);
+
+        NotifyExperienceChanged();
 
         if (debugLog)
         {
             Debug.Log(
                 $"[PlayerCharacterStatsController] " +
-                $"Initialized. Level={currentLevel}",
+                $"Initialized. " +
+                $"Level={currentLevel}, " +
+                $"EXP={currentExperience}/" +
+                $"{ExperienceToNextLevel}",
                 this
             );
         }
@@ -187,6 +246,170 @@ public class PlayerCharacterStatsController :
         }
     }
 
+    private void OnAnyEnemyDead(
+        EnemyWhitebox enemy
+    )
+    {
+        if (enemy == null)
+            return;
+
+        int experienceReward =
+            enemy.ExperienceReward;
+
+        if (experienceReward <= 0)
+            return;
+
+        AddExperience(experienceReward);
+    }
+
+    public void AddExperience(int amount)
+    {
+        if (amount <= 0)
+            return;
+
+        if (!IsInitialized &&
+            !Init())
+        {
+            return;
+        }
+
+        if (IsMaxLevel)
+        {
+            currentExperience = 0;
+
+            StatsChanged?.Invoke();
+            NotifyExperienceChanged();
+
+            return;
+        }
+
+        currentExperience += amount;
+
+        int previousLevel =
+            currentLevel;
+
+        while (!IsMaxLevel)
+        {
+            int requiredExperience =
+                config
+                    .GetExperienceRequiredForLevel(
+                        currentLevel
+                    );
+
+            if (requiredExperience <= 0)
+                break;
+
+            if (currentExperience <
+                requiredExperience)
+            {
+                break;
+            }
+
+            currentExperience -=
+                requiredExperience;
+
+            currentLevel++;
+        }
+
+        if (IsMaxLevel)
+        {
+            currentExperience = 0;
+        }
+
+        bool leveledUp =
+            currentLevel != previousLevel;
+
+        if (leveledUp)
+        {
+            ApplyLevelStats(true);
+
+            LevelChanged?.Invoke(
+                currentLevel
+            );
+        }
+        else
+        {
+            StatsChanged?.Invoke();
+        }
+
+        NotifyExperienceChanged();
+
+        if (debugLog)
+        {
+            Debug.Log(
+                $"[PlayerCharacterStatsController] " +
+                $"Gain EXP={amount}. " +
+                $"Level={currentLevel}, " +
+                $"EXP={currentExperience}/" +
+                $"{ExperienceToNextLevel}",
+                this
+            );
+        }
+    }
+
+    public void SetExperience(
+        int newExperience
+    )
+    {
+        if (!IsInitialized &&
+            !Init())
+        {
+            return;
+        }
+
+        currentExperience =
+            Mathf.Max(
+                0,
+                newExperience
+            );
+
+        int previousLevel =
+            currentLevel;
+
+        while (!IsMaxLevel)
+        {
+            int requiredExperience =
+                config
+                    .GetExperienceRequiredForLevel(
+                        currentLevel
+                    );
+
+            if (requiredExperience <= 0)
+                break;
+
+            if (currentExperience <
+                requiredExperience)
+            {
+                break;
+            }
+
+            currentExperience -=
+                requiredExperience;
+
+            currentLevel++;
+        }
+
+        if (IsMaxLevel)
+        {
+            currentExperience = 0;
+        }
+
+        if (currentLevel != previousLevel)
+        {
+            ApplyLevelStats(false);
+
+            LevelChanged?.Invoke(
+                currentLevel
+            );
+        }
+        else
+        {
+            StatsChanged?.Invoke();
+        }
+
+        NotifyExperienceChanged();
+    }
+
     public bool LevelUp()
     {
         if (currentLevel >= MaxLevel)
@@ -215,6 +438,8 @@ public class PlayerCharacterStatsController :
                 MaxLevel
             );
 
+        ClampExperience();
+
         if (!IsInitialized)
         {
             Init();
@@ -224,6 +449,12 @@ public class PlayerCharacterStatsController :
         ApplyLevelStats(
             addMaxHpGrowthToCurrentHp
         );
+
+        LevelChanged?.Invoke(
+            currentLevel
+        );
+
+        NotifyExperienceChanged();
     }
 
     public void RefreshStats()
@@ -291,7 +522,8 @@ public class PlayerCharacterStatsController :
                 oldCurrentHp;
 
             if (addMaxHpGrowthToCurrentHp &&
-                newMaxHp > oldMaxHp)
+                newMaxHp > oldMaxHp &&
+                oldCurrentHp > 0)
             {
                 targetCurrentHp +=
                     newMaxHp - oldMaxHp;
@@ -339,7 +571,8 @@ public class PlayerCharacterStatsController :
             combatStats.MaxHp;
 
         if (addMaxHpGrowthToCurrentHp &&
-            newMaxHp > oldMaxHp)
+            newMaxHp > oldMaxHp &&
+            currentHp > 0)
         {
             currentHp +=
                 newMaxHp - oldMaxHp;
@@ -348,6 +581,45 @@ public class PlayerCharacterStatsController :
         damageReceiver.SetHp(
             currentHp,
             newMaxHp
+        );
+    }
+
+    private void ClampExperience()
+    {
+        currentExperience =
+            Mathf.Max(
+                0,
+                currentExperience
+            );
+
+        if (IsMaxLevel)
+        {
+            currentExperience = 0;
+            return;
+        }
+
+        int requiredExperience =
+            ExperienceToNextLevel;
+
+        if (requiredExperience <= 0)
+        {
+            currentExperience = 0;
+            return;
+        }
+
+        currentExperience =
+            Mathf.Clamp(
+                currentExperience,
+                0,
+                requiredExperience - 1
+            );
+    }
+
+    private void NotifyExperienceChanged()
+    {
+        ExperienceChanged?.Invoke(
+            currentExperience,
+            ExperienceToNextLevel
         );
     }
 }

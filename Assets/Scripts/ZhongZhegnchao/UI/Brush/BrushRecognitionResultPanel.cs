@@ -145,6 +145,24 @@ public class BrushRecognitionResultPanel : BasePanel
         PlayFailureAnimation();
     }
 
+    public void ShowLevelUp(int newLevel)
+    {
+        ShowMe();
+
+        if (resultText != null)
+        {
+            resultText.text = "LEVEL UP";
+        }
+
+        if (skillText != null)
+        {
+            skillText.text =
+                $"LEVEL {newLevel}";
+        }
+
+        PlaySuccessAnimation();
+    }
+
     private void PlaySuccessAnimation()
     {
         KillCurrentAnimation();
