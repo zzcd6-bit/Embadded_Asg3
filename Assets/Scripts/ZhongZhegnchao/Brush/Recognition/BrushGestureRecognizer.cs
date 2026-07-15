@@ -32,6 +32,10 @@ public class BrushGestureRecognizer : MonoBehaviour
     [Header("Brush Mode")]
     public bool exitBrushModeOnRecognized = true;
 
+    [Header("Skill Unlock")]
+    [SerializeField]
+    private PlayerBrushSkillInventory skillInventory;
+
     [Header("Debug")]
     public bool debugPointInfo = true;
     public bool debugTemplateInfo = true;
@@ -44,7 +48,54 @@ public class BrushGestureRecognizer : MonoBehaviour
 
     private void Awake()
     {
+        InitializeUI();
+        ResolveSkillInventory();
         ReloadTemplates();
+    }
+
+    private void ResolveSkillInventory()
+    {
+        if (skillInventory != null)
+            return;
+
+        skillInventory =
+            GetComponent<PlayerBrushSkillInventory>();
+
+        if (skillInventory == null)
+        {
+            skillInventory =
+                GetComponentInParent<
+                    PlayerBrushSkillInventory>();
+        }
+
+        if (skillInventory == null)
+        {
+            skillInventory =
+                GetComponentInChildren<
+                    PlayerBrushSkillInventory>(true);
+        }
+
+        if (skillInventory == null)
+        {
+            Debug.LogWarning(
+                "[BrushGestureRecognizer] " +
+                "PlayerBrushSkillInventory not found.",
+                this
+            );
+        }
+    }
+
+    private void InitializeUI()
+    {
+        UIMgr uiMgr = UIMgr.Instance;
+
+        if (uiMgr == null)
+        {
+            Debug.LogError(
+                "[BrushGestureRecognizer] UIMgr initialize failed.",
+                this
+            );
+        }
     }
 
     public void ReloadTemplates()
@@ -223,9 +274,13 @@ public class BrushGestureRecognizer : MonoBehaviour
             if (debugPointInfo)
             {
                 Debug.LogWarning(
-                    $"[BrushGestureRecognizer] Not enough PDollar points. Count={strokeData.pdollarPoints.Count}"
+                    $"[BrushGestureRecognizer] " +
+                    $"Not enough PDollar points. " +
+                    $"Count={strokeData.pdollarPoints.Count}"
                 );
             }
+
+            ShowRecognitionFailure();
 
             return;
         }
@@ -264,15 +319,43 @@ public class BrushGestureRecognizer : MonoBehaviour
             $"Gesture Result: {result.GestureClass}, Skill: {skillType}, Score: {result.Score}"
         );
 
-        if (result.Score < minScore)
-            return;
+        bool recognitionSucceeded =
+    result.Score >= minScore &&
+    skillType != BrushSkillType.None;
 
-        BrushGestureResult brushResult = new BrushGestureResult(
-            result.GestureClass,
-            skillType,
-            result.Score,
-            strokeData
-        );
+        if (!recognitionSucceeded)
+        {
+            ShowRecognitionFailure();
+
+            return;
+        }
+
+        if (!HasUnlockedSkill(skillType))
+        {
+            if (debugPointInfo)
+            {
+                Debug.Log(
+                    $"[BrushGestureRecognizer] " +
+                    $"Recognized skill is not unlocked: " +
+                    $"{skillType}",
+                    this
+                );
+            }
+
+            ShowRecognitionFailure();
+
+            return;
+        }
+
+        ShowRecognitionSuccess(skillType);
+
+        BrushGestureResult brushResult =
+            new BrushGestureResult(
+                result.GestureClass,
+                skillType,
+                result.Score,
+                strokeData
+            );
 
         if (exitBrushModeOnRecognized)
         {
@@ -284,6 +367,55 @@ public class BrushGestureRecognizer : MonoBehaviour
             brushResult
         );
     }
+
+    private void ShowRecognitionSuccess(
+    BrushSkillType skillType
+)
+    {
+        UIMgr.Instance.ShowPanel<
+            BrushRecognitionResultPanel
+        >(
+            E_UILayer.Top,
+            panel =>
+            {
+                panel.ShowSuccess(skillType);
+            },
+            true
+        );
+    }
+
+    private void ShowRecognitionFailure()
+    {
+        UIMgr.Instance.ShowPanel<
+            BrushRecognitionResultPanel
+        >(
+            E_UILayer.Top,
+            panel =>
+            {
+                panel.ShowFailure();
+            },
+            true
+        );
+    }
+
+    private bool HasUnlockedSkill(
+    BrushSkillType skillType
+)
+    {
+        if (skillType == BrushSkillType.None)
+            return false;
+
+        if (skillInventory == null)
+        {
+            ResolveSkillInventory();
+        }
+
+        if (skillInventory == null)
+            return false;
+
+        return skillInventory.HasBrushSkill(skillType);
+    }
+
     private BrushSkillType GetSkillTypeFromGestureName(string gestureName)
     {
         if (string.IsNullOrEmpty(gestureName))

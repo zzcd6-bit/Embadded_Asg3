@@ -656,6 +656,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 368124383558167270, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
+      propertyPath: respawnDelay
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 2520113143535856881, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -672,6 +676,10 @@ PrefabInstance:
       propertyPath: animancer
       value: 
       objectReference: {fileID: 995554232}
+    - target: {fileID: 3662745343256671668, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
+      propertyPath: death._Clip
+      value: 
+      objectReference: {fileID: 7400000, guid: b0de5dbad47bd734380c38c47d357d3e, type: 2}
     - target: {fileID: 6265559545831232069, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
       propertyPath: rollBoxUI
       value: 
@@ -966,7 +974,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35d07a85aa1970744b009af23dd4cba7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SlashBrushSkill
-  minScore: 0.6
+  minScore: 0.9
   castContextBuilder: {fileID: 248848585}
   caster: {fileID: 219517335}
   requireUnlockedSkill: 1
@@ -986,7 +994,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ef5b53c9aebcd64ea7db7a8f30e89a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BrushGestureRecognizer
-  minScore: 0.6
+  minScore: 0.9
   minPointCount: 6
   loadXmlTemplatesFromResources: 1
   resourcesGestureFolder: GestureTemplates
@@ -997,6 +1005,7 @@ MonoBehaviour:
   useRuntimeFireTemplate: 0
   useRuntimeBridgeTemplate: 0
   exitBrushModeOnRecognized: 1
+  skillInventory: {fileID: 219517337}
   debugPointInfo: 1
   debugTemplateInfo: 1
   debugTopMatches: 1
@@ -1036,7 +1045,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 102b73b7d6670fd48810c2d5fab9883b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FireBrushSkill
-  minScore: 0.3
+  minScore: 0.9
   castContextBuilder: {fileID: 248848585}
   caster: {fileID: 219517335}
   requireUnlockedSkill: 1
@@ -1092,7 +1101,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e7384bf6640c864c8e1b36e1c3331fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WaterBrushSkill
-  minScore: 0.65
+  minScore: 0.9
   castContextBuilder: {fileID: 248848585}
   caster: {fileID: 219517335}
   requireUnlockedSkill: 1
@@ -1135,7 +1144,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbb327c3a9eb605419c837a01b7ea500, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WoodBrushSkill
-  minScore: 0.65
+  minScore: 0.9
   castContextBuilder: {fileID: 248848585}
   caster: {fileID: 219517335}
   requireUnlockedSkill: 1
@@ -1957,6 +1966,11 @@ MonoBehaviour:
   knockbackDuration: 0.18
   knockbackVerticalForce: 0
   knockbackOnlyHorizontal: 1
+  knockbackObstacleLayer:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  knockbackCollisionSkin: 0.05
+  stopKnockbackOnObstacle: 1
   debugLog: 1
 --- !u!114 &611657352
 MonoBehaviour:
@@ -2405,7 +2419,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 281b757fe6dbd0b429f79fe6dfd67d8e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2599,6 +2613,11 @@ MonoBehaviour:
   knockbackDuration: 0.18
   knockbackVerticalForce: 0
   knockbackOnlyHorizontal: 1
+  knockbackObstacleLayer:
+    serializedVersion: 2
+    m_Bits: 67648
+  knockbackCollisionSkin: 0.05
+  stopKnockbackOnObstacle: 1
   debugLog: 1
 --- !u!114 &718873964
 MonoBehaviour:
@@ -3173,7 +3192,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
   m_UseReflectionProbes: 0
-  m_AdditionalShaderChannelsFlag: 0
+  m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
@@ -3380,6 +3399,11 @@ MonoBehaviour:
   knockbackDuration: 0.18
   knockbackVerticalForce: 0
   knockbackOnlyHorizontal: 1
+  knockbackObstacleLayer:
+    serializedVersion: 2
+    m_Bits: 67648
+  knockbackCollisionSkin: 0.05
+  stopKnockbackOnObstacle: 1
   debugLog: 1
 --- !u!65 &1029940142
 BoxCollider:
@@ -4045,7 +4069,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 281b757fe6dbd0b429f79fe6dfd67d8e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4500,7 +4524,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1280039900
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5872,7 +5896,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 129279
+    m_Bits: 129247
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 8400000, guid: 28a181c8a20f4674ea49bd1e1e96ed6e, type: 2}
   m_TargetDisplay: 0

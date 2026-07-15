@@ -33,6 +33,16 @@ public class EnemyWhitebox : MonoBehaviour, IDamageable
     public float knockbackVerticalForce = 0f;
     public bool knockbackOnlyHorizontal = true;
 
+    [Header("»÷ÍËÅö×²")]
+    [SerializeField]
+    private LayerMask knockbackObstacleLayer = ~0;
+
+    [SerializeField]
+    private float knockbackCollisionSkin = 0.05f;
+
+    [SerializeField]
+    private bool stopKnockbackOnObstacle = true;
+
     [Header("Debug")]
     public bool debugLog = true;
 
@@ -297,16 +307,24 @@ public class EnemyWhitebox : MonoBehaviour, IDamageable
         );
     }
 
-    private IEnumerator KnockbackRoutine(Vector3 direction, float force)
+    private IEnumerator KnockbackRoutine(
+    Vector3 direction,
+    float force
+)
     {
         float timer = 0f;
 
-        while (timer < knockbackDuration && !isDead)
+        while (timer < knockbackDuration &&
+               !isDead)
         {
             float deltaTime = Time.deltaTime;
+
             timer += deltaTime;
 
-            float normalizedTime = Mathf.Clamp01(timer / knockbackDuration);
+            float normalizedTime =
+                Mathf.Clamp01(
+                    timer / knockbackDuration
+                );
 
             float strength = Mathf.Lerp(
                 force,
@@ -314,33 +332,293 @@ public class EnemyWhitebox : MonoBehaviour, IDamageable
                 normalizedTime
             );
 
-            Vector3 move = direction * strength * deltaTime;
+            Vector3 desiredMove =
+                direction *
+                strength *
+                deltaTime;
 
-            if (navMeshAgent != null &&
-                navMeshAgent.enabled &&
-                navMeshAgent.isOnNavMesh)
+            bool hitObstacle;
+
+            Vector3 safeMove =
+                GetSafeKnockbackMove(
+                    desiredMove,
+                    out hitObstacle
+                );
+
+            if (safeMove.sqrMagnitude > 0.000001f)
             {
-                navMeshAgent.Move(move);
+                ApplyKnockbackMove(safeMove);
             }
-            else if (characterController != null &&
-                     characterController.enabled)
+
+            if (hitObstacle &&
+                stopKnockbackOnObstacle)
             {
-                characterController.Move(move);
-            }
-            else if (enemyRigidbody != null &&
-                     !enemyRigidbody.isKinematic)
-            {
-                enemyRigidbody.MovePosition(enemyRigidbody.position + move);
-            }
-            else
-            {
-                transform.position += move;
+                if (debugLog)
+                {
+                    Debug.Log(
+                        "[EnemyWhitebox] " +
+                        "Knockback stopped by obstacle.",
+                        this
+                    );
+                }
+
+                break;
             }
 
             yield return null;
         }
 
         knockbackCoroutine = null;
+    }
+
+    private void ApplyKnockbackMove(
+    Vector3 move
+)
+    {
+        if (navMeshAgent != null &&
+            navMeshAgent.enabled &&
+            navMeshAgent.isOnNavMesh)
+        {
+            navMeshAgent.Move(move);
+            return;
+        }
+
+        if (characterController != null &&
+            characterController.enabled)
+        {
+            characterController.Move(move);
+            return;
+        }
+
+        if (enemyRigidbody != null &&
+            !enemyRigidbody.isKinematic)
+        {
+            enemyRigidbody.MovePosition(
+                enemyRigidbody.position + move
+            );
+
+            return;
+        }
+
+        transform.position += move;
+    }
+
+    private Vector3 GetSafeKnockbackMove(
+    Vector3 desiredMove,
+    out bool hitObstacle
+)
+    {
+        hitObstacle = false;
+
+        float moveDistance =
+            desiredMove.magnitude;
+
+        if (moveDistance <= 0.0001f)
+        {
+            return Vector3.zero;
+        }
+
+        Vector3 moveDirection =
+            desiredMove / moveDistance;
+
+        GetKnockbackCapsule(
+            out Vector3 point1,
+            out Vector3 point2,
+            out float radius
+        );
+
+        float castDistance =
+            moveDistance +
+            Mathf.Max(
+                0f,
+                knockbackCollisionSkin
+            );
+
+        RaycastHit[] hits =
+            Physics.CapsuleCastAll(
+                point1,
+                point2,
+                radius,
+                moveDirection,
+                castDistance,
+                knockbackObstacleLayer,
+                QueryTriggerInteraction.Ignore
+            );
+
+        float nearestDistance =
+            float.MaxValue;
+
+        bool foundObstacle = false;
+
+        for (int i = 0; i < hits.Length; i++)
+        {
+            RaycastHit hit = hits[i];
+
+            if (hit.collider == null)
+                continue;
+
+            if (IsOwnCollider(hit.collider))
+                continue;
+
+            if (hit.distance >= nearestDistance)
+                continue;
+
+            nearestDistance = hit.distance;
+            foundObstacle = true;
+        }
+
+        if (!foundObstacle)
+        {
+            return desiredMove;
+        }
+
+        hitObstacle = true;
+
+        float safeDistance = Mathf.Max(
+            0f,
+            nearestDistance -
+            knockbackCollisionSkin
+        );
+
+        safeDistance = Mathf.Min(
+            safeDistance,
+            moveDistance
+        );
+
+        return moveDirection * safeDistance;
+    }
+
+    private void GetKnockbackCapsule(
+    out Vector3 point1,
+    out Vector3 point2,
+    out float radius
+)
+    {
+        if (characterController != null)
+        {
+            Transform controllerTransform =
+                characterController.transform;
+
+            Vector3 center =
+                controllerTransform.TransformPoint(
+                    characterController.center
+                );
+
+            float scaleX =
+                Mathf.Abs(
+                    controllerTransform.lossyScale.x
+                );
+
+            float scaleY =
+                Mathf.Abs(
+                    controllerTransform.lossyScale.y
+                );
+
+            float scaleZ =
+                Mathf.Abs(
+                    controllerTransform.lossyScale.z
+                );
+
+            radius =
+                characterController.radius *
+                Mathf.Max(scaleX, scaleZ);
+
+            float height =
+                characterController.height *
+                scaleY;
+
+            float halfSegment =
+                Mathf.Max(
+                    0f,
+                    height * 0.5f - radius
+                );
+
+            point1 =
+                center +
+                Vector3.up * halfSegment;
+
+            point2 =
+                center -
+                Vector3.up * halfSegment;
+
+            return;
+        }
+
+        if (navMeshAgent != null)
+        {
+            radius = Mathf.Max(
+                0.05f,
+                navMeshAgent.radius
+            );
+
+            float height = Mathf.Max(
+                radius * 2f,
+                navMeshAgent.height
+            );
+
+            Vector3 center =
+                navMeshAgent.transform.position +
+                Vector3.up *
+                (
+                    navMeshAgent.baseOffset +
+                    height * 0.5f
+                );
+
+            float halfSegment =
+                Mathf.Max(
+                    0f,
+                    height * 0.5f - radius
+                );
+
+            point1 =
+                center +
+                Vector3.up * halfSegment;
+
+            point2 =
+                center -
+                Vector3.up * halfSegment;
+
+            return;
+        }
+
+        radius = 0.4f;
+
+        Vector3 fallbackCenter =
+            transform.position +
+            Vector3.up;
+
+        point1 =
+            fallbackCenter +
+            Vector3.up * 0.6f;
+
+        point2 =
+            fallbackCenter -
+            Vector3.up * 0.6f;
+    }
+
+    private bool IsOwnCollider(
+    Collider targetCollider
+)
+    {
+        if (targetCollider == null)
+            return false;
+
+        Transform enemyRoot =
+            simpleEnemy != null
+                ? simpleEnemy.transform
+                : transform;
+
+        Transform targetTransform =
+            targetCollider.transform;
+
+        if (targetTransform == enemyRoot)
+        {
+            return true;
+        }
+
+        return targetTransform.IsChildOf(
+            enemyRoot
+        );
     }
 
     public void SetCombatActive(bool active)

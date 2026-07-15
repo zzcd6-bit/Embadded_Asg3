@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 
@@ -55,6 +56,9 @@ public class BrushSceneElementObstacle :
     private bool hasReacted;
     private Tween disappearTween;
 
+    private readonly List<Material> fadeMaterials =
+        new List<Material>();
+
     public Transform ReactionTarget
     {
         get
@@ -72,10 +76,75 @@ public class BrushSceneElementObstacle :
             disappearTarget = transform;
         }
 
+        CacheFadeMaterials();
+
         if (reactionVfxObject != null)
         {
             reactionVfxObject.SetActive(false);
         }
+    }
+
+    private void CacheFadeMaterials()
+    {
+        fadeMaterials.Clear();
+
+        if (disappearTarget == null)
+            return;
+
+        Renderer[] renderers =
+            disappearTarget.GetComponentsInChildren<Renderer>(
+                true
+            );
+
+        for (int i = 0; i < renderers.Length; i++)
+        {
+            Renderer targetRenderer = renderers[i];
+
+            if (targetRenderer == null)
+                continue;
+
+            Material[] materials =
+                targetRenderer.materials;
+
+            for (int j = 0; j < materials.Length; j++)
+            {
+                Material material = materials[j];
+
+                if (material == null)
+                    continue;
+
+                if (!HasFadeColorProperty(material))
+                    continue;
+
+                if (!fadeMaterials.Contains(material))
+                {
+                    fadeMaterials.Add(material);
+                }
+            }
+        }
+    }
+
+    private bool HasFadeColorProperty(
+    Material material
+)
+    {
+        if (material == null)
+            return false;
+
+        return material.HasProperty("_BaseColor") ||
+               material.HasProperty("_Color");
+    }
+
+    private string GetColorPropertyName(
+        Material material
+    )
+    {
+        if (material.HasProperty("_BaseColor"))
+        {
+            return "_BaseColor";
+        }
+
+        return "_Color";
     }
 
     public bool CanReactTo(BrushSkillType skillType)
@@ -170,20 +239,79 @@ public class BrushSceneElementObstacle :
 
     private void StartDisappear()
     {
-        if (disappearTarget == null)
-            return;
-
         if (disappearTween != null &&
             disappearTween.IsActive())
         {
             disappearTween.Kill();
         }
 
-        disappearTween = disappearTarget
-            .DOScale(
-                Vector3.zero,
-                Mathf.Max(0.01f, disappearDuration)
-            )
+        if (fadeMaterials.Count <= 0)
+        {
+            Debug.LogWarning(
+                "[BrushSceneElementObstacle] " +
+                "No fade material found.",
+                this
+            );
+
+            OnDisappearComplete();
+            return;
+        }
+
+        float duration =
+            Mathf.Max(
+                0.01f,
+                disappearDuration
+            );
+
+        Sequence fadeSequence =
+            DOTween.Sequence();
+
+        for (int i = 0; i < fadeMaterials.Count; i++)
+        {
+            Material material =
+                fadeMaterials[i];
+
+            if (material == null)
+                continue;
+
+            string colorProperty =
+                GetColorPropertyName(material);
+
+            Color startColor =
+                material.GetColor(colorProperty);
+
+            Tween fadeTween = DOTween.To(
+                () =>
+                    material
+                        .GetColor(colorProperty)
+                        .a,
+
+                alpha =>
+                {
+                    if (material == null)
+                        return;
+
+                    Color color =
+                        material.GetColor(
+                            colorProperty
+                        );
+
+                    color.a = alpha;
+
+                    material.SetColor(
+                        colorProperty,
+                        color
+                    );
+                },
+
+                0f,
+                duration
+            );
+
+            fadeSequence.Join(fadeTween);
+        }
+
+        disappearTween = fadeSequence
             .SetEase(disappearEase)
             .OnComplete(OnDisappearComplete);
     }

@@ -11,7 +11,8 @@ public class PlayerAnimationController : MonoBehaviour
         RunLoop,
         RunStop,
         Jump,
-        Action
+        Action,
+        Death
     }
 
     [Header("Timing")]
@@ -27,6 +28,12 @@ public class PlayerAnimationController : MonoBehaviour
 
     private bool lastHasMoveInput;
     private bool isActionPlaying;
+    private bool isDead;
+
+    public bool IsDead
+    {
+        get { return isDead; }
+    }
 
     public void Init(Animator targetAnimator)
     {
@@ -40,6 +47,7 @@ public class PlayerAnimationController : MonoBehaviour
 
         animancerDriver.Init(targetAnimator);
 
+        isDead = false;
         currentState = PlayerAnimState.Idle;
 
         Debug.Log("[PlayerAnimationController] Init complete.");
@@ -47,6 +55,11 @@ public class PlayerAnimationController : MonoBehaviour
 
     public void SetLocomotion(float speed, bool hasMoveInput)
     {
+        if (isDead)
+        {
+            return;
+        }
+
         lastHasMoveInput = hasMoveInput;
 
         if (animancerDriver == null)
@@ -207,6 +220,11 @@ public class PlayerAnimationController : MonoBehaviour
 
     public void PlayJump()
     {
+        if (isDead)
+        {
+            return;
+        }
+
         if (animancerDriver == null)
         {
             return;
@@ -222,6 +240,11 @@ public class PlayerAnimationController : MonoBehaviour
 
     public void ReturnToLocomotion(bool hasMoveInput)
     {
+        if (isDead)
+        {
+            return;
+        }
+
         if (animancerDriver == null)
         {
             return;
@@ -246,8 +269,64 @@ public class PlayerAnimationController : MonoBehaviour
         // 保留接口，避免 PlayerLocomotion 调用时报错。
     }
 
+    public void PlayDeath()
+    {
+        if (animancerDriver == null)
+        {
+            return;
+        }
+
+        if (isDead)
+        {
+            return;
+        }
+
+        StopLocomotionCoroutine();
+        StopActionReturnCoroutine();
+
+        isDead = true;
+        isActionPlaying = true;
+        lastHasMoveInput = false;
+
+        currentState = PlayerAnimState.Death;
+
+        animancerDriver.PlayDeath();
+
+        Debug.Log(
+            "[PlayerAnimationController] Play Death.",
+            this
+        );
+    }
+
+    public void ResetAfterDeath()
+    {
+        if (!isDead)
+        {
+            return;
+        }
+
+        StopLocomotionCoroutine();
+        StopActionReturnCoroutine();
+
+        isDead = false;
+        isActionPlaying = false;
+        lastHasMoveInput = false;
+
+        PlayIdle();
+
+        Debug.Log(
+            "[PlayerAnimationController] Reset after Death.",
+            this
+        );
+    }
+
     public bool CanStartCombatAction()
     {
+        if (isDead)
+        {
+            return false;
+        }
+
         if (currentState == PlayerAnimState.Jump)
         {
             return false;
@@ -258,6 +337,11 @@ public class PlayerAnimationController : MonoBehaviour
 
     private void StopLocomotionCoroutine()
     {
+        if (isDead)
+        {
+            return;
+        }
+
         if (locomotionCoroutine == null)
         {
             return;
@@ -325,6 +409,11 @@ public class PlayerAnimationController : MonoBehaviour
 
     private void DoReturnFromAction(bool hasMoveInput, bool useRunStartWhenMoving)
     {
+        if (isDead)
+        {
+            return;
+        }
+
         isActionPlaying = false;
         lastHasMoveInput = hasMoveInput;
 
