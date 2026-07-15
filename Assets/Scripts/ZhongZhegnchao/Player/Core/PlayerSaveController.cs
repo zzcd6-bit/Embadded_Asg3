@@ -7,6 +7,7 @@ public class PlayerSaveController : MonoBehaviour, IPlayerSaveable
     public PlayerDamageReceiver damageReceiver;
     public PlayerBrushSkillInventory skillInventory;
     public PlayerInkPouchController inkPouchController;
+    public PlayerCharacterStatsController characterStatsController;
 
     [Header("Î»ÒÆ×é¼þ")]
     public Transform playerRoot;
@@ -77,6 +78,20 @@ public class PlayerSaveController : MonoBehaviour, IPlayerSaveable
         {
             playerRigidbody = playerRoot.GetComponentInChildren<Rigidbody>();
         }
+
+        if (characterStatsController == null)
+        {
+            characterStatsController =
+                GetComponent<
+                    PlayerCharacterStatsController>();
+        }
+
+        if (characterStatsController == null)
+        {
+            characterStatsController =
+                GetComponentInChildren<
+                    PlayerCharacterStatsController>();
+        }
     }
 
     public PlayerSaveData CapturePlayerSaveData()
@@ -117,6 +132,12 @@ public class PlayerSaveController : MonoBehaviour, IPlayerSaveable
             saveData.maxInk = inkPouchController.MaxInk;
         }
 
+        if (characterStatsController != null)
+        {
+            saveData.characterLevel =
+                characterStatsController.CurrentLevel;
+        }
+
         if (debugLog)
         {
             Debug.Log(
@@ -141,11 +162,30 @@ public class PlayerSaveController : MonoBehaviour, IPlayerSaveable
 
         TeleportPlayer(saveData.position, saveData.eulerAngles);
 
+        if (characterStatsController != null)
+        {
+            characterStatsController.SetLevel(
+                Mathf.Max(
+                    1,
+                    saveData.characterLevel
+                ),
+                false
+            );
+        }
+
         if (damageReceiver != null)
         {
+            int resolvedMaxHp =
+                characterStatsController != null &&
+                characterStatsController.CombatStats != null
+                    ? characterStatsController
+                        .CombatStats
+                        .MaxHp
+                    : saveData.maxHp;
+
             damageReceiver.SetHp(
                 saveData.currentHp,
-                saveData.maxHp
+                resolvedMaxHp
             );
         }
 

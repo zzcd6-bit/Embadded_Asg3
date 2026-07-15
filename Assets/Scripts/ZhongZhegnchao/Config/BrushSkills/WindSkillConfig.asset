@@ -114,7 +114,7 @@ MonoBehaviour:
   windSpawnYOffset: 1
   windFieldDuration: 10
   windPullRadius: 8
-  windPullSpeed: 10
+  windPullSpeed: 3
   windCenterRadius: 0.8
   windCenterTickInterval: 0.5
   windFireColor: {r: 1, g: 0.2, b: 0.05, a: 1}

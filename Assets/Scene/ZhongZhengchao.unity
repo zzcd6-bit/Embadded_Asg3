@@ -724,6 +724,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8263279031209517386, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.5
+      objectReference: {fileID: 0}
     - target: {fileID: 8711962937741669046, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
       propertyPath: m_Name
       value: Player
@@ -731,7 +735,13 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8711962937741669046, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 219517376}
+    - targetCorrespondingSourceObject: {fileID: 8711962937741669046, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 219517375}
   m_SourcePrefab: {fileID: 100100000, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
 --- !u!1 &219517335 stripped
 GameObject:
@@ -820,6 +830,72 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3467a708342ab5f409cbb4b888b6cbd0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerTeleportService
+--- !u!114 &219517363 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7860042217002967190, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
+  m_PrefabInstance: {fileID: 219517334}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 219517335}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1aab3b9cb62a1064c82bb1891a3bd01a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerInkPouchController
+--- !u!114 &219517364 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5932185986845760001, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
+  m_PrefabInstance: {fileID: 219517334}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 219517335}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3b02d74094f73242ac814cb171b5236, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerDamageReceiver
+--- !u!114 &219517372 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8289351068557653306, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
+  m_PrefabInstance: {fileID: 219517334}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 219517335}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93a7c3df945442141b9a6a1697a478e5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterCombatStats
+--- !u!114 &219517375
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 219517335}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1dd1a899596d33445bd19011b735eb84, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterProfileUIController
+  statsController: {fileID: 219517376}
+  playerController: {fileID: 219517336}
+  pauseGameWhenOpen: 1
+--- !u!114 &219517376
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 219517335}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cb6d626bc7986e428cdc486bf14792a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerCharacterStatsController
+  config: {fileID: 11400000, guid: 7eda24b07b11b9241a5a92cc53bfe9f4, type: 2}
+  currentLevel: 1
+  combatStats: {fileID: 219517372}
+  damageReceiver: {fileID: 219517364}
+  inkPouchController: {fileID: 219517363}
+  debugLog: 1
 --- !u!1 &248848576
 GameObject:
   m_ObjectHideFlags: 0
@@ -1979,7 +2055,7 @@ MonoBehaviour:
   fullHealDuration: 3
   destroyOnDeath: 0
   destroyDelay: 2
-  simpleEnemy: {fileID: 0}
+  simpleEnemy: {fileID: 611657354}
   notifySimpleEnemyOnDamaged: 1
   letSimpleEnemyApplyOwnKnockback: 0
   enableKnockback: 1
@@ -1988,7 +2064,7 @@ MonoBehaviour:
   knockbackOnlyHorizontal: 1
   knockbackObstacleLayer:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 67712
   knockbackCollisionSkin: 0.05
   stopKnockbackOnObstacle: 1
   canMove: 1
@@ -2637,7 +2713,7 @@ MonoBehaviour:
   knockbackOnlyHorizontal: 1
   knockbackObstacleLayer:
     serializedVersion: 2
-    m_Bits: 67648
+    m_Bits: 67776
   knockbackCollisionSkin: 0.05
   stopKnockbackOnObstacle: 1
   canMove: 1
@@ -2669,23 +2745,52 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93a7c3df945442141b9a6a1697a478e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CharacterCombatStats
-  attackPower: 8
-  defense: 10
-  damageBonus: 0
-  critRate: 0.1
-  critDamage: 1.5
-  physicalDamageBonus: 0
-  fireDamageBonus: 0
-  waterDamageBonus: 0
-  iceDamageBonus: 0
-  thunderDamageBonus: 0
-  earthDamageBonus: 0
-  physicalResistance: 0
-  fireResistance: 0
-  waterResistance: 0
-  iceResistance: 0
-  thunderResistance: 0
-  earthResistance: 0
+  baseStats:
+    maxHp: 100
+    attackPower: 10
+    defense: 0
+    damageBonus: 0
+    critRate: 0.1
+    critDamage: 1.5
+    elementDamageBonus:
+      physical: 0
+      fire: 0
+      water: 0
+      ice: 0
+      thunder: 0
+      earth: 0
+      wind: 0
+    elementResistance:
+      physical: 0
+      fire: 0
+      water: 0
+      ice: 0
+      thunder: 0
+      earth: 0
+      wind: 0
+  equipmentModifiers:
+    maxHp: 0
+    attackPower: 0
+    defense: 0
+    damageBonus: 0
+    critRate: 0
+    critDamage: 0
+    elementDamageBonus:
+      physical: 0
+      fire: 0
+      water: 0
+      ice: 0
+      thunder: 0
+      earth: 0
+      wind: 0
+    elementResistance:
+      physical: 0
+      fire: 0
+      water: 0
+      ice: 0
+      thunder: 0
+      earth: 0
+      wind: 0
 --- !u!114 &718873966
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2729,7 +2834,7 @@ MonoBehaviour:
   hasFireStatus: 0
   fireStatusRemainingTime: 0
   addBurningDurationWhenReapply: 1
-  maxFireStatusDuration: 15
+  maxFireStatusDuration: 5
   currentBurningTickInterval: 1
   currentBurningTickDamage: 1
   burningOwner: {fileID: 0}
@@ -3535,23 +3640,52 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93a7c3df945442141b9a6a1697a478e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CharacterCombatStats
-  attackPower: 8
-  defense: 10
-  damageBonus: 0
-  critRate: 0.1
-  critDamage: 1.5
-  physicalDamageBonus: 0
-  fireDamageBonus: 0
-  waterDamageBonus: 0
-  iceDamageBonus: 0
-  thunderDamageBonus: 0
-  earthDamageBonus: 0
-  physicalResistance: 0
-  fireResistance: 0
-  waterResistance: 0
-  iceResistance: 0
-  thunderResistance: 0
-  earthResistance: 0
+  baseStats:
+    maxHp: 100
+    attackPower: 10
+    defense: 0
+    damageBonus: 0
+    critRate: 0.1
+    critDamage: 1.5
+    elementDamageBonus:
+      physical: 0
+      fire: 0
+      water: 0
+      ice: 0
+      thunder: 0
+      earth: 0
+      wind: 0
+    elementResistance:
+      physical: 0
+      fire: 0
+      water: 0
+      ice: 0
+      thunder: 0
+      earth: 0
+      wind: 0
+  equipmentModifiers:
+    maxHp: 0
+    attackPower: 0
+    defense: 0
+    damageBonus: 0
+    critRate: 0
+    critDamage: 0
+    elementDamageBonus:
+      physical: 0
+      fire: 0
+      water: 0
+      ice: 0
+      thunder: 0
+      earth: 0
+      wind: 0
+    elementResistance:
+      physical: 0
+      fire: 0
+      water: 0
+      ice: 0
+      thunder: 0
+      earth: 0
+      wind: 0
 --- !u!114 &1029940140
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3709,7 +3843,7 @@ MonoBehaviour:
   hasFireStatus: 0
   fireStatusRemainingTime: 0
   addBurningDurationWhenReapply: 1
-  maxFireStatusDuration: 15
+  maxFireStatusDuration: 5
   currentBurningTickInterval: 1
   currentBurningTickDamage: 1
   burningOwner: {fileID: 0}
@@ -5157,7 +5291,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 520485569}
   m_HandleRect: {fileID: 520485567}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:

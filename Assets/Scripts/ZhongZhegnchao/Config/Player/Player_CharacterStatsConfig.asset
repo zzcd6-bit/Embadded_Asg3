@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a530da4134e9a914198bb04af76a4b9b, type: 3}
+  m_Name: Player_CharacterStatsConfig
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerCharacterStatsConfig
+  maxLevel: 100
+  levelOneStats:
+    maxHp: 100
+    attackPower: 10
+    defense: 0
+    damageBonus: 0
+    critRate: 0.1
+    critDamage: 1.5
+    elementDamageBonus:
+      physical: 0
+      fire: 0
+      water: 0
+      ice: 0
+      thunder: 0
+      earth: 0
+      wind: 0
+    elementResistance:
+      physical: 0
+      fire: 0
+      water: 0
+      ice: 0
+      thunder: 0
+      earth: 0
+      wind: 0
+  growthPerLevel:
+    maxHpPerLevel: 10
+    attackPowerPerLevel: 2
+    defensePerLevel: 1
+    damageBonusPerLevel: 0
+    elementDamageBonusPerLevel:
+      physical: 0
+      fire: 0
+      water: 0
+      ice: 0
+      thunder: 0
+      earth: 0
+      wind: 0
+    elementResistancePerLevel:
+      physical: 0
+      fire: 0
+      water: 0
+      ice: 0
+      thunder: 0
+      earth: 0
+      wind: 0

@@ -8,6 +8,8 @@ public class PlayerSaveData
     public Vector3 position;
     public Vector3 eulerAngles;
 
+    public int characterLevel = 1;
+
     public int currentHp;
     public int maxHp;
 

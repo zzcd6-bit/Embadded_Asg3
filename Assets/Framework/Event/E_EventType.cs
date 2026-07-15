@@ -15,10 +15,10 @@ public enum E_EventType
 
     #region New Player Input
     E_Input_Jump,
-    // Ye interaction deployment note: InputMgr already filters this event; add the missing enum without changing dispatch logic.
     E_Input_Dodge,
     E_Input_Attack,
     E_Input_LockOn,
+    E_Input_CharacterPanel,
     #endregion
 
     #region Old Player / Brush Compatibility
