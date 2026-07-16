@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03b98bfee72b72e489e7159dda782745, type: 3}
+  m_Name: Equipment_Inkflame_Helmet
+  m_EditorClassIdentifier: Assembly-CSharp::EquipmentData
+  itemId: equipment_inkflame_helmet
+  displayName: Ink-burning helmet
+  description: "The helmet, made from solidified flame ink, \ncan protect the wearer's
+    life and enhance lethal attacks."
+  icon: {fileID: 973902108, guid: 8d43433382794c349b7cde931d554004, type: 3}
+  quality: 4
+  canDiscard: 1
+  maxStack: 99
+  slotType: 0
+  equipmentSet: {fileID: 11400000, guid: e0961225a34d70548898c016b2a3cb95, type: 2}
+  maxHpBonus: 40
+  defenseBonus: 0
+  resistanceElement: 1
+  elementResistanceBonus: 0
+  damageBonus: 0
+  damageElement: 1
+  elementDamageBonus: 0
+  baseAttackPower: 0
+  attackPowerPerLevel: 0
+  criticalRateBonus: 0.04
+  criticalDamageBonus: 0.1
+  weaponMaxLevel: 20
+  levelOneExperienceRequirement: 100
+  experienceIncreasePerLevel: 25

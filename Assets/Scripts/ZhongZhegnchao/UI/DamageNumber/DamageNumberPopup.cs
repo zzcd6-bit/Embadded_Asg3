@@ -146,6 +146,9 @@ public class DamageNumberPopup : MonoBehaviour
             case ElementType.Thunder:
                 return new Color(0.75f, 0.35f, 1f, 1f);
 
+            case ElementType.Wind:
+                return new Color(0.35f, 1f, 0.75f, 1f);
+
             default:
                 return Color.white;
         }

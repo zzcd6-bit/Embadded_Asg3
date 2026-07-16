@@ -2,89 +2,164 @@ using UnityEngine;
 
 public class CharacterCombatStats : MonoBehaviour
 {
-    [Header("Basic Stats")]
-    public int attackPower = 10;
-    public int defense = 0;
+    [Header("Base Stats")]
+    [SerializeField]
+    private CharacterBaseStats baseStats =
+        new CharacterBaseStats();
 
-    [Header("General Damage Bonus")]
-    [Tooltip("0.2 means +20% damage.")]
-    public float damageBonus = 0f;
+    [Header("Equipment Modifiers")]
+    [SerializeField]
+    private CharacterStatModifiers equipmentModifiers =
+        new CharacterStatModifiers();
 
-    [Header("Critical")]
-    [Tooltip("0.1 means 10% crit chance.")]
-    public float critRate = 0.1f;
-
-    [Tooltip("1.5 means 150% damage when critical.")]
-    public float critDamage = 1.5f;
-
-    [Header("Element Damage Bonus")]
-    public float physicalDamageBonus = 0f;
-    public float fireDamageBonus = 0f;
-    public float waterDamageBonus = 0f;
-    public float iceDamageBonus = 0f;
-    public float thunderDamageBonus = 0f;
-    public float earthDamageBonus = 0f;
-
-    [Header("Element Resistance")]
-    [Tooltip("0.2 means reduce this element damage by 20%.")]
-    public float physicalResistance = 0f;
-    public float fireResistance = 0f;
-    public float waterResistance = 0f;
-    public float iceResistance = 0f;
-    public float thunderResistance = 0f;
-    public float earthResistance = 0f;
-
-    public float GetElementDamageBonus(ElementType element)
+    public int MaxHp
     {
-        switch (element)
+        get
         {
-            case ElementType.Physical:
-                return physicalDamageBonus;
-
-            case ElementType.Fire:
-                return fireDamageBonus;
-
-            case ElementType.Water:
-                return waterDamageBonus;
-
-            case ElementType.Ice:
-                return iceDamageBonus;
-
-            case ElementType.Thunder:
-                return thunderDamageBonus;
-
-            case ElementType.Earth:
-                return earthDamageBonus;
-
-            default:
-                return 0f;
+            return Mathf.Max(
+                1,
+                baseStats.maxHp +
+                equipmentModifiers.maxHp
+            );
         }
     }
 
-    public float GetElementResistance(ElementType element)
+    public int AttackPower
     {
-        switch (element)
+        get
         {
-            case ElementType.Physical:
-                return physicalResistance;
-
-            case ElementType.Fire:
-                return fireResistance;
-
-            case ElementType.Water:
-                return waterResistance;
-
-            case ElementType.Ice:
-                return iceResistance;
-
-            case ElementType.Thunder:
-                return thunderResistance;
-
-            case ElementType.Earth:
-                return earthResistance;
-
-            default:
-                return 0f;
+            return Mathf.Max(
+                0,
+                baseStats.attackPower +
+                equipmentModifiers.attackPower
+            );
         }
+    }
+
+    public int Defense
+    {
+        get
+        {
+            return Mathf.Max(
+                0,
+                baseStats.defense +
+                equipmentModifiers.defense
+            );
+        }
+    }
+
+    public float DamageBonus
+    {
+        get
+        {
+            return
+                baseStats.damageBonus +
+                equipmentModifiers.damageBonus;
+        }
+    }
+
+    public float CritRate
+    {
+        get
+        {
+            return Mathf.Clamp01(
+                baseStats.critRate +
+                equipmentModifiers.critRate
+            );
+        }
+    }
+
+    public float CritDamage
+    {
+        get
+        {
+            return Mathf.Max(
+                1f,
+                baseStats.critDamage +
+                equipmentModifiers.critDamage
+            );
+        }
+    }
+
+    public void SetBaseStats(
+        CharacterBaseStats newStats
+    )
+    {
+        baseStats =
+            newStats != null
+                ? newStats.Clone()
+                : new CharacterBaseStats();
+    }
+
+    public void SetEquipmentModifiers(
+        CharacterStatModifiers modifiers
+    )
+    {
+        equipmentModifiers =
+            modifiers != null
+                ? modifiers.Clone()
+                : new CharacterStatModifiers();
+    }
+
+    public void ClearEquipmentModifiers()
+    {
+        equipmentModifiers =
+            new CharacterStatModifiers();
+    }
+
+    public float GetElementDamageBonus(
+        ElementType element
+    )
+    {
+        float baseValue =
+            baseStats.elementDamageBonus != null
+                ? baseStats
+                    .elementDamageBonus
+                    .Get(element)
+                : 0f;
+
+        float modifierValue =
+            equipmentModifiers
+                .elementDamageBonus != null
+                ? equipmentModifiers
+                    .elementDamageBonus
+                    .Get(element)
+                : 0f;
+
+        return baseValue + modifierValue;
+    }
+
+    public float GetElementResistance(
+        ElementType element
+    )
+    {
+        float baseValue =
+            baseStats.elementResistance != null
+                ? baseStats
+                    .elementResistance
+                    .Get(element)
+                : 0f;
+
+        float modifierValue =
+            equipmentModifiers
+                .elementResistance != null
+                ? equipmentModifiers
+                    .elementResistance
+                    .Get(element)
+                : 0f;
+
+        return baseValue + modifierValue;
+    }
+
+    public CharacterBaseStats
+        GetBaseStatsSnapshot()
+    {
+        return baseStats.Clone();
+    }
+
+    public CharacterStatModifiers
+        GetEquipmentModifiersSnapshot()
+    {
+        return equipmentModifiers.Clone();
     }
 }

@@ -6,5 +6,6 @@ public enum ElementType
     Water,
     Ice,
     Thunder,
-    Earth
+    Earth,
+    Wind
 }

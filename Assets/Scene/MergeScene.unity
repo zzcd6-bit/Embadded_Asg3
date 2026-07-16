@@ -1047,6 +1047,7 @@ MonoBehaviour:
   useRuntimeFireTemplate: 0
   useRuntimeBridgeTemplate: 0
   exitBrushModeOnRecognized: 1
+  skillInventory: {fileID: 0}
   debugPointInfo: 1
   debugTemplateInfo: 1
   debugTopMatches: 1
@@ -2007,6 +2008,11 @@ MonoBehaviour:
   knockbackDuration: 0.18
   knockbackVerticalForce: 0
   knockbackOnlyHorizontal: 1
+  knockbackObstacleLayer:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  knockbackCollisionSkin: 0.05
+  stopKnockbackOnObstacle: 1
   debugLog: 1
 --- !u!114 &611657352
 MonoBehaviour:
@@ -2514,6 +2520,11 @@ MonoBehaviour:
   knockbackDuration: 0.18
   knockbackVerticalForce: 0
   knockbackOnlyHorizontal: 1
+  knockbackObstacleLayer:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  knockbackCollisionSkin: 0.05
+  stopKnockbackOnObstacle: 1
   debugLog: 1
 --- !u!114 &718873964
 MonoBehaviour:
@@ -3421,6 +3432,11 @@ MonoBehaviour:
   knockbackDuration: 0.18
   knockbackVerticalForce: 0
   knockbackOnlyHorizontal: 1
+  knockbackObstacleLayer:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  knockbackCollisionSkin: 0.05
+  stopKnockbackOnObstacle: 1
   debugLog: 1
 --- !u!65 &1029940142
 BoxCollider:
@@ -4296,7 +4312,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1280039900
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4734,7 +4750,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 520485569}
   m_HandleRect: {fileID: 520485567}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:

@@ -5,5 +5,6 @@ public enum BrushSkillType
     Fire,
     Water,
     Wood,
-    Bridge
+    Bridge,
+    Wind
 }

@@ -15,6 +15,9 @@ public class PlayerAnimancerDriver : MonoBehaviour
     [Header("Actions")]
     [SerializeField] private ClipTransition jump;
 
+    [Header("Death")]
+    [SerializeField] private ClipTransition death;
+
     public void Init(Animator targetAnimator)
     {
         if (targetAnimator != null)
@@ -66,6 +69,11 @@ public class PlayerAnimancerDriver : MonoBehaviour
     public void PlayJump()
     {
         PlayTransition(jump, "Jump");
+    }
+
+    public void PlayDeath()
+    {
+        PlayTransition(death, "Death");
     }
 
     public float GetRunStartLength()

@@ -1,0 +1,707 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+[DisallowMultipleComponent]
+public class WindFieldController : MonoBehaviour
+{
+    private BrushSkillConfig config;
+    private GameObject caster;
+
+    private float remainingDuration;
+
+    private bool isRunning;
+    private bool isRecycling;
+
+    private ElementType absorbedElement =
+        ElementType.None;
+
+    private ParticleSystem[] particleSystems;
+
+    private ParticleSystem.MinMaxGradient[]
+        originalStartColors;
+
+    private readonly HashSet<EnemyWhitebox>
+        controlledEnemies =
+            new HashSet<EnemyWhitebox>();
+
+    private readonly HashSet<EnemyWhitebox>
+        currentFrameEnemies =
+            new HashSet<EnemyWhitebox>();
+
+    private readonly Dictionary<
+        EnemyWhitebox,
+        float
+    > nextCenterTickTimes =
+        new Dictionary<EnemyWhitebox, float>();
+
+    private readonly List<EnemyWhitebox>
+        releaseBuffer =
+            new List<EnemyWhitebox>();
+
+    private void Awake()
+    {
+        CacheParticleSystems();
+    }
+
+    private void OnEnable()
+    {
+        RestoreParticleColors();
+        RestartParticleSystems();
+    }
+
+    public void Initialize(
+        BrushSkillConfig newConfig,
+        GameObject newCaster
+    )
+    {
+        ReleaseAllControlledEnemies();
+
+        config = newConfig;
+        caster = newCaster;
+
+        absorbedElement =
+            ElementType.None;
+
+        nextCenterTickTimes.Clear();
+
+        remainingDuration =
+            config != null
+                ? Mathf.Max(
+                    0.01f,
+                    config.windFieldDuration
+                )
+                : 0f;
+
+        isRunning = config != null;
+        isRecycling = false;
+
+        RestoreParticleColors();
+        RestartParticleSystems();
+
+        if (config == null)
+        {
+            Debug.LogWarning(
+                "[WindFieldController] " +
+                "Config is null.",
+                this
+            );
+
+            RecycleSelf();
+        }
+    }
+
+    private void Update()
+    {
+        if (!isRunning)
+            return;
+
+        if (config == null)
+        {
+            RecycleSelf();
+            return;
+        }
+
+        remainingDuration -= Time.deltaTime;
+
+        if (remainingDuration <= 0f)
+        {
+            RecycleSelf();
+            return;
+        }
+
+        UpdateWindPull();
+    }
+
+    private void UpdateWindPull()
+    {
+        currentFrameEnemies.Clear();
+
+        Collider[] hits =
+            Physics.OverlapSphere(
+                transform.position,
+                config.windPullRadius,
+                config.targetLayer,
+                QueryTriggerInteraction.Collide
+            );
+
+        for (int i = 0; i < hits.Length; i++)
+        {
+            Collider col = hits[i];
+
+            if (col == null)
+                continue;
+
+            EnemyWhitebox enemy =
+                FindEnemy(col);
+
+            if (enemy == null)
+                continue;
+
+            if (enemy.IsDead)
+                continue;
+
+            if (!currentFrameEnemies.Add(enemy))
+                continue;
+
+            if (controlledEnemies.Add(enemy))
+            {
+                enemy.SetWindPullActive(true);
+            }
+
+            PullEnemy(enemy);
+        }
+
+        ReleaseEnemiesOutsideRange();
+    }
+
+    private EnemyWhitebox FindEnemy(
+        Component component
+    )
+    {
+        if (component == null)
+            return null;
+
+        EnemyWhitebox enemy =
+            component.GetComponent<EnemyWhitebox>();
+
+        if (enemy == null)
+        {
+            enemy = component
+                .GetComponentInParent<
+                    EnemyWhitebox>();
+        }
+
+        if (enemy == null)
+        {
+            enemy = component
+                .GetComponentInChildren<
+                    EnemyWhitebox>();
+        }
+
+        return enemy;
+    }
+
+    private void PullEnemy(
+    EnemyWhitebox enemy
+)
+    {
+        if (enemy == null)
+            return;
+
+        Vector3 toCenter =
+            transform.position -
+            enemy.transform.position;
+
+        toCenter.y = 0f;
+
+        float distance =
+            toCenter.magnitude;
+
+        // 已经在中心
+        if (distance <= config.windCenterRadius)
+        {
+            ProcessCenterEnemy(enemy);
+            return;
+        }
+
+        // 离开中心后，下次进入立即造成一次 Tick
+        nextCenterTickTimes.Remove(enemy);
+
+        // Enemy 正在被击退
+        // 暂停风场拉力，让 Knockback 真正表现出来
+        if (enemy.IsBeingKnockedBack)
+        {
+            return;
+        }
+
+        if (toCenter.sqrMagnitude <= 0.0001f)
+            return;
+
+        Vector3 direction =
+            toCenter.normalized;
+
+        float moveDistance =
+            config.windPullSpeed *
+            Time.deltaTime;
+
+        moveDistance = Mathf.Min(
+            moveDistance,
+            distance
+        );
+
+        Vector3 move =
+            direction * moveDistance;
+
+        enemy.ApplyWindPullMove(move);
+
+        Vector3 afterMoveToCenter =
+            transform.position -
+            enemy.transform.position;
+
+        afterMoveToCenter.y = 0f;
+
+        if (afterMoveToCenter.magnitude <=
+            config.windCenterRadius)
+        {
+            ProcessCenterEnemy(enemy);
+        }
+    }
+
+    private void ProcessCenterEnemy(
+    EnemyWhitebox enemy
+)
+    {
+        if (enemy == null)
+            return;
+
+        if (enemy.IsDead)
+            return;
+
+        ElementStatusController status =
+            FindStatusController(enemy);
+
+        // 风场还没染色时
+        // 每个进入中心的 Enemy 都有机会成为第一个元素来源
+        TryAbsorbElement(status);
+
+        float currentTime =
+            Time.time;
+
+        if (nextCenterTickTimes.TryGetValue(
+                enemy,
+                out float nextTickTime
+            ))
+        {
+            if (currentTime < nextTickTime)
+            {
+                return;
+            }
+        }
+
+        float tickInterval =
+            Mathf.Max(
+                0.05f,
+                config.windCenterTickInterval
+            );
+
+        nextCenterTickTimes[enemy] =
+            currentTime + tickInterval;
+
+        bool canApplySpreadStatus = true;
+
+        if (status != null &&
+            absorbedElement != ElementType.None)
+        {
+            bool hasVaporizePair =
+                status.HasVaporizePair(
+                    absorbedElement
+                );
+
+            if (hasVaporizePair)
+            {
+                canApplySpreadStatus =
+                    status.CanTriggerVaporizeNow(
+                        absorbedElement
+                    );
+            }
+        }
+
+        // 每 Tick 都造成伤害
+        ApplyCenterTickDamage(enemy);
+
+        // 风场染色后，每 Tick 都重新附加元素状态
+        if (status != null &&
+            absorbedElement != ElementType.None &&
+            canApplySpreadStatus)
+        {
+            ApplySpreadStatus(status);
+        }
+    }
+
+    private void TryAbsorbElement(
+    ElementStatusController status
+)
+    {
+        if (absorbedElement != ElementType.None)
+            return;
+
+        if (status == null)
+            return;
+
+        ElementType element =
+            GetAbsorbableElement(status);
+
+        if (element == ElementType.None)
+            return;
+
+        AbsorbElement(element);
+    }
+
+    private ElementType GetCurrentDamageElement()
+    {
+        if (absorbedElement == ElementType.Fire)
+        {
+            return ElementType.Fire;
+        }
+
+        if (absorbedElement == ElementType.Water)
+        {
+            return ElementType.Water;
+        }
+
+        return ElementType.Wind;
+    }
+
+    private void ApplyCenterTickDamage(
+    EnemyWhitebox enemy
+)
+    {
+        if (enemy == null)
+            return;
+
+        GameObject attackerObject =
+            caster != null
+                ? caster
+                : gameObject;
+
+        Vector3 hitDirection =
+            enemy.transform.position -
+            transform.position;
+
+        hitDirection.y = 0f;
+
+        if (hitDirection.sqrMagnitude > 0.0001f)
+        {
+            hitDirection.Normalize();
+        }
+
+        DamageInfo damageInfo =
+            new DamageInfo
+            {
+                attacker = attackerObject,
+                target = enemy.gameObject,
+
+                damage = config.baseDamage,
+                knockback = 0f,
+
+                hitPoint =
+                    enemy.transform.position,
+
+                hitDirection =
+                    hitDirection,
+
+                sourceAction = null,
+
+                element =
+                    GetCurrentDamageElement(),
+
+                canApplyElementStatus = false,
+
+                skillMultiplier =
+                    config.skillMultiplier,
+
+                damageBonus =
+                    config.damageBonus,
+
+                reactionMultiplier =
+                    config.reactionMultiplier,
+
+                reactionType =
+                    ElementReactionType.None,
+
+                canCrit =
+                    config.canCrit
+            };
+
+        enemy.TakeDamage(damageInfo);
+    }
+
+    private ElementStatusController
+        FindStatusController(
+            EnemyWhitebox enemy
+        )
+    {
+        if (enemy == null)
+            return null;
+
+        ElementStatusController status =
+            enemy.GetComponent<
+                ElementStatusController>();
+
+        if (status == null)
+        {
+            status = enemy
+                .GetComponentInParent<
+                    ElementStatusController>();
+        }
+
+        if (status == null)
+        {
+            status = enemy
+                .GetComponentInChildren<
+                    ElementStatusController>();
+        }
+
+        return status;
+    }
+
+    private ElementType GetAbsorbableElement(
+        ElementStatusController status
+    )
+    {
+        if (status == null)
+            return ElementType.None;
+
+        // 两种状态意外并存时 Fire 优先
+        if (status.HasFireStatus)
+        {
+            return ElementType.Fire;
+        }
+
+        if (status.IsWet)
+        {
+            return ElementType.Water;
+        }
+
+        return ElementType.None;
+    }
+
+    private void AbsorbElement(
+        ElementType element
+    )
+    {
+        if (element != ElementType.Fire &&
+            element != ElementType.Water)
+        {
+            return;
+        }
+
+        absorbedElement = element;
+
+        Color targetColor =
+            absorbedElement == ElementType.Fire
+                ? config.windFireColor
+                : config.windWaterColor;
+
+        ApplyParticleColor(targetColor);
+
+        Debug.Log(
+            $"[WindFieldController] " +
+            $"Absorbed element: {absorbedElement}",
+            this
+        );
+    }
+
+    private void ApplySpreadStatus(
+        ElementStatusController status
+    )
+    {
+        if (status == null)
+            return;
+
+        GameObject owner =
+            caster != null
+                ? caster
+                : gameObject;
+
+        if (absorbedElement == ElementType.Fire)
+        {
+            status.ApplyBurning(
+                owner,
+                config.windSpreadFireDuration,
+                config.windSpreadFireTickInterval,
+                config.windSpreadFireTickDamage
+            );
+
+            return;
+        }
+
+        if (absorbedElement == ElementType.Water)
+        {
+            status.ApplyWet(
+                owner,
+                config.windSpreadWetDuration
+            );
+        }
+    }
+
+    private void ApplyParticleColor(
+        Color color
+    )
+    {
+        if (particleSystems == null)
+            return;
+
+        for (int i = 0;
+             i < particleSystems.Length;
+             i++)
+        {
+            ParticleSystem particleSystem =
+                particleSystems[i];
+
+            if (particleSystem == null)
+                continue;
+
+            ParticleSystem.MainModule main =
+                particleSystem.main;
+
+            main.startColor = color;
+        }
+    }
+
+    private void CacheParticleSystems()
+    {
+        particleSystems =
+            GetComponentsInChildren<
+                ParticleSystem>(true);
+
+        originalStartColors =
+            new ParticleSystem.MinMaxGradient[
+                particleSystems.Length
+            ];
+
+        for (int i = 0;
+             i < particleSystems.Length;
+             i++)
+        {
+            ParticleSystem particleSystem =
+                particleSystems[i];
+
+            if (particleSystem == null)
+                continue;
+
+            originalStartColors[i] =
+                particleSystem.main.startColor;
+        }
+    }
+
+    private void RestoreParticleColors()
+    {
+        if (particleSystems == null ||
+            originalStartColors == null)
+        {
+            return;
+        }
+
+        int count = Mathf.Min(
+            particleSystems.Length,
+            originalStartColors.Length
+        );
+
+        for (int i = 0; i < count; i++)
+        {
+            ParticleSystem particleSystem =
+                particleSystems[i];
+
+            if (particleSystem == null)
+                continue;
+
+            ParticleSystem.MainModule main =
+                particleSystem.main;
+
+            main.startColor =
+                originalStartColors[i];
+        }
+    }
+
+    private void RestartParticleSystems()
+    {
+        if (particleSystems == null)
+            return;
+
+        for (int i = 0;
+             i < particleSystems.Length;
+             i++)
+        {
+            ParticleSystem particleSystem =
+                particleSystems[i];
+
+            if (particleSystem == null)
+                continue;
+
+            particleSystem.Clear(true);
+            particleSystem.Play(true);
+        }
+    }
+
+    private void ReleaseEnemiesOutsideRange()
+    {
+        releaseBuffer.Clear();
+
+        foreach (
+            EnemyWhitebox enemy
+            in controlledEnemies
+        )
+        {
+            if (enemy == null ||
+                !currentFrameEnemies.Contains(enemy))
+            {
+                releaseBuffer.Add(enemy);
+            }
+        }
+
+        for (int i = 0;
+             i < releaseBuffer.Count;
+             i++)
+        {
+            EnemyWhitebox enemy =
+                releaseBuffer[i];
+
+            if (enemy != null)
+            {
+                enemy.SetWindPullActive(false);
+            }
+
+            controlledEnemies.Remove(enemy);
+            nextCenterTickTimes.Remove(enemy);
+        }
+    }
+
+    private void ReleaseAllControlledEnemies()
+    {
+        foreach (
+            EnemyWhitebox enemy
+            in controlledEnemies
+        )
+        {
+            if (enemy != null)
+            {
+                enemy.SetWindPullActive(false);
+            }
+        }
+
+        controlledEnemies.Clear();
+        currentFrameEnemies.Clear();
+        releaseBuffer.Clear();
+    }
+
+    private void RecycleSelf()
+    {
+        if (isRecycling)
+            return;
+
+        isRecycling = true;
+        isRunning = false;
+
+        ReleaseAllControlledEnemies();
+
+        PoolMgr.Instance.PushObj(gameObject);
+    }
+
+    private void OnDisable()
+    {
+        isRunning = false;
+
+        ReleaseAllControlledEnemies();
+
+        nextCenterTickTimes.Clear();
+
+        config = null;
+        caster = null;
+
+        absorbedElement =
+            ElementType.None;
+
+        isRecycling = false;
+    }
+}

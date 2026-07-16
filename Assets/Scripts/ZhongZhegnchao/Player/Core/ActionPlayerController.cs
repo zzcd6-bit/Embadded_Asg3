@@ -35,6 +35,8 @@ public class ActionPlayerController : MonoBehaviour
     private PlayerCombatInputHandler combatInputHandler;
     private PlayerDamageReceiver playerDamageReceiver;
 
+    private PlayerCharacterStatsController characterStatsController;
+
     private Animator animator;
     private Transform cameraTarget;
 
@@ -127,6 +129,10 @@ public class ActionPlayerController : MonoBehaviour
         combatInputHandler = GetOrAddComponent<PlayerCombatInputHandler>();
         playerDamageReceiver = GetOrAddComponent<PlayerDamageReceiver>();
 
+        characterStatsController =
+    GetOrAddComponent<
+        PlayerCharacterStatsController>();
+
         animationController.Init(animator);
         locomotion.Init(characterController, inputReceiver, animationController);
         cameraController.Init(cameraTarget);
@@ -146,6 +152,15 @@ public class ActionPlayerController : MonoBehaviour
         );
 
         actionPlayer.Init(animationController, inputReceiver, locomotion);
+        characterStatsController.Init(playerDamageReceiver);
+    }
+
+    public bool GameplayControlEnabled
+    {
+        get
+        {
+            return gameplayControlEnabled;
+        }
     }
 
     public void SetGameplayControlEnabled(bool enabled)

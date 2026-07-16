@@ -11,6 +11,8 @@ public class PlayerDamageReceiver : MonoBehaviour, IDamageable, IHealable
     [SerializeField] private bool debugLog = true;
 
     private bool isDead;
+    private PlayerAnimationController animationController;
+    private ActionPlayer actionPlayer;
 
     public int CurrentHp
     {
@@ -29,14 +31,60 @@ public class PlayerDamageReceiver : MonoBehaviour, IDamageable, IHealable
 
     public void SetHp(int newCurrentHp, int newMaxHp)
     {
+        bool wasDead = isDead;
+
         maxHp = Mathf.Max(1, newMaxHp);
-        currentHp = Mathf.Clamp(newCurrentHp, 0, maxHp);
+
+        currentHp = Mathf.Clamp(
+            newCurrentHp,
+            0,
+            maxHp
+        );
+
         isDead = currentHp <= 0;
+
+        if (!wasDead && isDead)
+        {
+            PlayDeathPresentation();
+        }
+        else if (wasDead && !isDead)
+        {
+            ResetDeathPresentation();
+        }
     }
 
     private void Awake()
     {
+        ResolveReferences();
         ResetHp();
+    }
+
+    private void ResolveReferences()
+    {
+        if (animationController == null)
+        {
+            animationController =
+                GetComponent<PlayerAnimationController>();
+        }
+
+        if (animationController == null)
+        {
+            animationController =
+                GetComponentInChildren<
+                    PlayerAnimationController>(true);
+        }
+
+        if (actionPlayer == null)
+        {
+            actionPlayer =
+                GetComponent<ActionPlayer>();
+        }
+
+        if (actionPlayer == null)
+        {
+            actionPlayer =
+                GetComponentInChildren<ActionPlayer>(true);
+        }
     }
 
     public void TakeDamage(DamageInfo damageInfo)
@@ -114,6 +162,8 @@ public class PlayerDamageReceiver : MonoBehaviour, IDamageable, IHealable
 
         isDead = true;
 
+        PlayDeathPresentation();
+
         EventCenter.Instance.EventTrigger(
             E_EventType.E_Player_Dead,
             new CharacterDeadEventInfo
@@ -144,6 +194,31 @@ public class PlayerDamageReceiver : MonoBehaviour, IDamageable, IHealable
         // 4. 后续这些都可以通过 E_Player_Dead 的监听器处理
     }
 
+    private void PlayDeathPresentation()
+    {
+        ResolveReferences();
+
+        if (actionPlayer != null)
+        {
+            actionPlayer.InterruptAction();
+        }
+
+        if (animationController != null)
+        {
+            animationController.PlayDeath();
+        }
+    }
+
+    private void ResetDeathPresentation()
+    {
+        ResolveReferences();
+
+        if (animationController != null)
+        {
+            animationController.ResetAfterDeath();
+        }
+    }
+
     public int Heal(int amount)
     {
         amount = Mathf.Max(0, amount);
@@ -171,7 +246,14 @@ public class PlayerDamageReceiver : MonoBehaviour, IDamageable, IHealable
 
     public void ResetHp()
     {
+        bool wasDead = isDead;
+
         currentHp = maxHp;
         isDead = false;
+
+        if (wasDead)
+        {
+            ResetDeathPresentation();
+        }
     }
 }

@@ -14,6 +14,10 @@ public class BrushSkillConfig : ScriptableObject
     public float rayDistance = 200f;
     public float fallbackDistance = 12f;
 
+    [Header("场景元素交互")]
+    public bool enableSceneElementInteraction = true;
+    public LayerMask sceneElementLayer;
+
     [Header("墨囊消耗")]
     public int inkCost = 1;
 
@@ -148,4 +152,36 @@ public class BrushSkillConfig : ScriptableObject
     public LayerMask bridgeTriggerLayer;
     public float bridgeCastRadius = 0.6f;
     public float bridgeActiveDuration = 8f;
+
+    [Header("Wind 风场生成")]
+    [Tooltip("Resources 路径，例如 Prefabs/WindFieldVFX")]
+    public string windFieldPoolName =
+    "Prefabs/WindFieldVFX";
+
+    public float windSpawnDistance = 8f;
+    public float windSpawnYOffset = 0f;
+    public float windFieldDuration = 6f;
+
+    [Header("Wind 拉拽")]
+    public float windPullRadius = 8f;
+    public float windPullSpeed = 10f;
+    public float windCenterRadius = 0.8f;
+
+    [Header("Wind 中心持续伤害")]
+    public float windCenterTickInterval = 0.5f;
+
+    [Header("Wind 扩散颜色")]
+    public Color windFireColor =
+        new Color(1f, 0.2f, 0.05f, 1f);
+
+    public Color windWaterColor =
+        new Color(0.1f, 0.55f, 1f, 1f);
+
+    [Header("Wind Fire 扩散状态")]
+    public float windSpreadFireDuration = 5f;
+    public float windSpreadFireTickInterval = 1f;
+    public int windSpreadFireTickDamage = 1;
+
+    [Header("Wind Water 扩散状态")]
+    public float windSpreadWetDuration = 5f;
 }

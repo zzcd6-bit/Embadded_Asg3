@@ -18,6 +18,13 @@ MonoBehaviour:
     m_Bits: 128
   rayDistance: 200
   fallbackDistance: 12
+  enableSceneElementInteraction: 0
+  sceneElementLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  inkCost: 1
+  useSkillCooldown: 0
+  skillCooldown: 3
   baseDamage: 1
   knockback: 0
   element: 1
@@ -40,8 +47,65 @@ MonoBehaviour:
   infusionBurningDuration: 5
   infusionBurningTickInterval: 1
   infusionBurningTickDamage: 1
-  bridgePrefab: {fileID: 0}
-  bridgeDuration: 8
-  bridgeLength: 6
-  bridgeWidth: 2
-  bridgeHeightOffset: 0.05
+  waterAuraDuration: 8
+  waterUsePool: 1
+  waterProjectilePoolName: WaterProjectile
+  waterProjectilePrefab: {fileID: 0}
+  waterShootInterval: 0.6
+  waterSearchRange: 20
+  waterProjectileDamage: 8
+  waterProjectileKnockback: 1
+  wetDuration: 5
+  waterUseArcHoming: 1
+  waterProjectileSpeed: 15
+  waterProjectileLifeTime: 5
+  waterArcHeight: 2
+  waterRotateSpeed: 12
+  waterReachDistance: 0.45
+  waterTargetOffset: {x: 0, y: 1, z: 0}
+  waterProjectileHitLayer:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  waterIgnoreAttackerCollision: 1
+  waterDestroyOnNonHitLayerCollision: 0
+  waterUseBarrage: 1
+  waterProjectileCountPerBurst: 5
+  waterBarrageAngle: 45
+  waterBarrageSpawnRadius: 0.35
+  waterBarrageVerticalStep: 0.12
+  waterDistributeTargets: 1
+  waterUseRandomBarrage: 1
+  waterBurstDelayMin: 0.02
+  waterBurstDelayMax: 0.12
+  waterRandomSpawnRadius: 0.45
+  waterRandomTargetOffsetRadius: 0.8
+  waterArcSideOffsetMin: -1.2
+  waterArcSideOffsetMax: 1.2
+  waterArcHeightRandomMin: -0.5
+  waterArcHeightRandomMax: 0.8
+  waterSpeedRandomMin: -2
+  waterSpeedRandomMax: 2
+  woodEffectDuration: 8
+  woodHealAmountPerTick: 5
+  woodHealTickInterval: 1
+  woodHealVfxUsePool: 1
+  woodHealVfxPoolName: Prefabs/WoodHealVFX
+  woodHealVfxPrefab: {fileID: 0}
+  woodHealVfxLocalOffset: {x: 0, y: 0, z: 0}
+  woodHealVfxParentToPlayer: 1
+  woodHealVfxRecycleDelay: 2
+  woodShieldVfxUsePool: 1
+  woodShieldVfxPoolName: Prefabs/WoodShieldVFX
+  woodShieldVfxPrefab: {fileID: 0}
+  woodShieldVfxLocalOffset: {x: 0, y: 0, z: 0}
+  woodShieldVfxParentToPlayer: 1
+  woodShieldVfxForceLoop: 1
+  woodGrantShield: 1
+  woodShieldAmount: 30
+  woodShieldDuration: 8
+  woodRefreshShieldWhenReapply: 1
+  bridgeTriggerLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  bridgeCastRadius: 0.6
+  bridgeActiveDuration: 8

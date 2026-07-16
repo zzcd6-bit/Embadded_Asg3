@@ -18,6 +18,10 @@ MonoBehaviour:
     m_Bits: 128
   rayDistance: 200
   fallbackDistance: 12
+  enableSceneElementInteraction: 1
+  sceneElementLayer:
+    serializedVersion: 2
+    m_Bits: 65536
   inkCost: 1
   useSkillCooldown: 0
   skillCooldown: 3
@@ -48,7 +52,7 @@ MonoBehaviour:
   waterProjectilePoolName: Prefabs/Projectile jellyfish
   waterProjectilePrefab: {fileID: 0}
   waterShootInterval: 0.6
-  waterSearchRange: 20
+  waterSearchRange: 10
   waterProjectileDamage: 8
   waterProjectileKnockback: 1
   wetDuration: 5
@@ -61,12 +65,12 @@ MonoBehaviour:
   waterTargetOffset: {x: 0, y: 1, z: 0}
   waterProjectileHitLayer:
     serializedVersion: 2
-    m_Bits: 2176
+    m_Bits: 67712
   waterIgnoreAttackerCollision: 1
   waterDestroyOnNonHitLayerCollision: 0
   waterUseBarrage: 1
   waterProjectileCountPerBurst: 2
-  waterBarrageAngle: 180
+  waterBarrageAngle: 45
   waterBarrageSpawnRadius: 0.35
   waterBarrageVerticalStep: 0.12
   waterDistributeTargets: 1
@@ -81,6 +85,25 @@ MonoBehaviour:
   waterArcHeightRandomMax: 0.8
   waterSpeedRandomMin: -2
   waterSpeedRandomMax: 2
+  woodEffectDuration: 8
+  woodHealAmountPerTick: 5
+  woodHealTickInterval: 1
+  woodHealVfxUsePool: 1
+  woodHealVfxPoolName: Prefabs/WoodHealVFX
+  woodHealVfxPrefab: {fileID: 0}
+  woodHealVfxLocalOffset: {x: 0, y: 0, z: 0}
+  woodHealVfxParentToPlayer: 1
+  woodHealVfxRecycleDelay: 2
+  woodShieldVfxUsePool: 1
+  woodShieldVfxPoolName: Prefabs/WoodShieldVFX
+  woodShieldVfxPrefab: {fileID: 0}
+  woodShieldVfxLocalOffset: {x: 0, y: 0, z: 0}
+  woodShieldVfxParentToPlayer: 1
+  woodShieldVfxForceLoop: 1
+  woodGrantShield: 1
+  woodShieldAmount: 30
+  woodShieldDuration: 8
+  woodRefreshShieldWhenReapply: 1
   bridgeTriggerLayer:
     serializedVersion: 2
     m_Bits: 0

@@ -259,6 +259,35 @@ public class ElementStatusController : MonoBehaviour
         }
     }
 
+    public bool HasVaporizePair(
+    ElementType incomingElement
+)
+    {
+        if (incomingElement == ElementType.Water &&
+            HasFireStatus)
+        {
+            return true;
+        }
+
+        if (incomingElement == ElementType.Fire &&
+            IsWet)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    public bool CanTriggerVaporizeNow(
+        ElementType incomingElement
+    )
+    {
+        if (!HasVaporizePair(incomingElement))
+            return false;
+
+        return CanTriggerVaporize();
+    }
+
     public DamageInfo ProcessIncomingElement(DamageInfo damageInfo)
     {
         if (damageInfo.element == ElementType.Water && IsBurning())

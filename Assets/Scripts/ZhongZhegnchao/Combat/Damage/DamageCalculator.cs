@@ -42,7 +42,7 @@ public static class DamageCalculator
         int baseDamage = Mathf.Max(0, damageInfo.damage);
 
         float attackPower = attackerStats != null
-            ? Mathf.Max(0, attackerStats.attackPower)
+            ? Mathf.Max(0, attackerStats.AttackPower)
             : 0f;
 
         float skillMultiplier = Mathf.Max(0f, damageInfo.skillMultiplier);
@@ -53,7 +53,7 @@ public static class DamageCalculator
 
         if (attackerStats != null)
         {
-            generalBonus += attackerStats.damageBonus;
+            generalBonus += attackerStats.DamageBonus;
             generalBonus += attackerStats.GetElementDamageBonus(damageInfo.element);
         }
 
@@ -65,13 +65,13 @@ public static class DamageCalculator
 
         if (damageInfo.canCrit && attackerStats != null)
         {
-            bool isCritical = Random.value <= attackerStats.critRate;
+            bool isCritical = Random.value <= attackerStats.CritRate;
 
             damageInfo.isCritical = isCritical;
 
             if (isCritical)
             {
-                critMultiplier = Mathf.Max(1f, attackerStats.critDamage);
+                critMultiplier = Mathf.Max(1f, attackerStats.CritDamage);
             }
         }
 
@@ -79,7 +79,7 @@ public static class DamageCalculator
 
         if (targetStats != null)
         {
-            float defense = Mathf.Max(0f, targetStats.defense);
+            float defense = Mathf.Max(0f, targetStats.Defense);
             defenseMultiplier = DefenseConstant / (DefenseConstant + defense);
         }
 

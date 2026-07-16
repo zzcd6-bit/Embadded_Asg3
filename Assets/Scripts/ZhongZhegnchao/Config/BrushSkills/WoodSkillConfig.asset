@@ -18,6 +18,10 @@ MonoBehaviour:
     m_Bits: 0
   rayDistance: 200
   fallbackDistance: 12
+  enableSceneElementInteraction: 0
+  sceneElementLayer:
+    serializedVersion: 2
+    m_Bits: 0
   inkCost: 1
   useSkillCooldown: 0
   skillCooldown: 3
