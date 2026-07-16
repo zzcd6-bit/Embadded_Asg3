@@ -69,8 +69,7 @@ public class EnemySpawnManager : MonoBehaviour
     public void DiscoverSceneSpawnPoints()
     {
         EnemySpawnPoint[] found = FindObjectsByType<EnemySpawnPoint>(
-            FindObjectsInactive.Include,
-            FindObjectsSortMode.None
+            FindObjectsInactive.Include
         );
 
         for (int i = 0; i < found.Length; i++)

@@ -92,6 +92,17 @@ public class UIMgr : BaseMgr<UIMgr>
         uiCanvas = FindSceneObject<Canvas>("Canvas");
         if (uiCanvas != null)
         {
+            if (!HasRequiredLayers(uiCanvas.transform))
+            {
+                Debug.LogWarning(
+                    $"UIMgr: 场景 Canvas({uiCanvas.gameObject.name}) 缺少 UI 层级，改用 Resources/UI/Canvas 预制体。"
+                );
+                uiCanvas = null;
+            }
+        }
+
+        if (uiCanvas != null)
+        {
             if (uiCamera != null)
             {
                 uiCanvas.worldCamera = uiCamera;
@@ -154,6 +165,18 @@ public class UIMgr : BaseMgr<UIMgr>
         }
     }
 
+    private bool HasRequiredLayers(Transform canvasTransform)
+    {
+        if (canvasTransform == null)
+        {
+            return false;
+        }
+
+        return canvasTransform.Find("Bottom") != null &&
+               canvasTransform.Find("Middle") != null &&
+               canvasTransform.Find("Top") != null &&
+               canvasTransform.Find("System") != null;
+    }
     private void InitEventSystem()
     {
         uiEventSystem = FindSceneObject<EventSystem>("EventSystem");
@@ -196,6 +219,11 @@ public class UIMgr : BaseMgr<UIMgr>
             }
 
             if (!candidate.gameObject.scene.IsValid())
+            {
+                continue;
+            }
+
+            if (!candidate.gameObject.scene.isLoaded)
             {
                 continue;
             }

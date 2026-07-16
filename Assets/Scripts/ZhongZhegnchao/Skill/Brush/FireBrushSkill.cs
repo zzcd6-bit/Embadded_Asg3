@@ -18,6 +18,10 @@ public class FireBrushSkill : BrushSkillBase
     [Header("Config")]
     public BrushSkillConfig config;
 
+    [Header("Temporary Bypass")]
+    // 临时 bypass：原逻辑只有 visibleTargets.Count > 0 才给玩家火附魔，调试剧情门时可打开。
+    public bool allowInfusionWithoutVisibleTarget = false;
+
     [Header("Debug")]
     public bool drawDebug = true;
 
@@ -59,8 +63,14 @@ public class FireBrushSkill : BrushSkillBase
         List<VisibleFireTarget> visibleTargets =
             FindVisibleEnemyTargets();
 
+        bool hasVisibleTargets = visibleTargets.Count > 0;
+        bool canBypassInfusionTarget =
+            allowInfusionWithoutVisibleTarget &&
+            config.applyInfusionToPlayer;
+
         if (visibleTargets.Count <= 0 &&
-            sceneReactionCount <= 0)
+            sceneReactionCount <= 0 &&
+            !canBypassInfusionTarget)
         {
             Debug.Log(
                 "[FireBrushSkill] " +
@@ -70,13 +80,16 @@ public class FireBrushSkill : BrushSkillBase
             return;
         }
 
-        if (visibleTargets.Count > 0)
+        if (hasVisibleTargets)
         {
             ApplyFireToVisibleTargets(
                 visibleTargets,
                 context
             );
+        }
 
+        if (hasVisibleTargets || canBypassInfusionTarget)
+        {
             ApplyFireInfusionToPlayer(context);
         }
 
@@ -85,7 +98,8 @@ public class FireBrushSkill : BrushSkillBase
             Debug.Log(
                 $"[FireBrushSkill] " +
                 $"EnemyCount={visibleTargets.Count}, " +
-                $"SceneReactionCount={sceneReactionCount}"
+                $"SceneReactionCount={sceneReactionCount}, " +
+                $"BypassInfusionTarget={canBypassInfusionTarget}"
             );
         }
     }

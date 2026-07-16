@@ -82,7 +82,7 @@ public class BurnBambooBarrierQuestService : MonoBehaviour, IGameSaveModule
         }
 
         BurnBambooBarrierQuestService existing =
-            FindFirstObjectByType<BurnBambooBarrierQuestService>(FindObjectsInactive.Include);
+            FindAnyObjectByType<BurnBambooBarrierQuestService>(FindObjectsInactive.Include);
         if (existing != null)
         {
             Instance = existing;
@@ -469,13 +469,13 @@ public class BurnBambooBarrierQuestService : MonoBehaviour, IGameSaveModule
 
     private bool PlayerHasFireSkill()
     {
-        PlayerBrushSkillInventory inventory = FindFirstObjectByType<PlayerBrushSkillInventory>();
+        PlayerBrushSkillInventory inventory = FindAnyObjectByType<PlayerBrushSkillInventory>();
         return inventory != null && inventory.HasBrushSkill(BrushSkillType.Fire);
     }
 
     private void TryUnlockPlayerFireSkill()
     {
-        PlayerBrushSkillInventory inventory = FindFirstObjectByType<PlayerBrushSkillInventory>();
+        PlayerBrushSkillInventory inventory = FindAnyObjectByType<PlayerBrushSkillInventory>();
         if (inventory == null)
         {
             Debug.LogWarning("[BurnBambooBarrierQuestService] PlayerBrushSkillInventory not found.", this);

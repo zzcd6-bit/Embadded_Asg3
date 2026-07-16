@@ -33,8 +33,7 @@ public class BuildingSaveController : MonoBehaviour, IGameSaveModule
         saveData.building.placedBuildings.Clear();
 
         PlayerPlacedBuildingMarker[] markers = FindObjectsByType<PlayerPlacedBuildingMarker>(
-            FindObjectsInactive.Exclude,
-            FindObjectsSortMode.None
+            FindObjectsInactive.Exclude
         );
 
         for (int i = 0; i < markers.Length; i++)
@@ -149,8 +148,7 @@ public class BuildingSaveController : MonoBehaviour, IGameSaveModule
             return;
 
         PlayerPlacedBuildingMarker[] markers = FindObjectsByType<PlayerPlacedBuildingMarker>(
-            FindObjectsInactive.Include,
-            FindObjectsSortMode.None
+            FindObjectsInactive.Include
         );
 
         for (int i = 0; i < markers.Length; i++)

@@ -23,7 +23,7 @@ TagManager:
   - Pickup
   - Interactable
   - BrushSceneElement
-  - 
+  - DamageableEnvironment
   - 
   - 
   - 

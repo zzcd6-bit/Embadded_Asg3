@@ -159,7 +159,9 @@ namespace Hovl
             if (prefab == null)
                 return null;
 
+#pragma warning disable CS0618
             int prefabId = prefab.GetInstanceID();
+#pragma warning restore CS0618
 
             if (!pools.TryGetValue(prefabId, out List<GameObject> pool))
             {

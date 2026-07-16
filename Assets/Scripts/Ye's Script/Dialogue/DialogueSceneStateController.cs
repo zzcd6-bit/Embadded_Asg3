@@ -17,11 +17,13 @@ public class DialogueSceneStateController : MonoBehaviour
     [SerializeField] private bool enforceNormalCursorEveryFrame;
 
     private readonly List<DialogueSystemReactable> disabledReactables = new();
+    private PlayerModeStateController playerModeStateController;
     private bool subscribed;
 
     private void OnEnable()
     {
         Subscribe();
+        ResolvePlayerModeStateController();
         BindSceneDialogueUi();
         ApplyNormalCursorState();
     }
@@ -29,6 +31,7 @@ public class DialogueSceneStateController : MonoBehaviour
     private void Start()
     {
         Subscribe();
+        ResolvePlayerModeStateController();
         BindSceneDialogueUi();
         if (DialogueManager.isConversationActive)
         {
@@ -44,6 +47,10 @@ public class DialogueSceneStateController : MonoBehaviour
     {
         Unsubscribe();
         RestoreDialogueReactables();
+        if (playerModeStateController != null)
+        {
+            playerModeStateController.ExitDialogueState();
+        }
     }
 
     private void Update()
@@ -121,6 +128,12 @@ public class DialogueSceneStateController : MonoBehaviour
 
     private void HandleConversationStarted(Transform actor)
     {
+        ResolvePlayerModeStateController();
+        if (playerModeStateController != null)
+        {
+            playerModeStateController.EnterDialogueState();
+        }
+
         DisableDialogueReactables();
         ApplyDialogueCursorState();
     }
@@ -128,7 +141,26 @@ public class DialogueSceneStateController : MonoBehaviour
     private void HandleConversationEnded(Transform actor)
     {
         RestoreDialogueReactables();
+        if (playerModeStateController != null)
+        {
+            playerModeStateController.ExitDialogueState();
+        }
+
         ApplyNormalCursorState();
+    }
+
+    private void ResolvePlayerModeStateController()
+    {
+        if (playerModeStateController != null)
+        {
+            return;
+        }
+
+        playerModeStateController = GetComponent<PlayerModeStateController>();
+        if (playerModeStateController == null)
+        {
+            playerModeStateController = FindAnyObjectByType<PlayerModeStateController>(FindObjectsInactive.Include);
+        }
     }
 
     private void DisableDialogueReactables()
@@ -141,8 +173,7 @@ public class DialogueSceneStateController : MonoBehaviour
         disabledReactables.Clear();
         DialogueSystemReactable[] reactables =
             FindObjectsByType<DialogueSystemReactable>(
-                FindObjectsInactive.Include,
-                FindObjectsSortMode.None);
+                FindObjectsInactive.Include);
 
         foreach (DialogueSystemReactable reactable in reactables)
         {
@@ -176,8 +207,8 @@ public class DialogueSceneStateController : MonoBehaviour
             return;
         }
 
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     private void ApplyNormalCursorState()
