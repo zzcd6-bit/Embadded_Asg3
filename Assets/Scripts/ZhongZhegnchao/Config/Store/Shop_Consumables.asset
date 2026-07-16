@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d55861ba702768b4c8bb0d8a42ca60c2, type: 3}
+  m_Name: Shop_Consumables
+  m_EditorClassIdentifier: Assembly-CSharp::ShopData
+  shopId: shop_consumables
+  displayName: shop consumables
+  products:
+  - itemData: {fileID: 11400000, guid: 14b766f4cd5851143978e9e3124a9813, type: 2}
+    price: 1
+    quantityPerPurchase: 100
+  - itemData: {fileID: 11400000, guid: 3d572a27ff3f8d44883e1eeaf5406e30, type: 2}
+    price: 1
+    quantityPerPurchase: 100
+  - itemData: {fileID: 11400000, guid: 0886dab5e32f78243ba7d5fb58a0fbaf, type: 2}
+    price: 1
+    quantityPerPurchase: 100
+  - itemData: {fileID: 11400000, guid: b51ce47f9953ffb47bd142b4f2f35bdf, type: 2}
+    price: 1
+    quantityPerPurchase: 100
+  - itemData: {fileID: 11400000, guid: cb9c0f9d1e37ff3488c72a17f7782f37, type: 2}
+    price: 1
+    quantityPerPurchase: 100
+  - itemData: {fileID: 11400000, guid: 0a9df7181885ef64c9ec3d685602e090, type: 2}
+    price: 1
+    quantityPerPurchase: 100
+  - itemData: {fileID: 11400000, guid: 4a24e5c686efa2540932831780bbd5cc, type: 2}
+    price: 1
+    quantityPerPurchase: 100
+  - itemData: {fileID: 11400000, guid: fc53c984c313b9b449e7e86c803c54a4, type: 2}
+    price: 1
+    quantityPerPurchase: 100
