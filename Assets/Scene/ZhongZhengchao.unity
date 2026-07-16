@@ -745,6 +745,15 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8711962937741669046, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
       insertIndex: -1
       addedObject: {fileID: 219517377}
+    - targetCorrespondingSourceObject: {fileID: 8711962937741669046, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 219517389}
+    - targetCorrespondingSourceObject: {fileID: 8711962937741669046, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 219517388}
+    - targetCorrespondingSourceObject: {fileID: 8711962937741669046, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 219517387}
   m_SourcePrefab: {fileID: 100100000, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
 --- !u!1 &219517335 stripped
 GameObject:
@@ -914,6 +923,76 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerLevelUpUIFeedback
   statsController: {fileID: 219517376}
   debugLog: 1
+--- !u!114 &219517387
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 219517335}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3e8ab9e24cc87045835ed9233e40220, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerItemUseController
+  inventoryController: {fileID: 219517389}
+  equipmentController: {fileID: 219517388}
+  statsController: {fileID: 219517376}
+  damageReceiver: {fileID: 219517364}
+  inkController: {fileID: 219517363}
+--- !u!114 &219517388
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 219517335}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec185da09f6358949bc7e98c3f9cde3a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerEquipmentController
+  inventoryController: {fileID: 219517389}
+  statsController: {fileID: 219517376}
+--- !u!114 &219517389
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 219517335}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d66e3e1ad4fb3444978a937e2b31462, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerInventoryController
+  itemDatabase: {fileID: 0}
+  startingItems:
+  - itemData: {fileID: 11400000, guid: 79f022e62d0eb7d4eafc7e355c915c21, type: 2}
+    quantity: 1
+  - itemData: {fileID: 11400000, guid: cc8128e88a43c094990f51d0550a9274, type: 2}
+    quantity: 1
+  - itemData: {fileID: 11400000, guid: 91c5fe3c44415ad4297b75564fbe5cb3, type: 2}
+    quantity: 1
+  - itemData: {fileID: 11400000, guid: c3088be20057f9149966bea1dfa64d0a, type: 2}
+    quantity: 1
+  - itemData: {fileID: 11400000, guid: 14b766f4cd5851143978e9e3124a9813, type: 2}
+    quantity: 1
+  - itemData: {fileID: 11400000, guid: 3d572a27ff3f8d44883e1eeaf5406e30, type: 2}
+    quantity: 10
+  - itemData: {fileID: 11400000, guid: 0886dab5e32f78243ba7d5fb58a0fbaf, type: 2}
+    quantity: 1
+  - itemData: {fileID: 11400000, guid: b51ce47f9953ffb47bd142b4f2f35bdf, type: 2}
+    quantity: 1
+  - itemData: {fileID: 11400000, guid: cb9c0f9d1e37ff3488c72a17f7782f37, type: 2}
+    quantity: 1
+  - itemData: {fileID: 11400000, guid: 0a9df7181885ef64c9ec3d685602e090, type: 2}
+    quantity: 1
+  - itemData: {fileID: 11400000, guid: 4a24e5c686efa2540932831780bbd5cc, type: 2}
+    quantity: 1
+  - itemData: {fileID: 11400000, guid: fc53c984c313b9b449e7e86c803c54a4, type: 2}
+    quantity: 10
+  debugLog: 0
 --- !u!1 &248848576
 GameObject:
   m_ObjectHideFlags: 0
@@ -1217,7 +1296,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BrushGestureBuildAdapter
   bindings:
-  - gestureName: BuildBridge
+  - gestureName: Bridge
     buildableItem: {fileID: 11400000, guid: 7036193219473a7499d350524a6da932, type: 2}
     minScore: 0.65
     inkCost: 0
@@ -3040,6 +3119,169 @@ Transform:
   m_Children: []
   m_Father: {fileID: 248848579}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &792876173
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 792876179}
+  - component: {fileID: 792876178}
+  - component: {fileID: 792876177}
+  - component: {fileID: 792876176}
+  - component: {fileID: 792876175}
+  - component: {fileID: 792876180}
+  m_Layer: 14
+  m_Name: HealingPotionPickup
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &792876175
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 792876173}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7509ad1e08e512a438c32642b6bacbb6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ReactableObject
+  optionName: Pick Up Crimson Healing Agent
+  category: 2
+  interactionPoint: {fileID: 0}
+  interactable: 1
+  disableAfterInteraction: 0
+  onInteract:
+    m_PersistentCalls:
+      m_Calls: []
+  onSelected:
+    m_PersistentCalls:
+      m_Calls: []
+  onDeselected:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!135 &792876176
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 792876173}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!23 &792876177
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 792876173}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &792876178
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 792876173}
+  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &792876179
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 792876173}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 3.8999996, y: 0.66364, z: -17.18}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &792876180
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 792876173}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dbc869b0bf620ed42a763cbb658225fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InventoryPickupItem
+  pickupId: 4fbf7491ddab42eea8850b6623c9a42f
+  itemData: {fileID: 11400000, guid: cb9c0f9d1e37ff3488c72a17f7782f37, type: 2}
+  quantity: 1
+  automaticallySetOptionName: 1
+  optionPrefix: Pick Up
+  deactivateAfterPickup: 1
+  destroyAfterPickup: 0
+  onPickedUp:
+    m_PersistentCalls:
+      m_Calls: []
+  debugLog: 0
 --- !u!1 &804169091
 GameObject:
   m_ObjectHideFlags: 0
@@ -6635,6 +6877,7 @@ SceneRoots:
   - {fileID: 195665193}
   - {fileID: 947385711}
   - {fileID: 907863196}
+  - {fileID: 792876179}
   - {fileID: 1638622795}
   - {fileID: 1661278355}
   - {fileID: 1192432517}

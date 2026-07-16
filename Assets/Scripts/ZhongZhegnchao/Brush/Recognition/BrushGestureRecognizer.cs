@@ -330,7 +330,8 @@ public class BrushGestureRecognizer : MonoBehaviour
             return;
         }
 
-        if (!HasUnlockedSkill(skillType))
+        if (RequiresSkillUnlock(skillType) &&
+    !HasUnlockedSkill(skillType))
         {
             if (debugPointInfo)
             {
@@ -414,6 +415,27 @@ public class BrushGestureRecognizer : MonoBehaviour
             return false;
 
         return skillInventory.HasBrushSkill(skillType);
+    }
+
+    private bool RequiresSkillUnlock(
+    BrushSkillType skillType
+)
+    {
+        switch (skillType)
+        {
+            case BrushSkillType.Slash:
+            case BrushSkillType.Fire:
+            case BrushSkillType.Water:
+            case BrushSkillType.Wood:
+            case BrushSkillType.Wind:
+                return true;
+
+            case BrushSkillType.Bridge:
+                return false;
+
+            default:
+                return false;
+        }
     }
 
     private BrushSkillType GetSkillTypeFromGestureName(string gestureName)

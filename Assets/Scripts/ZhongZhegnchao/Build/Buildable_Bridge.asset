@@ -12,14 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1b703aa75fd4ad49b637b2361209252, type: 3}
   m_Name: Buildable_Bridge
   m_EditorClassIdentifier: Assembly-CSharp::BuildableItemData
+  itemId: Buildable_Bridge
   displayName: Bridge
   icon: {fileID: 0}
   description: 
   buildingPrefab: {fileID: 1697032908129488615, guid: d7c328c1a7d2c484d84fbd2717b2fa60, type: 3}
-  size: {x: 20, y: 5}
-  surfaceRule: 0
+  size: {x: 5, y: 2}
+  surfaceRule: 1
   anchorDepth: 1
   maxAnchorHeightDelta: 0
-  placementYOffset: 0
+  placementYOffset: -0.37
   contributesWalkableNavMesh: 0
   cost: 0

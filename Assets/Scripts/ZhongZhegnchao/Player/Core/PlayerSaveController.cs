@@ -25,6 +25,12 @@ public class PlayerSaveController :
     [Header("Debug")]
     public bool debugLog = true;
 
+    public PlayerInventoryController
+    inventoryController;
+
+    public PlayerEquipmentController
+        equipmentController;
+
     private void Awake()
     {
         ResolveReferences();
@@ -122,6 +128,34 @@ public class PlayerSaveController :
                 playerRoot.GetComponentInChildren<
                     Rigidbody>(true);
         }
+
+        if (inventoryController == null)
+        {
+            inventoryController =
+                GetComponent<
+                    PlayerInventoryController>();
+        }
+
+        if (inventoryController == null)
+        {
+            inventoryController =
+                GetComponentInChildren<
+                    PlayerInventoryController>(true);
+        }
+
+        if (equipmentController == null)
+        {
+            equipmentController =
+                GetComponent<
+                    PlayerEquipmentController>();
+        }
+
+        if (equipmentController == null)
+        {
+            equipmentController =
+                GetComponentInChildren<
+                    PlayerEquipmentController>(true);
+        }
     }
 
     public PlayerSaveData CapturePlayerSaveData()
@@ -162,7 +196,61 @@ public class PlayerSaveController :
             );
         }
 
+        if (inventoryController != null)
+        {
+            saveData.hasInventoryData = true;
+
+            inventoryController.CaptureSaveData(
+                saveData.inventoryItems
+            );
+        }
+        else
+        {
+            saveData.hasInventoryData = false;
+        }
+
+        if (equipmentController != null)
+        {
+            equipmentController.CaptureSaveData(
+                saveData
+            );
+        }
+
+        saveData.collectedPickupIds.Clear();
+
+        saveData.collectedPickupIds.AddRange(
+            InventoryPickupPersistence
+                .CaptureCollectedIds()
+        );
+
         return saveData;
+    }
+
+    private void RestoreInventoryAndEquipment(
+    PlayerSaveData saveData
+)
+    {
+        if (saveData == null)
+            return;
+
+        // 旧存档没有背包字段时，
+        // 保留 PlayerInventoryController 的 Starting Items。
+        if (!saveData.hasInventoryData)
+            return;
+
+        if (inventoryController != null)
+        {
+            inventoryController.RestoreFromSaveData(
+                saveData.inventoryItems
+            );
+        }
+
+        if (equipmentController != null)
+        {
+            equipmentController.RestoreFromSaveData(
+                saveData
+            );
+        }
     }
 
     private void CaptureCharacterStats(
@@ -265,32 +353,26 @@ public class PlayerSaveController :
             return;
         }
 
-        ResolveReferences();
-
         TeleportPlayer(
-            saveData.position,
-            saveData.eulerAngles
-        );
+    saveData.position,
+    saveData.eulerAngles
+);
 
         RestoreCharacterStats(saveData);
+
+        // 必须先恢复背包和装备。
+        // 因为头盔可能增加 Max HP。
+        RestoreInventoryAndEquipment(saveData);
+
+        // 装备属性计算完成后再恢复当前生命值。
         RestoreHealth(saveData);
+
         RestoreSkills(saveData);
         RestoreInk(saveData);
 
-        if (debugLog)
-        {
-            Debug.Log(
-                $"[PlayerSaveController] " +
-                $"Player data restored. " +
-                $"Level={saveData.characterLevel}, " +
-                $"EXP={saveData.currentExperience}, " +
-                $"HP={saveData.currentHp}/" +
-                $"{saveData.maxHp}, " +
-                $"Ink={saveData.currentInk}/" +
-                $"{saveData.maxInk}",
-                this
-            );
-        }
+        InventoryPickupPersistence.LoadCollectedIds(
+            saveData.collectedPickupIds
+        );
     }
 
     private void RestoreCharacterStats(

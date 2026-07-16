@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 [DisallowMultipleComponent]
 public class CharacterProfileUIController :
@@ -20,6 +21,10 @@ public class CharacterProfileUIController :
     private InputMgr inputMgr;
 
     private bool isOpen;
+    public bool IsOpen
+    {
+        get { return isOpen; }
+    }
 
     private bool previousGameplayControlEnabled;
 
@@ -54,6 +59,27 @@ public class CharacterProfileUIController :
             E_EventType.E_Input_CharacterPanel,
             ToggleCharacterPanel
         );
+    }
+
+    private void Update()
+    {
+        HandleEscapeInput();
+    }
+
+    private void HandleEscapeInput()
+    {
+        if (!isOpen)
+            return;
+
+        Keyboard keyboard = Keyboard.current;
+
+        if (keyboard == null)
+            return;
+
+        if (keyboard.escapeKey.wasPressedThisFrame)
+        {
+            CloseCharacterPanel();
+        }
     }
 
     private void OnDisable()

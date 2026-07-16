@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbe8c064319ac3b428ac2d917b90b6af, type: 3}
+  m_Name: Consumable_InkPotion
+  m_EditorClassIdentifier: Assembly-CSharp::ConsumableItemData
+  itemId: consumable_ink_potion
+  displayName: Concentrated Ink
+  description: Made from high-concentration ink, it can quickly restore the amount
+    of ink needed to perform brush and ink work.
+  icon: {fileID: 1357928510, guid: e2d0a6ac9cb9f05479f1b8a38570dd8d, type: 3}
+  quality: 0
+  canDiscard: 1
+  maxStack: 99
+  effectType: 3
+  amount: 3
+  element: 1
+  percentageValue: 0
+  duration: 30

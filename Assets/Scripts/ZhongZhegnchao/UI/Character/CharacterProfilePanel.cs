@@ -64,6 +64,11 @@ public class CharacterProfilePanel : BasePanel
     [SerializeField]
     private TMP_Text windResistanceValueText;
 
+    [Header("Inventory UI")]
+    [SerializeField]
+    private CharacterInventoryUIController
+    inventoryUIController;
+
     private PlayerCharacterStatsController
         statsController;
 
@@ -108,11 +113,17 @@ public class CharacterProfilePanel : BasePanel
                 OnLevelChanged;
         }
 
+        inventoryUIController?.Bind(
+    controller
+);
+
         Refresh();
     }
 
     private void Unbind()
     {
+        inventoryUIController?.Unbind();
+
         if (statsController != null)
         {
             statsController.StatsChanged -=
@@ -413,12 +424,15 @@ public class CharacterProfilePanel : BasePanel
     }
 
     protected override void ClickBtn(
-        string btnName
-    )
+    string btnName
+)
     {
-        if (btnName == "CloseButton")
+        switch (btnName)
         {
-            closeCallback?.Invoke();
+            case "CloseButton":
+            case "XButton":
+                closeCallback?.Invoke();
+                break;
         }
     }
 
