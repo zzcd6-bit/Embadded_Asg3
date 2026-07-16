@@ -59,6 +59,12 @@ public class PerformanceDebugPanel : MonoBehaviour
             return;
         }
 
+        instance = FindAnyObjectByType<PerformanceDebugPanel>(FindObjectsInactive.Include);
+        if (instance != null)
+        {
+            return;
+        }
+
         GameObject panelObject = new("PerformanceDebugPanel");
         DontDestroyOnLoad(panelObject);
         panelObject.AddComponent<PerformanceDebugPanel>();

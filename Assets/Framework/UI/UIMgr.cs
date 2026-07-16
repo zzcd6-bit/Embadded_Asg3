@@ -65,6 +65,12 @@ public class UIMgr : BaseMgr<UIMgr>
 
     private void InitUICamera()
     {
+        uiCamera = FindSceneObject<Camera>("UICamera");
+        if (uiCamera != null)
+        {
+            return;
+        }
+
         GameObject cameraPrefab = ResMgr.Instance.Load<GameObject>("UI/UICamera");
 
         if (cameraPrefab == null)
@@ -83,6 +89,17 @@ public class UIMgr : BaseMgr<UIMgr>
 
     private void InitCanvas()
     {
+        uiCanvas = FindSceneObject<Canvas>("Canvas");
+        if (uiCanvas != null)
+        {
+            if (uiCamera != null)
+            {
+                uiCanvas.worldCamera = uiCamera;
+            }
+
+            return;
+        }
+
         GameObject canvasPrefab = ResMgr.Instance.Load<GameObject>("UI/Canvas");
 
         if (canvasPrefab == null)
@@ -139,6 +156,18 @@ public class UIMgr : BaseMgr<UIMgr>
 
     private void InitEventSystem()
     {
+        uiEventSystem = FindSceneObject<EventSystem>("EventSystem");
+        if (uiEventSystem != null)
+        {
+            return;
+        }
+
+        if (EventSystem.current != null)
+        {
+            uiEventSystem = EventSystem.current;
+            return;
+        }
+
         GameObject eventSystemPrefab = ResMgr.Instance.Load<GameObject>("UI/EventSystem");
 
         if (eventSystemPrefab == null)
@@ -153,6 +182,31 @@ public class UIMgr : BaseMgr<UIMgr>
         {
             GameObject.DontDestroyOnLoad(uiEventSystem.gameObject);
         }
+    }
+
+    private static T FindSceneObject<T>(string objectName) where T : Component
+    {
+        T[] objects = Resources.FindObjectsOfTypeAll<T>();
+        for (int i = 0; i < objects.Length; i++)
+        {
+            T candidate = objects[i];
+            if (candidate == null || candidate.gameObject == null)
+            {
+                continue;
+            }
+
+            if (!candidate.gameObject.scene.IsValid())
+            {
+                continue;
+            }
+
+            if (candidate.gameObject.name == objectName)
+            {
+                return candidate;
+            }
+        }
+
+        return null;
     }
 
     /// <summary>
