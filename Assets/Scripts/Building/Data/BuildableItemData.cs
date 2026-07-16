@@ -24,7 +24,6 @@ public class BuildableItemData : ScriptableObject
     [SerializeField, Min(1)] private int anchorDepth = 1;
     [SerializeField, Min(0f)] private float maxAnchorHeightDelta;
     [SerializeField] private float placementYOffset;
-    [SerializeField] private bool contributesWalkableNavMesh;
 
     [Header("Economy")]
     [SerializeField] private int cost;
@@ -39,7 +38,6 @@ public class BuildableItemData : ScriptableObject
     public int AnchorDepth => Mathf.Max(1, anchorDepth);
     public float MaxAnchorHeightDelta => Mathf.Max(0f, maxAnchorHeightDelta);
     public float PlacementYOffset => placementYOffset;
-    public bool ContributesWalkableNavMesh => contributesWalkableNavMesh;
     public int Cost => Mathf.Max(0, cost);
 
 #if UNITY_EDITOR

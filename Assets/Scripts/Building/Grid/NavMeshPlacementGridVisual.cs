@@ -30,6 +30,11 @@ public class NavMeshPlacementGridVisual : MonoBehaviour
     private Material generatedOccupiedCellMaterial;
     private Material generatedPreviewCellMaterial;
     private bool isVisible;
+    private bool hasDrawnGrid;
+    private Vector2Int lastDrawnCenterCell;
+    private int lastDrawnRadius;
+    private int lastDrawnPreviewHash;
+    private int lastDrawnOccupiedHash;
     private int usedLineCount;
     private int usedOccupiedCellCount;
     private int usedPreviewCellCount;
@@ -90,6 +95,11 @@ public class NavMeshPlacementGridVisual : MonoBehaviour
         if (!visible)
         {
             HideAllLines();
+            hasDrawnGrid = false;
+        }
+        else
+        {
+            hasDrawnGrid = false;
         }
     }
 
@@ -105,12 +115,28 @@ public class NavMeshPlacementGridVisual : MonoBehaviour
         bool isPreviewValid = true;
         bool hasPreviewCells = placementController != null
             && placementController.TryGetCurrentPreviewCells(previewCells, out isPreviewValid);
-        surfaceSampleCache.Clear();
 
         int minX = centerCell.x - radius;
         int maxX = centerCell.x + radius;
         int minY = centerCell.y - radius;
         int maxY = centerCell.y + radius;
+        int previewHash = CalculatePreviewHash(hasPreviewCells, isPreviewValid);
+        int occupiedHash = CalculateOccupiedHash(minX, maxX, minY, maxY);
+
+        if (hasDrawnGrid
+            && centerCell == lastDrawnCenterCell
+            && radius == lastDrawnRadius
+            && previewHash == lastDrawnPreviewHash
+            && occupiedHash == lastDrawnOccupiedHash)
+        {
+            return;
+        }
+
+        hasDrawnGrid = true;
+        lastDrawnCenterCell = centerCell;
+        lastDrawnRadius = radius;
+        lastDrawnPreviewHash = previewHash;
+        lastDrawnOccupiedHash = occupiedHash;
 
         for (int x = minX; x <= maxX + 1; x++)
         {
@@ -166,6 +192,47 @@ public class NavMeshPlacementGridVisual : MonoBehaviour
             previewCellPool[i].gameObject.SetActive(false);
         }
 
+    }
+
+    private int CalculatePreviewHash(bool hasPreviewCells, bool isPreviewValid)
+    {
+        unchecked
+        {
+            int hash = hasPreviewCells ? 17 : 23;
+            hash = hash * 31 + (isPreviewValid ? 1 : 0);
+            hash = hash * 31 + previewCells.Count;
+
+            for (int i = 0; i < previewCells.Count; i++)
+            {
+                hash = hash * 31 + previewCells[i].x;
+                hash = hash * 31 + previewCells[i].y;
+            }
+
+            return hash;
+        }
+    }
+
+    private int CalculateOccupiedHash(int minX, int maxX, int minY, int maxY)
+    {
+        unchecked
+        {
+            int hash = 19;
+            for (int x = minX; x <= maxX; x++)
+            {
+                for (int y = minY; y <= maxY; y++)
+                {
+                    if (!gridPlacementSystem.IsCellUnavailable(new Vector2Int(x, y)))
+                    {
+                        continue;
+                    }
+
+                    hash = hash * 31 + x;
+                    hash = hash * 31 + y;
+                }
+            }
+
+            return hash;
+        }
     }
 
     private Vector3 GetGridCenter()

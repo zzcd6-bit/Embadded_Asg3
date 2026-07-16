@@ -13,7 +13,6 @@ public class GridSurfaceClassifier : MonoBehaviour
     [SerializeField] private float layerClusterThreshold = 0.35f;
 
     private readonly Dictionary<Vector2Int, CellSurfaceInfo> cellCache = new();
-    private int cachedFrame = -1;
 
     private static readonly Vector2[] SampleOffsets =
     {
@@ -46,8 +45,6 @@ public class GridSurfaceClassifier : MonoBehaviour
 
     public bool TryGetCellSurface(Vector2Int cell, out CellSurfaceInfo info)
     {
-        ClearCacheIfFrameChanged();
-
         if (cellCache.TryGetValue(cell, out info))
         {
             return info.HasSurface;
@@ -58,14 +55,8 @@ public class GridSurfaceClassifier : MonoBehaviour
         return info.HasSurface;
     }
 
-    private void ClearCacheIfFrameChanged()
+    public void ClearCache()
     {
-        if (cachedFrame == Time.frameCount)
-        {
-            return;
-        }
-
-        cachedFrame = Time.frameCount;
         cellCache.Clear();
     }
 

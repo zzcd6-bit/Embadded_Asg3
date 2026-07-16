@@ -50,11 +50,6 @@ public class BuildingPlacementColliderGuard : MonoBehaviour
                 continue;
             }
 
-            if (collider.GetComponentInParent<BuildingNavMeshProxy>() != null)
-            {
-                continue;
-            }
-
             ColliderState state = new(collider);
             colliderStates.Add(state);
             collider.enabled = false;

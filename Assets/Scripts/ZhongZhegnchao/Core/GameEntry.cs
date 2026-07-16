@@ -4,6 +4,8 @@ public class GameEntry : MonoBehaviour
 {
     private void Awake()
     {
+        PerformanceDebugPanel.EnsureInstance();
+
         // ø™∆Ù Framework  ‰»ÎºÏ≤‚
         InputMgr.Instance.StartOrCloseInputMgr(true);
 

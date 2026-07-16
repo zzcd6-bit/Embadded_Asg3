@@ -349,7 +349,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7493697287aa45a2ba8ea164d62d95e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DeathDropBridge
-  enemyHealth: {fileID: 21558249}
+  enemyHealth: {fileID: 0}
   dropReward: {fileID: 21558256}
   dropOnlyOnce: 1
 --- !u!114 &21558256
@@ -392,7 +392,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 51140400}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Spawn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -674,7 +674,7 @@ GameObject:
   - component: {fileID: 142663942}
   - component: {fileID: 142663944}
   - component: {fileID: 142663943}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: TP_ye_ye_scene_west
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1427,7 +1427,7 @@ GameObject:
   - component: {fileID: 259607615}
   - component: {fileID: 259607617}
   - component: {fileID: 259607616}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: TP_ye_ye_scene_default
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1750,7 +1750,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 306795155}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Spawn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1852,7 +1852,7 @@ GameObject:
   - component: {fileID: 389343654}
   - component: {fileID: 389343656}
   - component: {fileID: 389343655}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Visual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1942,7 +1942,7 @@ GameObject:
   - component: {fileID: 414432128}
   - component: {fileID: 414432130}
   - component: {fileID: 414432129}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: TP_ye_ye_scene_east
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2758,7 +2758,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7493697287aa45a2ba8ea164d62d95e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DeathDropBridge
-  enemyHealth: {fileID: 718873967}
+  enemyHealth: {fileID: 0}
   dropReward: {fileID: 718873969}
   dropOnlyOnce: 1
 --- !u!114 &718873969
@@ -2803,7 +2803,7 @@ GameObject:
   - component: {fileID: 729467968}
   - component: {fileID: 729467970}
   - component: {fileID: 729467969}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Visual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3809,7 +3809,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1097425728}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Spawn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3914,7 +3914,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 112584098}
   m_HandleRect: {fileID: 112584096}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -5547,7 +5547,7 @@ GameObject:
   - component: {fileID: 1535723551}
   - component: {fileID: 1535723553}
   - component: {fileID: 1535723552}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: TP_ye_ye_scene_north
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5773,7 +5773,7 @@ GameObject:
   - component: {fileID: 1592027220}
   - component: {fileID: 1592027222}
   - component: {fileID: 1592027221}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Visual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6768,7 +6768,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1856887788}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Spawn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6801,7 +6801,7 @@ GameObject:
   - component: {fileID: 1873764461}
   - component: {fileID: 1873764463}
   - component: {fileID: 1873764462}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Visual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
