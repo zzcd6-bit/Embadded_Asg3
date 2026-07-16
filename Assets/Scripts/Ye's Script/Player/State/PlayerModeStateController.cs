@@ -31,6 +31,7 @@ public class PlayerModeStateController : MonoBehaviour
     private PlayerLocomotion locomotion;
     private PlayerCombatInputHandler combatInputHandler;
     private PlayerCameraController cameraController;
+    private PlayerAnimationController animationController;
     private BrushModeController brushModeController;
 
     private readonly Dictionary<GameObject, int> originalLayers = new();
@@ -38,6 +39,7 @@ public class PlayerModeStateController : MonoBehaviour
     private bool cachedForDialogue;
     private bool originalInputReceiverEnabled;
     private bool originalLocomotionEnabled;
+    private bool originalLocomotionCanMove;
     private bool originalCombatInputHandlerEnabled;
     private bool originalBuildModeControllerEnabled;
     private bool originalInteractionManagerEnabled;
@@ -114,6 +116,7 @@ public class PlayerModeStateController : MonoBehaviour
         }
 
         CacheDialogueState();
+        StopPlayerLocomotionForDialogue();
         currentState = PlayerModeState.Dialogue;
 
         if (buildModeController != null)
@@ -144,7 +147,6 @@ public class PlayerModeStateController : MonoBehaviour
 
         if (locomotion != null)
         {
-            locomotion.CanMove = false;
             locomotion.enabled = false;
         }
 
@@ -207,7 +209,7 @@ public class PlayerModeStateController : MonoBehaviour
         if (locomotion != null)
         {
             locomotion.enabled = originalLocomotionEnabled;
-            locomotion.CanMove = originalLocomotionEnabled;
+            locomotion.CanMove = originalLocomotionCanMove;
         }
 
         if (interactionManager != null)
@@ -258,6 +260,7 @@ public class PlayerModeStateController : MonoBehaviour
             locomotion = playerRoot.GetComponent<PlayerLocomotion>();
             combatInputHandler = playerRoot.GetComponent<PlayerCombatInputHandler>();
             cameraController = playerRoot.GetComponent<PlayerCameraController>();
+            animationController = playerRoot.GetComponent<PlayerAnimationController>();
         }
 
         if (brushModeController == null)
@@ -305,6 +308,7 @@ public class PlayerModeStateController : MonoBehaviour
 
         originalInputReceiverEnabled = inputReceiver != null && inputReceiver.enabled;
         originalLocomotionEnabled = locomotion != null && locomotion.enabled;
+        originalLocomotionCanMove = locomotion != null && locomotion.CanMove;
         originalCombatInputHandlerEnabled = combatInputHandler != null && combatInputHandler.enabled;
         originalBuildModeControllerEnabled = buildModeController != null && buildModeController.enabled;
         originalInteractionManagerEnabled = interactionManager != null && interactionManager.enabled;
@@ -312,6 +316,19 @@ public class PlayerModeStateController : MonoBehaviour
         originalInteractionUiActive = interactionUiRoot != null && interactionUiRoot.activeSelf;
         originalPlayerBarsHudActive = playerBarsHudRoot != null && playerBarsHudRoot.activeSelf;
         cachedForDialogue = true;
+    }
+
+    private void StopPlayerLocomotionForDialogue()
+    {
+        if (locomotion != null)
+        {
+            locomotion.CanMove = false;
+        }
+
+        if (animationController != null)
+        {
+            animationController.ReturnToLocomotion(false);
+        }
     }
 
     private void ApplyHiddenLayer()

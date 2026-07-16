@@ -19,11 +19,13 @@ public class PlayerCameraController : MonoBehaviour
 
     [Header("Look Settings")]
     [FormerlySerializedAs("mouseSensitivity")]
-    [SerializeField] private float horizontalMouseSensitivity = 180f;
-    [SerializeField] private float verticalMouseSensitivity = 120f;
+    [SerializeField] private float horizontalMouseSensitivity = 3f;
+    [SerializeField] private float verticalMouseSensitivity = 2f;
     [SerializeField] private float minPitch = -35f;
     [SerializeField] private float maxPitch = 65f;
     [SerializeField] private bool lockCursor = true;
+    [SerializeField] private KeyCode releaseCursorKey = KeyCode.LeftAlt;
+    [SerializeField] private KeyCode alternateReleaseCursorKey = KeyCode.RightAlt;
 
     [Header("Zoom Settings")]
     [SerializeField] private float zoomSpeed = 1.5f;
@@ -39,6 +41,8 @@ public class PlayerCameraController : MonoBehaviour
 
     private bool initialized;
     private bool ownsDetachedTarget;
+    private bool cursorReleasedLastFrame;
+    private bool skipLookThisFrame;
     private CinemachineThirdPersonFollow thirdPersonFollow;
 
     public void Init(Transform target)
@@ -89,6 +93,7 @@ public class PlayerCameraController : MonoBehaviour
         {
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
+            cursorReleasedLastFrame = false;
         }
 
         Debug.Log("[PlayerCameraController] Init complete.");
@@ -102,6 +107,7 @@ public class PlayerCameraController : MonoBehaviour
         }
 
         UpdateTargetPosition();
+        UpdateCursorState();
         UpdateTargetRotation();
         UpdateZoom();
     }
@@ -122,6 +128,7 @@ public class PlayerCameraController : MonoBehaviour
 
     public void SetCursorLocked(bool locked)
     {
+        lockCursor = locked;
         Cursor.lockState = locked ? CursorLockMode.Locked : CursorLockMode.None;
         Cursor.visible = !locked;
     }
@@ -156,7 +163,7 @@ public class PlayerCameraController : MonoBehaviour
 
     private void UpdateTargetRotation()
     {
-        if (!cameraInputEnabled)
+        if (!CanRotateCamera())
         {
             return;
         }
@@ -164,11 +171,45 @@ public class PlayerCameraController : MonoBehaviour
         float mouseX = Input.GetAxis("Mouse X");
         float mouseY = Input.GetAxis("Mouse Y");
 
-        yaw += mouseX * horizontalMouseSensitivity * Time.deltaTime;
-        pitch -= mouseY * verticalMouseSensitivity * Time.deltaTime;
+        yaw += mouseX * horizontalMouseSensitivity;
+        pitch -= mouseY * verticalMouseSensitivity;
         pitch = Mathf.Clamp(pitch, minPitch, maxPitch);
 
         cameraTarget.rotation = Quaternion.Euler(pitch, yaw, 0f);
+    }
+
+    private void UpdateCursorState()
+    {
+        skipLookThisFrame = false;
+
+        if (!cameraInputEnabled || !lockCursor)
+        {
+            return;
+        }
+
+        bool cursorReleased = IsReleaseCursorHeld();
+        if (cursorReleased != cursorReleasedLastFrame)
+        {
+            skipLookThisFrame = true;
+        }
+
+        Cursor.lockState = cursorReleased ? CursorLockMode.None : CursorLockMode.Locked;
+        Cursor.visible = cursorReleased;
+        cursorReleasedLastFrame = cursorReleased;
+    }
+
+    private bool CanRotateCamera()
+    {
+        return cameraInputEnabled &&
+               !skipLookThisFrame &&
+               (!lockCursor || !IsReleaseCursorHeld()) &&
+               Cursor.lockState == CursorLockMode.Locked;
+    }
+
+    private bool IsReleaseCursorHeld()
+    {
+        return Input.GetKey(releaseCursorKey) ||
+               Input.GetKey(alternateReleaseCursorKey);
     }
 
     private void UpdateZoom()
@@ -183,7 +224,9 @@ public class PlayerCameraController : MonoBehaviour
             return;
         }
 
-        if (cameraInputEnabled && !InteractionRollBoxUI.BlocksCameraZoom)
+        if (cameraInputEnabled &&
+            Cursor.lockState == CursorLockMode.Locked &&
+            !InteractionRollBoxUI.BlocksCameraZoom)
         {
             float scroll = Input.GetAxis("Mouse ScrollWheel");
             if (Mathf.Abs(scroll) > 0.0001f)
