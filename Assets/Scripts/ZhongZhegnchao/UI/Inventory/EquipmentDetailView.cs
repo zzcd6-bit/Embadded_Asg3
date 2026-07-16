@@ -64,7 +64,8 @@ public class EquipmentDetailView : MonoBehaviour
     [SerializeField]
     private TMP_Text introductionText;
 
-    [Header("Optional Weapon Progress")]
+    [Header("Weapon Progress")]
+    [Tooltip("拖入整个武器等级区域根节点。头盔、胸甲和鞋子会隐藏此对象。")]
     [SerializeField]
     private GameObject weaponProgressRoot;
 
@@ -87,13 +88,13 @@ public class EquipmentDetailView : MonoBehaviour
 
     public void ShowEquipment(
         InventoryItemEntry entry,
-        PlayerEquipmentController
-            equipmentController
+        PlayerEquipmentController equipmentController
     )
     {
         gameObject.SetActive(true);
 
-        if (entry?.ItemData is not EquipmentData data)
+        if (entry == null ||
+            !(entry.ItemData is EquipmentData data))
         {
             ShowEmpty();
             return;
@@ -132,9 +133,76 @@ public class EquipmentDetailView : MonoBehaviour
         );
     }
 
+    public void ShowEmpty()
+    {
+        SetImage(
+            iconImage,
+            null
+        );
+
+        SetText(
+            nameText,
+            "EMPTY"
+        );
+
+        SetText(
+            typeText,
+            "-"
+        );
+
+        if (qualityText != null)
+        {
+            qualityText.gameObject.SetActive(
+                !showRarityInsideType
+            );
+
+            qualityText.text = "-";
+        }
+
+        SetText(
+            mainStatNameText,
+            "-"
+        );
+
+        SetText(
+            mainStatValueText,
+            "-"
+        );
+
+        SetSecondaryStat(
+            secondaryStat1Root,
+            secondaryStat1NameText,
+            secondaryStat1ValueText,
+            false,
+            string.Empty,
+            string.Empty
+        );
+
+        SetSecondaryStat(
+            secondaryStat2Root,
+            secondaryStat2NameText,
+            secondaryStat2ValueText,
+            false,
+            string.Empty,
+            string.Empty
+        );
+
+        if (setBonusArea != null)
+        {
+            setBonusArea.SetActive(false);
+        }
+
+        ClearWeaponProgress();
+
+        SetText(
+            introductionText,
+            "Select an equipment slot."
+        );
+    }
+
     private void RefreshTypeAndRarity(
-    EquipmentData data
-)
+        EquipmentData data
+    )
     {
         if (data == null)
             return;
@@ -186,59 +254,6 @@ public class EquipmentDetailView : MonoBehaviour
         }
     }
 
-    public void ShowEmpty()
-    {
-        SetImage(iconImage, null);
-
-        SetText(nameText, "EMPTY");
-        SetText(typeText, "-");
-
-        if (qualityText != null)
-        {
-            qualityText.gameObject.SetActive(
-                !showRarityInsideType
-            );
-
-            qualityText.text = "-";
-        }
-
-        SetText(mainStatNameText, "-");
-        SetText(mainStatValueText, "-");
-
-        SetSecondaryStat(
-            secondaryStat1Root,
-            secondaryStat1NameText,
-            secondaryStat1ValueText,
-            false,
-            string.Empty,
-            string.Empty
-        );
-
-        SetSecondaryStat(
-            secondaryStat2Root,
-            secondaryStat2NameText,
-            secondaryStat2ValueText,
-            false,
-            string.Empty,
-            string.Empty
-        );
-
-        if (setBonusArea != null)
-        {
-            setBonusArea.SetActive(false);
-        }
-
-        if (weaponProgressRoot != null)
-        {
-            weaponProgressRoot.SetActive(false);
-        }
-
-        SetText(
-            introductionText,
-            "Select an equipment slot."
-        );
-    }
-
     private void RefreshStats(
         EquipmentData data,
         InventoryItemEntry entry
@@ -247,133 +262,165 @@ public class EquipmentDetailView : MonoBehaviour
         switch (data.SlotType)
         {
             case EquipmentSlotType.Helmet:
-
-                SetText(
-                    mainStatNameText,
-                    "Health"
-                );
-
-                SetText(
-                    mainStatValueText,
-                    $"+{data.MaxHpBonus}"
-                );
-
-                SetSecondaryStat(
-                    secondaryStat1Root,
-                    secondaryStat1NameText,
-                    secondaryStat1ValueText,
-                    true,
-                    "Critical Chance",
-                    FormatPercent(
-                        data.CriticalRateBonus
-                    )
-                );
-
-                SetSecondaryStat(
-                    secondaryStat2Root,
-                    secondaryStat2NameText,
-                    secondaryStat2ValueText,
-                    true,
-                    "Critical Damage",
-                    FormatPercent(
-                        data.CriticalDamageBonus
-                    )
-                );
-
+                ShowHelmetStats(data);
                 break;
 
             case EquipmentSlotType.Chest:
-
-                SetText(
-                    mainStatNameText,
-                    "Defense"
-                );
-
-                SetText(
-                    mainStatValueText,
-                    $"+{data.DefenseBonus}"
-                );
-
-                SetSecondaryStat(
-                    secondaryStat1Root,
-                    secondaryStat1NameText,
-                    secondaryStat1ValueText,
-                    true,
-                    $"{GetElementName(data.ResistanceElement)} Resistance",
-                    FormatPercent(
-                        data.ElementResistanceBonus
-                    )
-                );
-
-                HideSecondaryStat2();
-
+                ShowChestStats(data);
                 break;
 
             case EquipmentSlotType.Shoes:
-
-                SetText(
-                    mainStatNameText,
-                    "Damage Bonus"
-                );
-
-                SetText(
-                    mainStatValueText,
-                    FormatPercent(
-                        data.DamageBonus
-                    )
-                );
-
-                SetSecondaryStat(
-                    secondaryStat1Root,
-                    secondaryStat1NameText,
-                    secondaryStat1ValueText,
-                    true,
-                    $"{GetElementName(data.DamageElement)} Damage",
-                    FormatPercent(
-                        data.ElementDamageBonus
-                    )
-                );
-
-                HideSecondaryStat2();
-
+                ShowShoesStats(data);
                 break;
 
             case EquipmentSlotType.Weapon:
-
-                SetText(
-                    mainStatNameText,
-                    "Attack"
+                ShowWeaponStats(
+                    data,
+                    entry
                 );
-
-                SetText(
-                    mainStatValueText,
-                    $"+{data.GetAttackPowerAtLevel(entry.WeaponLevel)}"
-                );
-
-                SetSecondaryStat(
-                    secondaryStat1Root,
-                    secondaryStat1NameText,
-                    secondaryStat1ValueText,
-                    true,
-                    "Critical Chance",
-                    FormatPercent(
-                        data.CriticalRateBonus
-                    )
-                );
-
-                SetSecondaryStat(
-                    secondaryStat2Root,
-                    secondaryStat2NameText,
-                    secondaryStat2ValueText,
-                    true,
-                    "Critical Damage",
-                    FormatPercent(
-                        data.CriticalDamageBonus
-                    )
-                );
-
                 break;
         }
+    }
+
+    private void ShowHelmetStats(
+        EquipmentData data
+    )
+    {
+        SetText(
+            mainStatNameText,
+            "Health"
+        );
+
+        SetText(
+            mainStatValueText,
+            $"+{data.MaxHpBonus}"
+        );
+
+        SetSecondaryStat(
+            secondaryStat1Root,
+            secondaryStat1NameText,
+            secondaryStat1ValueText,
+            true,
+            "Critical Chance",
+            FormatPercent(
+                data.CriticalRateBonus
+            )
+        );
+
+        SetSecondaryStat(
+            secondaryStat2Root,
+            secondaryStat2NameText,
+            secondaryStat2ValueText,
+            true,
+            "Critical Damage",
+            FormatPercent(
+                data.CriticalDamageBonus
+            )
+        );
+    }
+
+    private void ShowChestStats(
+        EquipmentData data
+    )
+    {
+        SetText(
+            mainStatNameText,
+            "Defense"
+        );
+
+        SetText(
+            mainStatValueText,
+            $"+{data.DefenseBonus}"
+        );
+
+        SetSecondaryStat(
+            secondaryStat1Root,
+            secondaryStat1NameText,
+            secondaryStat1ValueText,
+            true,
+            $"{GetElementName(data.ResistanceElement)} Resistance",
+            FormatPercent(
+                data.ElementResistanceBonus
+            )
+        );
+
+        HideSecondaryStat2();
+    }
+
+    private void ShowShoesStats(
+        EquipmentData data
+    )
+    {
+        SetText(
+            mainStatNameText,
+            "Damage Bonus"
+        );
+
+        SetText(
+            mainStatValueText,
+            FormatPercent(
+                data.DamageBonus
+            )
+        );
+
+        SetSecondaryStat(
+            secondaryStat1Root,
+            secondaryStat1NameText,
+            secondaryStat1ValueText,
+            true,
+            $"{GetElementName(data.DamageElement)} Damage",
+            FormatPercent(
+                data.ElementDamageBonus
+            )
+        );
+
+        HideSecondaryStat2();
+    }
+
+    private void ShowWeaponStats(
+        EquipmentData data,
+        InventoryItemEntry entry
+    )
+    {
+        int currentLevel =
+            entry != null
+                ? Mathf.Max(
+                    1,
+                    entry.WeaponLevel
+                )
+                : 1;
+
+        SetText(
+            mainStatNameText,
+            "Attack"
+        );
+
+        SetText(
+            mainStatValueText,
+            $"+{data.GetAttackPowerAtLevel(currentLevel)}"
+        );
+
+        SetSecondaryStat(
+            secondaryStat1Root,
+            secondaryStat1NameText,
+            secondaryStat1ValueText,
+            true,
+            "Critical Chance",
+            FormatPercent(
+                data.CriticalRateBonus
+            )
+        );
+
+        SetSecondaryStat(
+            secondaryStat2Root,
+            secondaryStat2NameText,
+            secondaryStat2ValueText,
+            true,
+            "Critical Damage",
+            FormatPercent(
+                data.CriticalDamageBonus
+            )
+        );
     }
 
     private void HideSecondaryStat2()
@@ -390,8 +437,7 @@ public class EquipmentDetailView : MonoBehaviour
 
     private void RefreshSetBonus(
         EquipmentData data,
-        PlayerEquipmentController
-            equipmentController
+        PlayerEquipmentController equipmentController
     )
     {
         EquipmentSetData setData =
@@ -452,50 +498,149 @@ public class EquipmentDetailView : MonoBehaviour
     )
     {
         bool isWeapon =
+            data != null &&
             data.SlotType ==
             EquipmentSlotType.Weapon;
 
-        if (weaponProgressRoot != null)
-        {
-            weaponProgressRoot.SetActive(
-                isWeapon
-            );
-        }
-
-        if (!isWeapon)
-            return;
-
-        SetText(
-            weaponLevelText,
-            $"Lv. {entry.WeaponLevel}"
+        SetWeaponProgressVisible(
+            isWeapon
         );
 
-        int required =
-            data.GetWeaponExperienceRequirement(
+        if (!isWeapon ||
+            entry == null)
+        {
+            ClearWeaponProgressContent();
+            return;
+        }
+
+        int currentLevel =
+            Mathf.Max(
+                1,
                 entry.WeaponLevel
             );
 
-        bool isMax =
-            entry.WeaponLevel >=
-            data.WeaponMaxLevel;
+        int maximumLevel =
+            Mathf.Max(
+                1,
+                data.WeaponMaxLevel
+            );
+
+        bool isMaximumLevel =
+            currentLevel >= maximumLevel;
+
+        SetText(
+            weaponLevelText,
+            $"Lv. {currentLevel}/{maximumLevel}"
+        );
+
+        if (isMaximumLevel)
+        {
+            if (weaponExperienceFill != null)
+            {
+                weaponExperienceFill.fillAmount =
+                    1f;
+            }
+
+            SetText(
+                weaponExperienceText,
+                "MAX"
+            );
+
+            return;
+        }
+
+        int requiredExperience =
+            data.GetWeaponExperienceRequirement(
+                currentLevel
+            );
+
+        int currentExperience =
+            Mathf.Max(
+                0,
+                entry.WeaponExperience
+            );
 
         if (weaponExperienceFill != null)
         {
             weaponExperienceFill.fillAmount =
-                isMax || required <= 0
-                    ? 1f
+                requiredExperience <= 0
+                    ? 0f
                     : Mathf.Clamp01(
-                        entry.WeaponExperience /
-                        (float)required
+                        currentExperience /
+                        (float)requiredExperience
                     );
         }
 
         SetText(
             weaponExperienceText,
-            isMax
-                ? "MAX"
-                : $"{entry.WeaponExperience}/{required}"
+            requiredExperience <= 0
+                ? $"{currentExperience}/-"
+                : $"{currentExperience}/{requiredExperience}"
         );
+    }
+
+    private void SetWeaponProgressVisible(
+        bool visible
+    )
+    {
+        if (weaponProgressRoot != null)
+        {
+            weaponProgressRoot.SetActive(
+                visible
+            );
+        }
+
+        /*
+         * 即使没有配置 Weapon Progress Root，
+         * 也单独控制里面的 UI，避免头盔、胸甲和鞋子
+         * 残留武器等级文字。
+         */
+
+        if (weaponLevelText != null)
+        {
+            weaponLevelText.gameObject.SetActive(
+                visible
+            );
+        }
+
+        if (weaponExperienceFill != null)
+        {
+            weaponExperienceFill.gameObject.SetActive(
+                visible
+            );
+        }
+
+        if (weaponExperienceText != null)
+        {
+            weaponExperienceText.gameObject.SetActive(
+                visible
+            );
+        }
+    }
+
+    private void ClearWeaponProgress()
+    {
+        SetWeaponProgressVisible(false);
+        ClearWeaponProgressContent();
+    }
+
+    private void ClearWeaponProgressContent()
+    {
+        SetText(
+            weaponLevelText,
+            string.Empty
+        );
+
+        SetText(
+            weaponExperienceText,
+            string.Empty
+        );
+
+        if (weaponExperienceFill != null)
+        {
+            weaponExperienceFill.fillAmount =
+                0f;
+        }
     }
 
     private void SetSecondaryStat(
@@ -509,24 +654,47 @@ public class EquipmentDetailView : MonoBehaviour
     {
         if (root != null)
         {
-            root.SetActive(visible);
+            root.SetActive(
+                visible
+            );
         }
 
         if (!visible)
-            return;
+        {
+            SetText(
+                nameTarget,
+                string.Empty
+            );
 
-        SetText(nameTarget, statName);
-        SetText(valueTarget, statValue);
+            SetText(
+                valueTarget,
+                string.Empty
+            );
+
+            return;
+        }
+
+        SetText(
+            nameTarget,
+            statName
+        );
+
+        SetText(
+            valueTarget,
+            statValue
+        );
     }
 
-    private string FormatPercent(float value)
+    private string FormatPercent(
+        float value
+    )
     {
         return $"{value * 100f:0.#}%";
     }
 
     private string GetElementName(
-    ElementType element
-)
+        ElementType element
+    )
     {
         return InventoryDisplayNameUtility
             .GetElementName(
@@ -542,7 +710,8 @@ public class EquipmentDetailView : MonoBehaviour
     {
         if (target != null)
         {
-            target.text = value;
+            target.text =
+                value;
         }
     }
 
@@ -554,7 +723,10 @@ public class EquipmentDetailView : MonoBehaviour
         if (target == null)
             return;
 
-        target.sprite = sprite;
-        target.enabled = sprite != null;
+        target.sprite =
+            sprite;
+
+        target.enabled =
+            sprite != null;
     }
 }

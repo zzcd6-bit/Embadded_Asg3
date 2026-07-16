@@ -100,7 +100,11 @@ public class PlayerCharacterStatsController :
         get { return inkPouchController; }
     }
 
-    public bool IsInitialized { get; private set; }
+    public bool IsInitialized
+    {
+        get;
+        private set;
+    }
 
     private void Awake()
     {
@@ -189,7 +193,7 @@ public class PlayerCharacterStatsController :
         if (debugLog)
         {
             Debug.Log(
-                $"[PlayerCharacterStatsController] " +
+                "[PlayerCharacterStatsController] " +
                 $"Initialized. " +
                 $"Level={currentLevel}, " +
                 $"EXP={currentExperience}/" +
@@ -259,10 +263,14 @@ public class PlayerCharacterStatsController :
         if (experienceReward <= 0)
             return;
 
-        AddExperience(experienceReward);
+        AddExperience(
+            experienceReward
+        );
     }
 
-    public void AddExperience(int amount)
+    public void AddExperience(
+        int amount
+    )
     {
         if (amount <= 0)
             return;
@@ -337,7 +345,7 @@ public class PlayerCharacterStatsController :
         if (debugLog)
         {
             Debug.Log(
-                $"[PlayerCharacterStatsController] " +
+                "[PlayerCharacterStatsController] " +
                 $"Gain EXP={amount}. " +
                 $"Level={currentLevel}, " +
                 $"EXP={currentExperience}/" +
@@ -472,16 +480,122 @@ public class PlayerCharacterStatsController :
         CharacterStatModifiers modifiers
     )
     {
-        if (combatStats == null)
+        if (!IsInitialized &&
+            !Init())
+        {
             return;
+        }
+
+        ResolveReferences();
+
+        if (combatStats == null)
+        {
+            Debug.LogError(
+                "[PlayerCharacterStatsController] " +
+                "CharacterCombatStats is missing.",
+                this
+            );
+
+            return;
+        }
+
+        /*
+         * 更新装备前，记录旧生命值状态。
+         */
+
+        int previousMaxHp =
+            damageReceiver != null
+                ? damageReceiver.MaxHp
+                : combatStats.MaxHp;
+
+        int previousCurrentHp =
+            damageReceiver != null
+                ? damageReceiver.CurrentHp
+                : previousMaxHp;
+
+        /*
+         * 装备属性属于 CharacterCombatStats，
+         * 不能直接写 equipmentModifiers 字段。
+         */
 
         combatStats.SetEquipmentModifiers(
-            modifiers
+            modifiers ??
+            new CharacterStatModifiers()
         );
 
-        SyncMaxHp(false);
+        /*
+         * CharacterCombatStats 更新后，
+         * 此时可以取得新的最终最大生命值。
+         */
+
+        int newMaxHp =
+            Mathf.Max(
+                1,
+                combatStats.MaxHp
+            );
+
+        if (damageReceiver != null)
+        {
+            int adjustedCurrentHp =
+                previousCurrentHp;
+
+            int maxHpDifference =
+                newMaxHp -
+                previousMaxHp;
+
+            /*
+             * 最大生命值增加时，
+             * 当前生命值增加相同数值。
+             *
+             * Current HP 为 0 时不增加，
+             * 避免死亡状态因为装备而复活。
+             */
+
+            if (maxHpDifference > 0 &&
+                previousCurrentHp > 0)
+            {
+                adjustedCurrentHp +=
+                    maxHpDifference;
+            }
+
+            /*
+             * 卸下生命装备时：
+             *
+             * 当前 HP 没超过新上限
+             * → 保持当前 HP。
+             *
+             * 当前 HP 超过新上限
+             * → 限制到新最大 HP。
+             */
+
+            adjustedCurrentHp =
+                Mathf.Clamp(
+                    adjustedCurrentHp,
+                    0,
+                    newMaxHp
+                );
+
+            damageReceiver.SetHp(
+                adjustedCurrentHp,
+                newMaxHp
+            );
+        }
 
         StatsChanged?.Invoke();
+
+        if (debugLog)
+        {
+            Debug.Log(
+                "[PlayerCharacterStatsController] " +
+                "Equipment modifiers applied. " +
+                $"Old HP={previousCurrentHp}/" +
+                $"{previousMaxHp}, " +
+                $"New HP=" +
+                $"{damageReceiver?.CurrentHp ?? 0}/" +
+                $"{newMaxHp}",
+                this
+            );
+        }
     }
 
     private void ApplyLevelStats(
@@ -526,8 +640,16 @@ public class PlayerCharacterStatsController :
                 oldCurrentHp > 0)
             {
                 targetCurrentHp +=
-                    newMaxHp - oldMaxHp;
+                    newMaxHp -
+                    oldMaxHp;
             }
+
+            targetCurrentHp =
+                Mathf.Clamp(
+                    targetCurrentHp,
+                    0,
+                    newMaxHp
+                );
 
             damageReceiver.SetHp(
                 targetCurrentHp,
@@ -540,8 +662,8 @@ public class PlayerCharacterStatsController :
         if (debugLog)
         {
             Debug.Log(
-                $"[PlayerCharacterStatsController] " +
-                $"Stats applied. " +
+                "[PlayerCharacterStatsController] " +
+                "Stats applied. " +
                 $"Level={currentLevel}, " +
                 $"HP={newMaxHp}, " +
                 $"ATK={combatStats.AttackPower}, " +
@@ -549,39 +671,6 @@ public class PlayerCharacterStatsController :
                 this
             );
         }
-    }
-
-    private void SyncMaxHp(
-        bool addMaxHpGrowthToCurrentHp
-    )
-    {
-        if (combatStats == null ||
-            damageReceiver == null)
-        {
-            return;
-        }
-
-        int oldMaxHp =
-            damageReceiver.MaxHp;
-
-        int currentHp =
-            damageReceiver.CurrentHp;
-
-        int newMaxHp =
-            combatStats.MaxHp;
-
-        if (addMaxHpGrowthToCurrentHp &&
-            newMaxHp > oldMaxHp &&
-            currentHp > 0)
-        {
-            currentHp +=
-                newMaxHp - oldMaxHp;
-        }
-
-        damageReceiver.SetHp(
-            currentHp,
-            newMaxHp
-        );
     }
 
     private void ClampExperience()
