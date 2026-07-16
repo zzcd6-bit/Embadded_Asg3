@@ -189,8 +189,27 @@ public class BurnBambooBarrierQuestService : MonoBehaviour, IGameSaveModule
         }
 
         fireBasicUnlocked = true;
-        TryUnlockPlayerFireSkill();
-        Log("Unlocked temporary skill: " + FireBasicSkillId);
+        Log("Marked temporary skill as available: " + FireBasicSkillId);
+        NotifyChanged();
+    }
+
+    public void MarkFireSkillPickedUp()
+    {
+        if (questState == BurnBambooBarrierQuestState.Locked)
+        {
+            AcceptQuest(QuestId);
+        }
+
+        fireBasicUnlocked = true;
+        CompleteObjective(QuestId, ObtainBasicFireSkillObjectiveId);
+
+        if (questState == BurnBambooBarrierQuestState.Active &&
+            !hitBambooBugWithFireCompleted)
+        {
+            ActivateObjective(QuestId, HitBambooBugWithFireObjectiveId);
+        }
+
+        Log("Fire skill pickup collected.");
         NotifyChanged();
     }
 
@@ -255,8 +274,7 @@ public class BurnBambooBarrierQuestService : MonoBehaviour, IGameSaveModule
         }
 
         rewardGranted = true;
-        TryUnlockPlayerFireSkill();
-        Log("Reward granted: Reward_BurnBambooBarrier (Fire skill permanent, skill point x1, gold x100 placeholder).");
+        Log("Reward granted: Reward_BurnBambooBarrier (skill point x1, gold x100 placeholder).");
         NotifyChanged();
     }
 
@@ -351,11 +369,6 @@ public class BurnBambooBarrierQuestService : MonoBehaviour, IGameSaveModule
                               questState == BurnBambooBarrierQuestState.Completed;
         rewardGranted = tokens.Contains(RewardGrantedSaveToken) ||
                         questState == BurnBambooBarrierQuestState.Completed;
-
-        if (fireBasicUnlocked)
-        {
-            TryUnlockPlayerFireSkill();
-        }
 
         NotifyChanged();
     }
@@ -471,18 +484,6 @@ public class BurnBambooBarrierQuestService : MonoBehaviour, IGameSaveModule
     {
         PlayerBrushSkillInventory inventory = FindAnyObjectByType<PlayerBrushSkillInventory>();
         return inventory != null && inventory.HasBrushSkill(BrushSkillType.Fire);
-    }
-
-    private void TryUnlockPlayerFireSkill()
-    {
-        PlayerBrushSkillInventory inventory = FindAnyObjectByType<PlayerBrushSkillInventory>();
-        if (inventory == null)
-        {
-            Debug.LogWarning("[BurnBambooBarrierQuestService] PlayerBrushSkillInventory not found.", this);
-            return;
-        }
-
-        inventory.UnlockBrushSkill(BrushSkillType.Fire);
     }
 
     private void NotifyChanged()

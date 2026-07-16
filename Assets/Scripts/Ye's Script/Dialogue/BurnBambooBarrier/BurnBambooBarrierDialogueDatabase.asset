@@ -431,8 +431,8 @@ MonoBehaviour:
         isConnector: 0
         priority: 2
       conditionsString: 
-      userScript: UnlockSkill("FireBasic"); CompleteObjective("Quest_BurnBambooBarrier",
-        "ObtainBasicFireSkill"); ShowSkillUnlockUI("FireBasic"); ShowTutorial("Tutorial_FireBasic")
+      userScript: ActivateObjective("Quest_BurnBambooBarrier", "ObtainBasicFireSkill");
+        SpawnFireSkillPickup(); ShowTutorial("Tutorial_FireBasic")
       onExecute:
         m_PersistentCalls:
           m_Calls: []
@@ -630,7 +630,7 @@ MonoBehaviour:
         type: 5
         typeString: CustomFieldType_Actor
       - title: Dialogue Text
-        value: "\u83B7\u5F97\u706B\u7CFB\u57FA\u7840\u6280\u80FD\uFF1A\u5F15\u706B\u3002"
+        value: "\u5B88\u6797\u4EBA\u628A\u4E00\u679A\u706B\u79CD\u653E\u5728\u4E86\u9644\u8FD1\u3002"
         type: 0
         typeString: 
       conversationID: 101
@@ -673,7 +673,7 @@ MonoBehaviour:
         type: 5
         typeString: CustomFieldType_Actor
       - title: Dialogue Text
-        value: "\u7ED8\u5236\u706B\u5143\u7D20\u7B26\u53F7\uFF0C\u53EF\u4EE5\u4F7F\u653B\u51FB\u9644\u5E26\u706B\u5143\u7D20\u3002"
+        value: "\u62FE\u53D6\u5B83\u540E\uFF0C\u518D\u5C1D\u8BD5\u7528\u706B\u5143\u7D20\u653B\u51FB\u90A3\u9762\u5F02\u5E38\u7AF9\u5899\u3002"
         type: 0
         typeString: 
       conversationID: 101
@@ -814,7 +814,7 @@ MonoBehaviour:
       conditionPriority: 2
       outgoingLinks: []
       conditionsString: 
-      userScript: ActivateObjective("Quest_BurnBambooBarrier", "HitBambooBugWithFire")
+      userScript: 
       onExecute:
         m_PersistentCalls:
           m_Calls: []

@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using PixelCrushers.DialogueSystem;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class DialogueSceneStateController : MonoBehaviour
 {
@@ -16,9 +18,20 @@ public class DialogueSceneStateController : MonoBehaviour
     [SerializeField] private bool lockCursorWhenNotInDialogue = true;
     [SerializeField] private bool enforceNormalCursorEveryFrame;
 
+    [Header("Dialogue Selection")]
+    [SerializeField] private KeyCode submitResponseKey = KeyCode.E;
+    [SerializeField] private KeyCode previousResponseKey = KeyCode.W;
+    [SerializeField] private KeyCode nextResponseKey = KeyCode.S;
+    [SerializeField] private KeyCode pointerModeKey = KeyCode.LeftAlt;
+    [SerializeField] private KeyCode alternatePointerModeKey = KeyCode.RightAlt;
+    [SerializeField] private float scrollThreshold = 0.1f;
+    [SerializeField] private bool focusFirstSelectable = true;
+
     private readonly List<DialogueSystemReactable> disabledReactables = new();
+    private readonly List<Selectable> dialogueSelectables = new();
     private PlayerModeStateController playerModeStateController;
     private bool subscribed;
+    private bool dialoguePointerMode;
 
     private void OnEnable()
     {
@@ -55,6 +68,12 @@ public class DialogueSceneStateController : MonoBehaviour
 
     private void Update()
     {
+        if (DialogueManager.isConversationActive)
+        {
+            HandleDialogueInput();
+            return;
+        }
+
         if (!manageCursor || !enforceNormalCursorEveryFrame || DialogueManager.isConversationActive)
         {
             return;
@@ -135,7 +154,8 @@ public class DialogueSceneStateController : MonoBehaviour
         }
 
         DisableDialogueReactables();
-        ApplyDialogueCursorState();
+        dialoguePointerMode = false;
+        ApplyDialogueCursorState(false);
     }
 
     private void HandleConversationEnded(Transform actor)
@@ -146,6 +166,7 @@ public class DialogueSceneStateController : MonoBehaviour
             playerModeStateController.ExitDialogueState();
         }
 
+        dialoguePointerMode = false;
         ApplyNormalCursorState();
     }
 
@@ -200,15 +221,183 @@ public class DialogueSceneStateController : MonoBehaviour
         disabledReactables.Clear();
     }
 
-    private void ApplyDialogueCursorState()
+    private void HandleDialogueInput()
+    {
+        bool pointerMode =
+            Input.GetKey(pointerModeKey) ||
+            Input.GetKey(alternatePointerModeKey);
+
+        if (pointerMode != dialoguePointerMode)
+        {
+            dialoguePointerMode = pointerMode;
+            ApplyDialogueCursorState(dialoguePointerMode);
+        }
+
+        if (focusFirstSelectable)
+        {
+            EnsureDialogueSelection();
+        }
+
+        float scroll = Input.mouseScrollDelta.y;
+        if (scroll > scrollThreshold || Input.GetKeyDown(previousResponseKey))
+        {
+            MoveDialogueSelection(-1);
+        }
+        else if (scroll < -scrollThreshold || Input.GetKeyDown(nextResponseKey))
+        {
+            MoveDialogueSelection(1);
+        }
+
+        if (Input.GetKeyDown(submitResponseKey))
+        {
+            SubmitDialogueSelection();
+        }
+    }
+
+    private void EnsureDialogueSelection()
+    {
+        EventSystem eventSystem = EventSystem.current;
+        if (eventSystem == null || dialogueUiObject == null)
+        {
+            return;
+        }
+
+        GameObject selected = eventSystem.currentSelectedGameObject;
+        if (IsUsableDialogueSelectable(selected))
+        {
+            return;
+        }
+
+        Selectable selectable = FindFirstDialogueSelectable();
+        if (selectable != null)
+        {
+            eventSystem.SetSelectedGameObject(selectable.gameObject);
+        }
+    }
+
+    private void MoveDialogueSelection(int direction)
+    {
+        EventSystem eventSystem = EventSystem.current;
+        if (eventSystem == null || dialogueUiObject == null)
+        {
+            return;
+        }
+
+        RefreshDialogueSelectables();
+        if (dialogueSelectables.Count == 0)
+        {
+            return;
+        }
+
+        GameObject selectedObject = eventSystem.currentSelectedGameObject;
+        int selectedIndex = -1;
+        for (int i = 0; i < dialogueSelectables.Count; i++)
+        {
+            if (dialogueSelectables[i] != null &&
+                dialogueSelectables[i].gameObject == selectedObject)
+            {
+                selectedIndex = i;
+                break;
+            }
+        }
+
+        if (selectedIndex < 0)
+        {
+            selectedIndex = direction > 0 ? -1 : 0;
+        }
+
+        int nextIndex = selectedIndex + direction;
+        if (nextIndex < 0)
+        {
+            nextIndex = dialogueSelectables.Count - 1;
+        }
+        else if (nextIndex >= dialogueSelectables.Count)
+        {
+            nextIndex = 0;
+        }
+
+        eventSystem.SetSelectedGameObject(dialogueSelectables[nextIndex].gameObject);
+    }
+
+    private void SubmitDialogueSelection()
+    {
+        EventSystem eventSystem = EventSystem.current;
+        if (eventSystem == null)
+        {
+            return;
+        }
+
+        EnsureDialogueSelection();
+        GameObject selected = eventSystem.currentSelectedGameObject;
+        if (!IsUsableDialogueSelectable(selected))
+        {
+            return;
+        }
+
+        BaseEventData eventData = new(eventSystem);
+        ExecuteEvents.Execute(selected, eventData, ExecuteEvents.submitHandler);
+    }
+
+    private Selectable FindFirstDialogueSelectable()
+    {
+        RefreshDialogueSelectables();
+        return dialogueSelectables.Count > 0 ? dialogueSelectables[0] : null;
+    }
+
+    private void RefreshDialogueSelectables()
+    {
+        dialogueSelectables.Clear();
+        if (dialogueUiObject == null)
+        {
+            return;
+        }
+
+        Selectable[] selectables = dialogueUiObject.GetComponentsInChildren<Selectable>(false);
+        for (int i = 0; i < selectables.Length; i++)
+        {
+            Selectable selectable = selectables[i];
+            if (selectable != null &&
+                selectable.IsActive() &&
+                selectable.IsInteractable())
+            {
+                dialogueSelectables.Add(selectable);
+            }
+        }
+    }
+
+    private bool IsUsableDialogueSelectable(GameObject selected)
+    {
+        if (selected == null || dialogueUiObject == null)
+        {
+            return false;
+        }
+
+        if (!selected.transform.IsChildOf(dialogueUiObject.transform))
+        {
+            return false;
+        }
+
+        Selectable selectable = selected.GetComponent<Selectable>();
+        return selectable != null &&
+               selectable.IsActive() &&
+               selectable.IsInteractable();
+    }
+
+    private void ApplyDialogueCursorState(bool pointerMode)
     {
         if (!manageCursor)
         {
             return;
         }
 
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        if (playerModeStateController != null)
+        {
+            playerModeStateController.SetDialoguePointerMode(pointerMode);
+            return;
+        }
+
+        Cursor.lockState = pointerMode ? CursorLockMode.None : CursorLockMode.Locked;
+        Cursor.visible = pointerMode;
     }
 
     private void ApplyNormalCursorState()

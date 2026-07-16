@@ -49,6 +49,24 @@ public class PlayerModeStateController : MonoBehaviour
     public bool IsInDialogue => currentState == PlayerModeState.Dialogue;
     public static bool IsDialogueMode => Instance != null && Instance.IsInDialogue;
 
+    public void SetDialoguePointerMode(bool pointerMode)
+    {
+        if (currentState != PlayerModeState.Dialogue)
+        {
+            return;
+        }
+
+        if (cameraController != null)
+        {
+            cameraController.SetCameraInputEnabled(!pointerMode);
+            cameraController.SetCursorLocked(!pointerMode);
+            return;
+        }
+
+        Cursor.lockState = pointerMode ? CursorLockMode.None : CursorLockMode.Locked;
+        Cursor.visible = pointerMode;
+    }
+
     private void Awake()
     {
         if (Instance != null && Instance != this)

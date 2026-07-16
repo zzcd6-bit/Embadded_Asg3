@@ -15,7 +15,7 @@ MonoBehaviour:
   skillType: 2
   targetLayer:
     serializedVersion: 2
-    m_Bits: 131200
+    m_Bits: 128
   rayDistance: 200
   fallbackDistance: 12
   enableSceneElementInteraction: 1

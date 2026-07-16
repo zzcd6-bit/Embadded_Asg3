@@ -132,6 +132,7 @@ GameObject:
   - component: {fileID: 114612456}
   - component: {fileID: 114612459}
   - component: {fileID: 114612460}
+  - component: {fileID: 114612461}
   m_Layer: 0
   m_Name: Quest Dialogue Runtime
   m_TagString: Untagged
@@ -152,6 +153,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BurnBambooBarrierDialogueLuaBridge
   questService: {fileID: 114612457}
+  fireSkillPickupActivator: {fileID: 114612461}
   unregisterOnDisable: 0
   logBridgeCalls: 1
 --- !u!114 &114612457
@@ -233,6 +235,41 @@ MonoBehaviour:
   playerBarsHudRoot: {fileID: 3000000000}
   hideFromEnemiesInDialogue: 1
   hiddenLayerName: Ignore Raycast
+--- !u!114 &114612461
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 114612455}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3caa5b63d97844b4a9fec91f6f3f9e0a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScenePickupActivator
+  pickupObject: {fileID: 160430381}
+  spawnAnchor: {fileID: 700735970}
+  spawnOffset: {x: 1.5, y: 0.65, z: 0}
+  pickupPrompt: Pick Up Fire Skill
+  activationAlert: "\u62FE\u53D6\u9644\u8FD1\u7684\u706B\u79CD\u3002"
+  collectedAlert: "\u5DF2\u83B7\u5F97\u706B\u5143\u7D20\u6280\u80FD\u3002"
+  hidePickupOnAwake: 1
+  logStateChanges: 1
+  onPickupCollected:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 114612457}
+        m_TargetAssemblyTypeName: BurnBambooBarrierQuestService, Assembly-CSharp
+        m_MethodName: MarkFireSkillPickedUp
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &120945708
 GameObject:
   m_ObjectHideFlags: 0
@@ -382,7 +419,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!135 &160430383
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -1183,7 +1220,7 @@ MonoBehaviour:
   useRuntimeFireTemplate: 0
   useRuntimeBridgeTemplate: 0
   exitBrushModeOnRecognized: 1
-  skillInventory: {fileID: 0}
+  skillInventory: {fileID: 219517337}
   debugPointInfo: 1
   debugTemplateInfo: 1
   debugTopMatches: 1

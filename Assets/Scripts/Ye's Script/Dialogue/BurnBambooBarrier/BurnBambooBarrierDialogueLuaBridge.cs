@@ -5,6 +5,7 @@ using UnityEngine;
 public class BurnBambooBarrierDialogueLuaBridge : MonoBehaviour
 {
     [SerializeField] private BurnBambooBarrierQuestService questService;
+    [SerializeField] private ScenePickupActivator fireSkillPickupActivator;
     [SerializeField] private bool unregisterOnDisable;
     [SerializeField] private bool logBridgeCalls = true;
 
@@ -31,6 +32,7 @@ public class BurnBambooBarrierDialogueLuaBridge : MonoBehaviour
         RegisterLuaFunction(nameof(ShowQuestNotification));
         RegisterLuaFunction(nameof(ShowTutorial));
         RegisterLuaFunction(nameof(ShowSkillUnlockUI));
+        RegisterLuaFunction(nameof(SpawnFireSkillPickup));
     }
 
     private void OnDisable()
@@ -53,6 +55,7 @@ public class BurnBambooBarrierDialogueLuaBridge : MonoBehaviour
         Lua.UnregisterFunction(nameof(ShowQuestNotification));
         Lua.UnregisterFunction(nameof(ShowTutorial));
         Lua.UnregisterFunction(nameof(ShowSkillUnlockUI));
+        Lua.UnregisterFunction(nameof(SpawnFireSkillPickup));
     }
 
     public void AcceptQuest(string questId)
@@ -181,6 +184,30 @@ public class BurnBambooBarrierDialogueLuaBridge : MonoBehaviour
     public void ShowSkillUnlockUI(string skillId)
     {
         Debug.Log("[SkillUnlock] " + skillId, this);
+    }
+
+    public void SpawnFireSkillPickup()
+    {
+        if (Service != null &&
+            (Service.HasSkill(BurnBambooBarrierQuestService.FireBasicSkillId) ||
+             Service.IsObjectiveCompleted(BurnBambooBarrierQuestService.ObtainBasicFireSkillObjectiveId)))
+        {
+            return;
+        }
+
+        if (fireSkillPickupActivator == null)
+        {
+            fireSkillPickupActivator = GetComponent<ScenePickupActivator>();
+        }
+
+        if (fireSkillPickupActivator == null)
+        {
+            Debug.LogWarning("[BurnBambooBarrierDialogueLuaBridge] Fire skill pickup activator is missing.", this);
+            return;
+        }
+
+        fireSkillPickupActivator.ActivatePickup();
+        Log("SpawnFireSkillPickup()");
     }
 
     private BurnBambooBarrierQuestService Service
