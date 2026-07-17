@@ -60,6 +60,49 @@ public class SlashBrushSkill : BrushSkillBase
         if (screenPoints == null || screenPoints.Count < 2)
             return;
 
+        float damageMultiplier =
+            Mathf.Max(
+                0f,
+                GetSkillTreeStatValue(
+                    SkillTreeStatType
+                        .DamageMultiplier,
+                    1f
+                )
+            );
+
+        float rangeMultiplier =
+            Mathf.Max(
+                0.01f,
+                GetSkillTreeStatValue(
+                    SkillTreeStatType
+                        .RangeMultiplier,
+                    1f
+                )
+            );
+
+        int resolvedBaseDamage =
+            Mathf.Max(
+                0,
+                Mathf.RoundToInt(
+                    config.baseDamage *
+                    damageMultiplier
+                )
+            );
+
+        float resolvedSkillMultiplier =
+            Mathf.Max(
+                0f,
+                config.skillMultiplier *
+                damageMultiplier
+            );
+
+        float resolvedSphereRadius =
+            Mathf.Max(
+                0.01f,
+                config.slashSphereRadius *
+                rangeMultiplier
+            );
+
         Dictionary<IDamageable, DamageInfo> hitTargets = new Dictionary<IDamageable, DamageInfo>();
 
         for (int i = 0; i < config.slashSampleCount; i++)
@@ -78,7 +121,7 @@ public class SlashBrushSkill : BrushSkillBase
 
             RaycastHit[] hits = Physics.SphereCastAll(
                 ray,
-                config.slashSphereRadius,
+                resolvedSphereRadius,
                 config.rayDistance,
                 config.targetLayer,
                 QueryTriggerInteraction.Collide
@@ -108,7 +151,7 @@ public class SlashBrushSkill : BrushSkillBase
                     attacker = context.caster != null ? context.caster : gameObject,
                     target = targetObject,
 
-                    damage = config.baseDamage,
+                    damage = resolvedBaseDamage,
                     knockback = config.knockback,
 
                     hitPoint = hit.point,
@@ -118,7 +161,7 @@ public class SlashBrushSkill : BrushSkillBase
                     element = config.element,
                     canApplyElementStatus = config.canApplyElementStatus,
 
-                    skillMultiplier = config.skillMultiplier,
+                    skillMultiplier = resolvedSkillMultiplier,
                     damageBonus = config.damageBonus,
                     reactionMultiplier = config.reactionMultiplier,
                     reactionType = ElementReactionType.None,
@@ -135,6 +178,17 @@ public class SlashBrushSkill : BrushSkillBase
         }
 
         UnityEngine.Debug.Log($"Slash executed. Damage target count: {hitTargets.Count}");
+    }
+
+    protected override float GetCooldown()
+    {
+        if (config == null)
+            return 0f;
+
+        if (!config.useSkillCooldown)
+            return 0f;
+
+        return config.skillCooldown;
     }
 
     protected override int GetInkCost()

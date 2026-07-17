@@ -37,16 +37,16 @@ MonoBehaviour:
   slashSampleCount: 12
   fireDamageRadius: 3
   applyBurning: 1
-  burningDuration: 5
+  burningDuration: 3
   burningTickInterval: 0.3
-  burningTickDamage: 1
+  burningTickDamage: 5
   applyInfusionToPlayer: 1
   infusionDuration: 20
   infusionDamageMultiplier: 1.5
   infusionApplyBurningOnHit: 1
-  infusionBurningDuration: 5
+  infusionBurningDuration: 3
   infusionBurningTickInterval: 0.3
-  infusionBurningTickDamage: 1
+  infusionBurningTickDamage: 5
   waterAuraDuration: 8
   waterUsePool: 1
   waterProjectilePoolName: WaterProjectile
@@ -109,3 +109,17 @@ MonoBehaviour:
     m_Bits: 0
   bridgeCastRadius: 0.6
   bridgeActiveDuration: 8
+  windFieldPoolName: Prefabs/WindFieldVFX
+  windSpawnDistance: 8
+  windSpawnYOffset: 0
+  windFieldDuration: 6
+  windPullRadius: 8
+  windPullSpeed: 10
+  windCenterRadius: 0.8
+  windCenterTickInterval: 0.5
+  windFireColor: {r: 1, g: 0.2, b: 0.05, a: 1}
+  windWaterColor: {r: 0.1, g: 0.55, b: 1, a: 1}
+  windSpreadFireDuration: 5
+  windSpreadFireTickInterval: 1
+  windSpreadFireTickDamage: 1
+  windSpreadWetDuration: 5

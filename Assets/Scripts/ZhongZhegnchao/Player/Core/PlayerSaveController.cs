@@ -34,6 +34,11 @@ public class PlayerSaveController :
     private PlayerCurrencyController
         currencyController;
 
+    [Header("技能树")]
+    [SerializeField]
+    private PlayerSkillTreeController
+        skillTreeController;
+
     [Header("Debug")]
     public bool debugLog = true;
 
@@ -57,6 +62,7 @@ public class PlayerSaveController :
         ResolveInventoryController();
         ResolveEquipmentController();
         ResolveCurrencyController();
+        ResolveSkillTreeController();
     }
 
     private void ResolveDamageReceiver()
@@ -213,6 +219,23 @@ public class PlayerSaveController :
         }
     }
 
+    private void ResolveSkillTreeController()
+    {
+        if (skillTreeController == null)
+        {
+            skillTreeController =
+                GetComponent<
+                    PlayerSkillTreeController>();
+        }
+
+        if (skillTreeController == null)
+        {
+            skillTreeController =
+                GetComponentInChildren<
+                    PlayerSkillTreeController>(true);
+        }
+    }
+
     public PlayerSaveData CapturePlayerSaveData()
     {
         ResolveReferences();
@@ -233,7 +256,14 @@ public class PlayerSaveController :
 
         CaptureCharacterStats(saveData);
         CaptureHealth(saveData);
+
+        /*
+         * 先保存技能是否解锁，
+         * 再保存技能树等级。
+         */
         CaptureSkills(saveData);
+        CaptureSkillTree(saveData);
+
         CaptureInk(saveData);
         CaptureInventory(saveData);
         CaptureEquipment(saveData);
@@ -242,6 +272,18 @@ public class PlayerSaveController :
 
         if (debugLog)
         {
+            int availableSkillPoints =
+                skillTreeController != null
+                    ? skillTreeController
+                        .AvailableSkillPoints
+                    : 0;
+
+            int usedSkillPoints =
+                skillTreeController != null
+                    ? skillTreeController
+                        .UsedSkillPoints
+                    : 0;
+
             Debug.Log(
                 "[PlayerSaveController] " +
                 "Player data captured. " +
@@ -252,6 +294,8 @@ public class PlayerSaveController :
                 $"Ink={saveData.currentInk}/" +
                 $"{saveData.maxInk}, " +
                 $"Coins={saveData.currentCoins}, " +
+                $"AvailableSP={availableSkillPoints}, " +
+                $"UsedSP={usedSkillPoints}, " +
                 $"ItemCount=" +
                 $"{saveData.inventoryItems.Count}, " +
                 $"SkillCount=" +
@@ -313,7 +357,16 @@ public class PlayerSaveController :
         List<BrushSkillType> unlockedSkills =
             skillInventory.GetUnlockedSkills();
 
+        if (saveData.unlockedBrushSkills == null)
+        {
+            saveData.unlockedBrushSkills =
+                new List<string>();
+        }
+
         saveData.unlockedBrushSkills.Clear();
+
+        if (unlockedSkills == null)
+            return;
 
         for (int i = 0;
              i < unlockedSkills.Count;
@@ -332,6 +385,31 @@ public class PlayerSaveController :
                 skillType.ToString()
             );
         }
+    }
+
+    private void CaptureSkillTree(
+        PlayerSaveData saveData
+    )
+    {
+        if (saveData == null ||
+            skillTreeController == null)
+        {
+            return;
+        }
+
+        /*
+         * 保存内容包括：
+         *
+         * 1. 五个技能当前等级
+         * 2. 是否拥有重新分配资格
+         *
+         * 总技能点与剩余技能点不直接保存，
+         * 会根据人物等级和技能等级重新计算。
+         */
+
+        saveData.skillTreeData =
+            skillTreeController
+                .CaptureSaveData();
     }
 
     private void CaptureInk(
@@ -456,11 +534,15 @@ public class PlayerSaveController :
             saveData.eulerAngles
         );
 
+        /*
+         * 先恢复人物等级。
+         * 技能树的总技能点依赖人物等级。
+         */
         RestoreCharacterStats(saveData);
 
         /*
          * 必须先恢复背包和装备。
-         * 因为头盔等装备可能增加最大生命值。
+         * 因为头盔等装备可能增加 Max HP。
          */
         RestoreInventoryAndEquipment(
             saveData
@@ -472,13 +554,34 @@ public class PlayerSaveController :
          */
         RestoreHealth(saveData);
 
+        /*
+         * 必须先恢复技能解锁状态，
+         * 再恢复技能树等级。
+         *
+         * 否则技能树不知道哪些技能
+         * 应该至少保持 Lv.1。
+         */
         RestoreSkills(saveData);
+        RestoreSkillTree(saveData);
+
         RestoreInk(saveData);
         RestoreCurrency(saveData);
         RestoreCollectedPickups(saveData);
 
         if (debugLog)
         {
+            int availableSkillPoints =
+                skillTreeController != null
+                    ? skillTreeController
+                        .AvailableSkillPoints
+                    : 0;
+
+            int usedSkillPoints =
+                skillTreeController != null
+                    ? skillTreeController
+                        .UsedSkillPoints
+                    : 0;
+
             Debug.Log(
                 "[PlayerSaveController] " +
                 "Player data restored. " +
@@ -488,7 +591,9 @@ public class PlayerSaveController :
                 $"{damageReceiver?.CurrentHp ?? 0}/" +
                 $"{damageReceiver?.MaxHp ?? 0}, " +
                 $"Coins=" +
-                $"{currencyController?.CurrentCoins ?? 0}",
+                $"{currencyController?.CurrentCoins ?? 0}, " +
+                $"AvailableSP={availableSkillPoints}, " +
+                $"UsedSP={usedSkillPoints}",
                 this
             );
         }
@@ -544,7 +649,8 @@ public class PlayerSaveController :
 
         /*
          * 必须在背包恢复后再恢复装备。
-         * 装备通过 Instance ID 查找背包中的装备实例。
+         * 装备通过 Instance ID
+         * 查找背包中的装备实例。
          */
         if (equipmentController != null)
         {
@@ -626,6 +732,7 @@ public class PlayerSaveController :
                 bool parsed =
                     System.Enum.TryParse(
                         skillName,
+                        true,
                         out BrushSkillType skillType
                     );
 
@@ -652,6 +759,34 @@ public class PlayerSaveController :
 
         skillInventory.SetUnlockedSkills(
             loadedSkills
+        );
+    }
+
+    private void RestoreSkillTree(
+        PlayerSaveData saveData
+    )
+    {
+        if (saveData == null ||
+            skillTreeController == null)
+        {
+            return;
+        }
+
+        /*
+         * PlayerSkillTreeController 内部会校正：
+         *
+         * 未解锁技能
+         * → Lv.0
+         *
+         * 已解锁但存档等级小于 1
+         * → Lv.1
+         *
+         * 技能投入点数超过人物等级允许值
+         * → 自动回退多余等级
+         */
+
+        skillTreeController.RestoreFromSaveData(
+            saveData.skillTreeData
         );
     }
 
@@ -686,7 +821,7 @@ public class PlayerSaveController :
             /*
              * RestoreCoins 不会触发
              * CoinsGained 提示，
-             * 避免加载存档时弹出“获得金币”。
+             * 避免加载存档时弹出获得金币。
              */
             currencyController.RestoreCoins(
                 Mathf.Max(
@@ -698,10 +833,7 @@ public class PlayerSaveController :
         else
         {
             /*
-             * 兼容旧存档：
-             * 旧存档没有金币字段时，
-             * 使用 PlayerCurrencyController
-             * 配置的 Starting Coins。
+             * 兼容旧存档。
              */
             currencyController
                 .ResetToStartingCoins();

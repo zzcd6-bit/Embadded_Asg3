@@ -757,6 +757,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8711962937741669046, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
       insertIndex: -1
       addedObject: {fileID: 219517399}
+    - targetCorrespondingSourceObject: {fileID: 8711962937741669046, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 219517409}
   m_SourcePrefab: {fileID: 100100000, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
 --- !u!1 &219517335 stripped
 GameObject:
@@ -1013,6 +1016,24 @@ MonoBehaviour:
   currentCoins: 0
   debugLog: 1
   debugAmount: 100
+--- !u!114 &219517409
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 219517335}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5dbfb068e59bbc4cba773806aaf84cd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerSkillTreeController
+  config: {fileID: 11400000, guid: f18abc2215850c74d9a918857e8e7164, type: 2}
+  characterStatsController: {fileID: 219517376}
+  skillInventory: {fileID: 219517337}
+  runtimeLevels: []
+  canResetSkills: 0
+  debugLog: 0
 --- !u!1 &248848576
 GameObject:
   m_ObjectHideFlags: 0
@@ -4306,6 +4327,7 @@ GameObject:
   - component: {fileID: 1098213891}
   - component: {fileID: 1098213890}
   - component: {fileID: 1098213889}
+  - component: {fileID: 1098213894}
   m_Layer: 15
   m_Name: BridgeTP
   m_TagString: Untagged
@@ -4434,6 +4456,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1098213894
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1098213888}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0475ea2994324714fa996c29de755dd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SkillTreeCheckpointResetGrant
+  skillTreeController: {fileID: 219517409}
 --- !u!224 &1107434603 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6291988052355220073, guid: e0b6749cfd01dc641aa3c846f8b08f83, type: 3}
@@ -4946,6 +4981,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerSaveManager
   playerSaveController: {fileID: 219517348}
   saveModules: []
+  skillTreeController: {fileID: 219517409}
+  grantSkillResetOpportunityOnSave: 1
   saveFolderName: Saves
   saveFileName: player_save.json
   saveKey: 289
@@ -6643,6 +6680,7 @@ GameObject:
   - component: {fileID: 1905178366}
   - component: {fileID: 1905178365}
   - component: {fileID: 1905178364}
+  - component: {fileID: 1905178369}
   m_Layer: 15
   m_Name: DefaultTP
   m_TagString: Untagged
@@ -6771,6 +6809,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1905178369
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1905178363}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0475ea2994324714fa996c29de755dd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SkillTreeCheckpointResetGrant
+  skillTreeController: {fileID: 219517409}
 --- !u!1 &1964026413
 GameObject:
   m_ObjectHideFlags: 0

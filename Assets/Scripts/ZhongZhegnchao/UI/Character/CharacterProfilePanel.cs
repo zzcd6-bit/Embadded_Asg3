@@ -6,68 +6,42 @@ using UnityEngine.UI;
 public class CharacterProfilePanel : BasePanel
 {
     [Header("Character")]
-    [SerializeField]
-    private TMP_Text levelValueText;
+    [SerializeField] private TMP_Text levelValueText;
 
     [Header("Main Stats")]
-    [SerializeField]
-    private TMP_Text healthValueText;
-
-    [SerializeField]
-    private TMP_Text inkValueText;
+    [SerializeField] private TMP_Text healthValueText;
+    [SerializeField] private TMP_Text inkValueText;
 
     [Header("Experience")]
-    [SerializeField]
-    private Image experienceFillImage;
-
-    [SerializeField]
-    private TMP_Text experienceValueText;
+    [SerializeField] private Image experienceFillImage;
+    [SerializeField] private TMP_Text experienceValueText;
 
     [Header("Offensive Stats")]
-    [SerializeField]
-    private TMP_Text attackValueText;
-
-    [SerializeField]
-    private TMP_Text damageBonusValueText;
-
-    [SerializeField]
-    private TMP_Text criticalChanceValueText;
-
-    [SerializeField]
-    private TMP_Text criticalDamageValueText;
-
-    [SerializeField]
-    private TMP_Text physicalDamageValueText;
-
-    [SerializeField]
-    private TMP_Text fireDamageValueText;
-
-    [SerializeField]
-    private TMP_Text waterDamageValueText;
-
-    [SerializeField]
-    private TMP_Text windDamageValueText;
+    [SerializeField] private TMP_Text attackValueText;
+    [SerializeField] private TMP_Text damageBonusValueText;
+    [SerializeField] private TMP_Text criticalChanceValueText;
+    [SerializeField] private TMP_Text criticalDamageValueText;
+    [SerializeField] private TMP_Text physicalDamageValueText;
+    [SerializeField] private TMP_Text fireDamageValueText;
+    [SerializeField] private TMP_Text waterDamageValueText;
+    [SerializeField] private TMP_Text windDamageValueText;
 
     [Header("Defensive Stats")]
-    [SerializeField]
-    private TMP_Text defenseValueText;
-
-    [SerializeField]
-    private TMP_Text physicalResistanceValueText;
-
-    [SerializeField]
-    private TMP_Text fireResistanceValueText;
-
-    [SerializeField]
-    private TMP_Text waterResistanceValueText;
-
-    [SerializeField]
-    private TMP_Text windResistanceValueText;
+    [SerializeField] private TMP_Text defenseValueText;
+    [SerializeField] private TMP_Text physicalResistanceValueText;
+    [SerializeField] private TMP_Text fireResistanceValueText;
+    [SerializeField] private TMP_Text waterResistanceValueText;
+    [SerializeField] private TMP_Text windResistanceValueText;
 
     [Header("Inventory UI")]
     [SerializeField]
     private CharacterInventoryUIController
-    inventoryUIController;
+        inventoryUIController;
+
+    [Header("Skill Tree UI")]
+    [SerializeField]
+    private CharacterSkillTreeUIController
+        skillTreeUIController;
 
     private PlayerCharacterStatsController
         statsController;
@@ -77,14 +51,12 @@ public class CharacterProfilePanel : BasePanel
     public override void ShowMe()
     {
         gameObject.SetActive(true);
-
         Refresh();
     }
 
     public override void HideMe()
     {
         Unbind();
-
         gameObject.SetActive(false);
     }
 
@@ -95,16 +67,12 @@ public class CharacterProfilePanel : BasePanel
     {
         Unbind();
 
-        statsController =
-            controller;
-
-        closeCallback =
-            onClose;
+        statsController = controller;
+        closeCallback = onClose;
 
         if (statsController != null)
         {
-            statsController.StatsChanged +=
-                Refresh;
+            statsController.StatsChanged += Refresh;
 
             statsController.ExperienceChanged +=
                 OnExperienceChanged;
@@ -113,9 +81,8 @@ public class CharacterProfilePanel : BasePanel
                 OnLevelChanged;
         }
 
-        inventoryUIController?.Bind(
-    controller
-);
+        inventoryUIController?.Bind(controller);
+        skillTreeUIController?.Bind(controller);
 
         Refresh();
     }
@@ -123,11 +90,11 @@ public class CharacterProfilePanel : BasePanel
     private void Unbind()
     {
         inventoryUIController?.Unbind();
+        skillTreeUIController?.Unbind();
 
         if (statsController != null)
         {
-            statsController.StatsChanged -=
-                Refresh;
+            statsController.StatsChanged -= Refresh;
 
             statsController.ExperienceChanged -=
                 OnExperienceChanged;
@@ -148,9 +115,7 @@ public class CharacterProfilePanel : BasePanel
         RefreshExperience();
     }
 
-    private void OnLevelChanged(
-        int newLevel
-    )
+    private void OnLevelChanged(int newLevel)
     {
         Refresh();
     }
@@ -181,23 +146,15 @@ public class CharacterProfilePanel : BasePanel
         );
 
         RefreshExperience();
-
-        RefreshOffensiveStats(
-            combatStats
-        );
-
-        RefreshDefensiveStats(
-            combatStats
-        );
+        RefreshOffensiveStats(combatStats);
+        RefreshDefensiveStats(combatStats);
     }
 
     private void RefreshCharacterInfo()
     {
         SetText(
             levelValueText,
-            statsController
-                .CurrentLevel
-                .ToString()
+            statsController.CurrentLevel.ToString()
         );
     }
 
@@ -233,10 +190,7 @@ public class CharacterProfilePanel : BasePanel
         }
         else
         {
-            SetText(
-                inkValueText,
-                "-"
-            );
+            SetText(inkValueText, "-");
         }
     }
 
@@ -248,16 +202,9 @@ public class CharacterProfilePanel : BasePanel
         if (statsController.IsMaxLevel)
         {
             if (experienceFillImage != null)
-            {
-                experienceFillImage.fillAmount =
-                    1f;
-            }
+                experienceFillImage.fillAmount = 1f;
 
-            SetText(
-                experienceValueText,
-                "MAX"
-            );
-
+            SetText(experienceValueText, "MAX");
             return;
         }
 
@@ -276,14 +223,10 @@ public class CharacterProfilePanel : BasePanel
                 (float)requiredExperience;
         }
 
-        fillAmount =
-            Mathf.Clamp01(fillAmount);
+        fillAmount = Mathf.Clamp01(fillAmount);
 
         if (experienceFillImage != null)
-        {
-            experienceFillImage.fillAmount =
-                fillAmount;
-        }
+            experienceFillImage.fillAmount = fillAmount;
 
         SetText(
             experienceValueText,
@@ -410,22 +353,18 @@ public class CharacterProfilePanel : BasePanel
         string value
     )
     {
-        if (targetText == null)
-            return;
-
-        targetText.text = value;
+        if (targetText != null)
+            targetText.text = value;
     }
 
-    private string FormatPercent(
-        float value
-    )
+    private string FormatPercent(float value)
     {
         return $"{value * 100f:0.#}%";
     }
 
     protected override void ClickBtn(
-    string btnName
-)
+        string btnName
+    )
     {
         switch (btnName)
         {

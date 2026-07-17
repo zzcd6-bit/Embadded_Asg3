@@ -54,7 +54,31 @@ public class WaterBrushSkill : BrushSkillBase
             return;
         }
 
-        waterAuraShooter.ActivateWaterAura(config);
+        float damageMultiplier =
+            Mathf.Max(
+                0f,
+                GetSkillTreeStatValue(
+                    SkillTreeStatType
+                        .DamageMultiplier,
+                    1f
+                )
+            );
+
+        float projectileSpeedMultiplier =
+            Mathf.Max(
+                0.01f,
+                GetSkillTreeStatValue(
+                    SkillTreeStatType
+                        .ProjectileSpeedMultiplier,
+                    1f
+                )
+            );
+
+        waterAuraShooter.ActivateWaterAura(
+            config,
+            damageMultiplier,
+            projectileSpeedMultiplier
+        );
 
         Debug.Log("[WaterBrushSkill] Water aura activated.", this);
     }

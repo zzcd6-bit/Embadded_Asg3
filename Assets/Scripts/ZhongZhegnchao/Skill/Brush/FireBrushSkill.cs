@@ -390,11 +390,30 @@ public class FireBrushSkill : BrushSkillBase
             statusController = targetObject.AddComponent<ElementStatusController>();
         }
 
+        float burnDamageMultiplier =
+            Mathf.Max(
+                0f,
+                GetSkillTreeStatValue(
+                    SkillTreeStatType
+                        .BurnDamageMultiplier,
+                    1f
+                )
+            );
+
+        int resolvedBurningTickDamage =
+            Mathf.Max(
+                0,
+                Mathf.RoundToInt(
+                    config.burningTickDamage *
+                    burnDamageMultiplier
+                )
+            );
+
         statusController.ApplyBurning(
             attacker,
             config.burningDuration,
             config.burningTickInterval,
-            config.burningTickDamage
+            resolvedBurningTickDamage
         );
     }
 
@@ -460,13 +479,49 @@ public class FireBrushSkill : BrushSkillBase
             return;
         }
 
+        float formDamageMultiplier =
+            Mathf.Max(
+                0f,
+                GetSkillTreeStatValue(
+                    SkillTreeStatType
+                        .FormDamageMultiplier,
+                    1f
+                )
+            );
+
+        float burnDamageMultiplier =
+            Mathf.Max(
+                0f,
+                GetSkillTreeStatValue(
+                    SkillTreeStatType
+                        .BurnDamageMultiplier,
+                    1f
+                )
+            );
+
+        float resolvedInfusionDamageMultiplier =
+            Mathf.Max(
+                0f,
+                config.infusionDamageMultiplier *
+                formDamageMultiplier
+            );
+
+        int resolvedInfusionBurningTickDamage =
+            Mathf.Max(
+                0,
+                Mathf.RoundToInt(
+                    config.infusionBurningTickDamage *
+                    burnDamageMultiplier
+                )
+            );
+
         infusion.ApplyFireInfusion(
             config.infusionDuration,
-            config.infusionDamageMultiplier,
+            resolvedInfusionDamageMultiplier,
             config.infusionApplyBurningOnHit,
             config.infusionBurningDuration,
             config.infusionBurningTickInterval,
-            config.infusionBurningTickDamage
+            resolvedInfusionBurningTickDamage
         );
     }
 

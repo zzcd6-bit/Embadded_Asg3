@@ -7,6 +7,10 @@ public class WindFieldController : MonoBehaviour
     private BrushSkillConfig config;
     private GameObject caster;
 
+    private float pullRadiusMultiplier = 1f;
+    private float pullForceMultiplier = 1f;
+    private float infusionDamageMultiplier = 1f;
+
     private float remainingDuration;
 
     private bool isRunning;
@@ -54,10 +58,45 @@ public class WindFieldController : MonoBehaviour
         GameObject newCaster
     )
     {
+        Initialize(
+            newConfig,
+            newCaster,
+            1f,
+            1f,
+            1f
+        );
+    }
+
+    public void Initialize(
+        BrushSkillConfig newConfig,
+        GameObject newCaster,
+        float newPullRadiusMultiplier,
+        float newPullForceMultiplier,
+        float newInfusionDamageMultiplier
+    )
+    {
         ReleaseAllControlledEnemies();
 
         config = newConfig;
         caster = newCaster;
+
+        pullRadiusMultiplier =
+            Mathf.Max(
+                0.01f,
+                newPullRadiusMultiplier
+            );
+
+        pullForceMultiplier =
+            Mathf.Max(
+                0.01f,
+                newPullForceMultiplier
+            );
+
+        infusionDamageMultiplier =
+            Mathf.Max(
+                0f,
+                newInfusionDamageMultiplier
+            );
 
         absorbedElement =
             ElementType.None;
@@ -119,7 +158,7 @@ public class WindFieldController : MonoBehaviour
         Collider[] hits =
             Physics.OverlapSphere(
                 transform.position,
-                config.windPullRadius,
+                GetResolvedPullRadius(),
                 config.targetLayer,
                 QueryTriggerInteraction.Collide
             );
@@ -152,6 +191,41 @@ public class WindFieldController : MonoBehaviour
         }
 
         ReleaseEnemiesOutsideRange();
+    }
+
+    private float GetResolvedPullRadius()
+    {
+        if (config == null)
+            return 0f;
+
+        return Mathf.Max(
+            0.01f,
+            config.windPullRadius *
+            pullRadiusMultiplier
+        );
+    }
+
+    private float GetResolvedPullSpeed()
+    {
+        if (config == null)
+            return 0f;
+
+        return Mathf.Max(
+            0f,
+            config.windPullSpeed *
+            pullForceMultiplier
+        );
+    }
+
+    private float GetResolvedInfusionDamageMultiplier()
+    {
+        if (absorbedElement ==
+            ElementType.None)
+        {
+            return 1f;
+        }
+
+        return infusionDamageMultiplier;
     }
 
     private EnemyWhitebox FindEnemy(
@@ -197,18 +271,13 @@ public class WindFieldController : MonoBehaviour
         float distance =
             toCenter.magnitude;
 
-        // 已经在中心
         if (distance <= config.windCenterRadius)
         {
             ProcessCenterEnemy(enemy);
             return;
         }
-
-        // 离开中心后，下次进入立即造成一次 Tick
         nextCenterTickTimes.Remove(enemy);
 
-        // Enemy 正在被击退
-        // 暂停风场拉力，让 Knockback 真正表现出来
         if (enemy.IsBeingKnockedBack)
         {
             return;
@@ -221,7 +290,7 @@ public class WindFieldController : MonoBehaviour
             toCenter.normalized;
 
         float moveDistance =
-            config.windPullSpeed *
+            GetResolvedPullSpeed() *
             Time.deltaTime;
 
         moveDistance = Mathf.Min(
@@ -260,8 +329,6 @@ public class WindFieldController : MonoBehaviour
         ElementStatusController status =
             FindStatusController(enemy);
 
-        // 风场还没染色时
-        // 每个进入中心的 Enemy 都有机会成为第一个元素来源
         TryAbsorbElement(status);
 
         float currentTime =
@@ -306,10 +373,8 @@ public class WindFieldController : MonoBehaviour
             }
         }
 
-        // 每 Tick 都造成伤害
         ApplyCenterTickDamage(enemy);
 
-        // 风场染色后，每 Tick 都重新附加元素状态
         if (status != null &&
             absorbedElement != ElementType.None &&
             canApplySpreadStatus)
@@ -375,13 +440,32 @@ public class WindFieldController : MonoBehaviour
             hitDirection.Normalize();
         }
 
+        float resolvedDamageMultiplier =
+            GetResolvedInfusionDamageMultiplier();
+
+        int resolvedBaseDamage =
+            Mathf.Max(
+                0,
+                Mathf.RoundToInt(
+                    config.baseDamage *
+                    resolvedDamageMultiplier
+                )
+            );
+
+        float resolvedSkillMultiplier =
+            Mathf.Max(
+                0f,
+                config.skillMultiplier *
+                resolvedDamageMultiplier
+            );
+
         DamageInfo damageInfo =
             new DamageInfo
             {
                 attacker = attackerObject,
                 target = enemy.gameObject,
 
-                damage = config.baseDamage,
+                damage = resolvedBaseDamage,
                 knockback = 0f,
 
                 hitPoint =
@@ -398,7 +482,7 @@ public class WindFieldController : MonoBehaviour
                 canApplyElementStatus = false,
 
                 skillMultiplier =
-                    config.skillMultiplier,
+                    resolvedSkillMultiplier,
 
                 damageBonus =
                     config.damageBonus,
@@ -452,7 +536,6 @@ public class WindFieldController : MonoBehaviour
         if (status == null)
             return ElementType.None;
 
-        // 两种状态意外并存时 Fire 优先
         if (status.HasFireStatus)
         {
             return ElementType.Fire;
@@ -506,11 +589,20 @@ public class WindFieldController : MonoBehaviour
 
         if (absorbedElement == ElementType.Fire)
         {
+            int resolvedSpreadTickDamage =
+                Mathf.Max(
+                    0,
+                    Mathf.RoundToInt(
+                        config.windSpreadFireTickDamage *
+                        infusionDamageMultiplier
+                    )
+                );
+
             status.ApplyBurning(
                 owner,
                 config.windSpreadFireDuration,
                 config.windSpreadFireTickInterval,
-                config.windSpreadFireTickDamage
+                resolvedSpreadTickDamage
             );
 
             return;
@@ -701,6 +793,10 @@ public class WindFieldController : MonoBehaviour
 
         absorbedElement =
             ElementType.None;
+
+        pullRadiusMultiplier = 1f;
+        pullForceMultiplier = 1f;
+        infusionDamageMultiplier = 1f;
 
         isRecycling = false;
     }

@@ -51,4 +51,8 @@ public class PlayerSaveData
     public bool hasCurrencyData;
 
     public int currentCoins;
+
+    [Header("Skill Tree")]
+    public PlayerSkillTreeSaveData skillTreeData =
+    new PlayerSkillTreeSaveData();
 }
