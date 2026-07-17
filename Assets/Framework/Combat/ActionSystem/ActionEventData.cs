@@ -21,6 +21,7 @@ public class ActionEventData
     public HitStopEventData hitStop = new HitStopEventData();
     public SpeedEventData speed = new SpeedEventData();
     public MovementEventData movement = new MovementEventData();
+    public AudioEventData audio = new AudioEventData();
 
     public float EndTime
     {

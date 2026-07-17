@@ -11,10 +11,8 @@ public abstract class BrushSkillBase : MonoBehaviour
     [Header("Caster")]
     public GameObject caster;
 
-    [Header("技能获得限制")]
     public bool requireUnlockedSkill = true;
 
-    [Header("墨囊消耗限制")]
     public bool requireInkCost = true;
 
     [Header("Debug")]
@@ -22,6 +20,7 @@ public abstract class BrushSkillBase : MonoBehaviour
 
     private IBrushSkillCostReceiver skillCostReceiver;
     private IBrushSkillUnlockReceiver skillUnlockReceiver;
+    private PlayerSkillTreeController skillTreeController;
 
     private float nextUseAllowedTime;
 
@@ -62,6 +61,7 @@ public abstract class BrushSkillBase : MonoBehaviour
 
         ResolveSkillUnlockReceiver();
         ResolveSkillCostReceiver();
+        ResolveSkillTreeController();
     }
 
     protected virtual void OnEnable()
@@ -94,7 +94,6 @@ public abstract class BrushSkillBase : MonoBehaviour
         if (!CanUseUnlockedSkill())
             return;
 
-        // 重点：先检查 CD，再扣墨囊
         if (!CanUseCooldown())
             return;
 
@@ -115,7 +114,7 @@ public abstract class BrushSkillBase : MonoBehaviour
 
     private bool CanUseCooldown()
     {
-        float cooldown = Mathf.Max(0f, GetCooldown());
+        float cooldown = GetResolvedCooldown();
 
         if (cooldown <= 0f)
             return true;
@@ -136,7 +135,7 @@ public abstract class BrushSkillBase : MonoBehaviour
 
     private void StartCooldown()
     {
-        float cooldown = Mathf.Max(0f, GetCooldown());
+        float cooldown = GetResolvedCooldown();
 
         if (cooldown <= 0f)
             return;
@@ -155,6 +154,97 @@ public abstract class BrushSkillBase : MonoBehaviour
     protected virtual float GetCooldown()
     {
         return 0f;
+    }
+
+    private float GetResolvedCooldown()
+    {
+        float baseCooldown =
+            Mathf.Max(
+                0f,
+                GetCooldown()
+            );
+
+        if (baseCooldown <= 0f)
+            return 0f;
+
+        float cooldownMultiplier =
+            Mathf.Max(
+                0f,
+                GetSkillTreeStatValue(
+                    SkillTreeStatType
+                        .CooldownMultiplier,
+                    1f
+                )
+            );
+
+        return baseCooldown *
+               cooldownMultiplier;
+    }
+
+    protected float GetSkillTreeStatValue(
+        SkillTreeStatType statType,
+        float fallbackValue
+    )
+    {
+        if (skillTreeController == null)
+        {
+            ResolveSkillTreeController();
+        }
+
+        if (skillTreeController == null)
+            return fallbackValue;
+
+        return skillTreeController.GetStatValue(
+            SkillType,
+            statType,
+            fallbackValue
+        );
+    }
+
+    protected int GetSkillTreeLevel()
+    {
+        if (skillTreeController == null)
+        {
+            ResolveSkillTreeController();
+        }
+
+        if (skillTreeController == null)
+            return 0;
+
+        return skillTreeController.GetSkillLevel(
+            SkillType
+        );
+    }
+
+    private void ResolveSkillTreeController()
+    {
+        skillTreeController = null;
+
+        GameObject searchObject =
+            caster != null
+                ? caster
+                : gameObject;
+
+        if (searchObject == null)
+            return;
+
+        skillTreeController =
+            searchObject.GetComponent<
+                PlayerSkillTreeController>();
+
+        if (skillTreeController == null)
+        {
+            skillTreeController =
+                searchObject.GetComponentInParent<
+                    PlayerSkillTreeController>();
+        }
+
+        if (skillTreeController == null)
+        {
+            skillTreeController =
+                searchObject.GetComponentInChildren<
+                    PlayerSkillTreeController>(true);
+        }
     }
 
     private void ResolveSkillUnlockReceiver()

@@ -4,5 +4,6 @@ public enum ActionEventType
     HitBox,
     HitStop,
     Speed,
-    Movement
+    Movement,
+    Audio
 }

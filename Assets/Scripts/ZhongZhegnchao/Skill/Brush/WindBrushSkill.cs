@@ -176,9 +176,42 @@ public class WindBrushSkill : BrushSkillBase
             return;
         }
 
+        float pullRadiusMultiplier =
+            Mathf.Max(
+                0.01f,
+                GetSkillTreeStatValue(
+                    SkillTreeStatType
+                        .PullRadiusMultiplier,
+                    1f
+                )
+            );
+
+        float pullForceMultiplier =
+            Mathf.Max(
+                0.01f,
+                GetSkillTreeStatValue(
+                    SkillTreeStatType
+                        .PullForceMultiplier,
+                    1f
+                )
+            );
+
+        float infusionDamageMultiplier =
+            Mathf.Max(
+                0f,
+                GetSkillTreeStatValue(
+                    SkillTreeStatType
+                        .InfusionDamageMultiplier,
+                    1f
+                )
+            );
+
         controller.Initialize(
             config,
-            casterObject
+            casterObject,
+            pullRadiusMultiplier,
+            pullForceMultiplier,
+            infusionDamageMultiplier
         );
 
         Debug.Log(

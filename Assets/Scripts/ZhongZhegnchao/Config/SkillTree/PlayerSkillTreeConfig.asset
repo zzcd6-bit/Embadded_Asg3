@@ -1,0 +1,220 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b3f4366eb08d824d94eaa77d5ff3a8b, type: 3}
+  m_Name: PlayerSkillTreeConfig
+  m_EditorClassIdentifier: Assembly-CSharp::SkillTreeConfig
+  skills:
+  - skillType: 1
+    displayName: Slash
+    introduction: A reliable brush slash that deals direct damage.
+    icon: {fileID: 1601250004, guid: a3c7ebec865ddd740ac9f262134c5c48, type: 3}
+    stats:
+    - statType: 0
+      displayName: Damage
+      icon: {fileID: -1815075859, guid: a39ddb0b0238be74a80ab1a79c5f4aee, type: 3}
+      unlockLevel: 1
+      growthMode: 0
+      baseValue: 1
+      valuePerLevel: 0.1
+      maximumBonus: 0
+      softCapCurve: 1
+      valueFormat: 2
+      decimalPlaces: 1
+      showInUI: 1
+    - statType: 1
+      displayName: Range
+      icon: {fileID: -694629365, guid: a39ddb0b0238be74a80ab1a79c5f4aee, type: 3}
+      unlockLevel: 1
+      growthMode: 1
+      baseValue: 1
+      valuePerLevel: 0
+      maximumBonus: 0.35
+      softCapCurve: 6
+      valueFormat: 2
+      decimalPlaces: 1
+      showInUI: 1
+    - statType: 2
+      displayName: Cooldown
+      icon: {fileID: -602136265, guid: a39ddb0b0238be74a80ab1a79c5f4aee, type: 3}
+      unlockLevel: 1
+      growthMode: 1
+      baseValue: 1
+      valuePerLevel: 0
+      maximumBonus: -0.35
+      softCapCurve: 8
+      valueFormat: 2
+      decimalPlaces: 1
+      showInUI: 1
+  - skillType: 2
+    displayName: Fire
+    introduction: Burn enemies and strengthen the alternate fire form.
+    icon: {fileID: 938613535, guid: a3c7ebec865ddd740ac9f262134c5c48, type: 3}
+    stats:
+    - statType: 3
+      displayName: Burn Damage
+      icon: {fileID: 938613535, guid: a3c7ebec865ddd740ac9f262134c5c48, type: 3}
+      unlockLevel: 1
+      growthMode: 0
+      baseValue: 1
+      valuePerLevel: 0.08
+      maximumBonus: 0
+      softCapCurve: 1
+      valueFormat: 2
+      decimalPlaces: 1
+      showInUI: 1
+    - statType: 4
+      displayName: Form Damage
+      icon: {fileID: -1815075859, guid: a39ddb0b0238be74a80ab1a79c5f4aee, type: 3}
+      unlockLevel: 1
+      growthMode: 0
+      baseValue: 1
+      valuePerLevel: 0.06
+      maximumBonus: 0
+      softCapCurve: 1
+      valueFormat: 2
+      decimalPlaces: 1
+      showInUI: 1
+    - statType: 2
+      displayName: Cooldown
+      icon: {fileID: -602136265, guid: a39ddb0b0238be74a80ab1a79c5f4aee, type: 3}
+      unlockLevel: 1
+      growthMode: 1
+      baseValue: 1
+      valuePerLevel: 0
+      maximumBonus: -0.4
+      softCapCurve: 8
+      valueFormat: 2
+      decimalPlaces: 1
+      showInUI: 1
+  - skillType: 6
+    displayName: Wind
+    introduction: Pull enemies together and absorb another element.
+    icon: {fileID: 1465166977, guid: a3c7ebec865ddd740ac9f262134c5c48, type: 3}
+    stats:
+    - statType: 5
+      displayName: Pull Radius
+      icon: {fileID: 362814061, guid: a39ddb0b0238be74a80ab1a79c5f4aee, type: 3}
+      unlockLevel: 1
+      growthMode: 1
+      baseValue: 1
+      valuePerLevel: 0
+      maximumBonus: 0.5
+      softCapCurve: 7
+      valueFormat: 2
+      decimalPlaces: 1
+      showInUI: 1
+    - statType: 6
+      displayName: Pull Force
+      icon: {fileID: -694629365, guid: a39ddb0b0238be74a80ab1a79c5f4aee, type: 3}
+      unlockLevel: 1
+      growthMode: 1
+      baseValue: 1
+      valuePerLevel: 0
+      maximumBonus: 1
+      softCapCurve: 8
+      valueFormat: 2
+      decimalPlaces: 1
+      showInUI: 1
+    - statType: 7
+      displayName: Infusion Damage
+      icon: {fileID: -1815075859, guid: a39ddb0b0238be74a80ab1a79c5f4aee, type: 3}
+      unlockLevel: 1
+      growthMode: 0
+      baseValue: 1
+      valuePerLevel: 0.08
+      maximumBonus: 0
+      softCapCurve: 1
+      valueFormat: 2
+      decimalPlaces: 1
+      showInUI: 1
+  - skillType: 3
+    displayName: Water
+    introduction: Launch a water projectile for safe ranged damage.
+    icon: {fileID: -1784418906, guid: a3c7ebec865ddd740ac9f262134c5c48, type: 3}
+    stats:
+    - statType: 0
+      displayName: Damage
+      icon: {fileID: -1815075859, guid: a39ddb0b0238be74a80ab1a79c5f4aee, type: 3}
+      unlockLevel: 1
+      growthMode: 0
+      baseValue: 1
+      valuePerLevel: 0.1
+      maximumBonus: 0
+      softCapCurve: 1
+      valueFormat: 2
+      decimalPlaces: 1
+      showInUI: 1
+    - statType: 8
+      displayName: Projectile Speed
+      icon: {fileID: 712517786, guid: a39ddb0b0238be74a80ab1a79c5f4aee, type: 3}
+      unlockLevel: 1
+      growthMode: 1
+      baseValue: 1
+      valuePerLevel: 0
+      maximumBonus: 0.6
+      softCapCurve: 7
+      valueFormat: 2
+      decimalPlaces: 1
+      showInUI: 1
+    - statType: 2
+      displayName: Cooldown
+      icon: {fileID: -602136265, guid: a39ddb0b0238be74a80ab1a79c5f4aee, type: 3}
+      unlockLevel: 1
+      growthMode: 1
+      baseValue: 1
+      valuePerLevel: 0
+      maximumBonus: -0.4
+      softCapCurve: 8
+      valueFormat: 2
+      decimalPlaces: 1
+      showInUI: 1
+  - skillType: 4
+    displayName: Wood
+    introduction: Restore health. A protective shield is unlocked at level 5.
+    icon: {fileID: -998501635, guid: a3c7ebec865ddd740ac9f262134c5c48, type: 3}
+    stats:
+    - statType: 9
+      displayName: Heal
+      icon: {fileID: 1512168202, guid: a39ddb0b0238be74a80ab1a79c5f4aee, type: 3}
+      unlockLevel: 1
+      growthMode: 1
+      baseValue: 0.2
+      valuePerLevel: 0
+      maximumBonus: 0.55
+      softCapCurve: 12
+      valueFormat: 2
+      decimalPlaces: 1
+      showInUI: 1
+    - statType: 10
+      displayName: Shield
+      icon: {fileID: 1512764449, guid: a39ddb0b0238be74a80ab1a79c5f4aee, type: 3}
+      unlockLevel: 5
+      growthMode: 1
+      baseValue: 0.15
+      valuePerLevel: 0
+      maximumBonus: 0.45
+      softCapCurve: 10
+      valueFormat: 2
+      decimalPlaces: 1
+      showInUI: 1
+    - statType: 2
+      displayName: Cooldown
+      icon: {fileID: -602136265, guid: a39ddb0b0238be74a80ab1a79c5f4aee, type: 3}
+      unlockLevel: 1
+      growthMode: 1
+      baseValue: 1
+      valuePerLevel: 0
+      maximumBonus: -0.35
+      softCapCurve: 8
+      valueFormat: 2
+      decimalPlaces: 1
+      showInUI: 1

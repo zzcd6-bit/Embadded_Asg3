@@ -22,14 +22,25 @@ public class PlayerSaveController :
 
     public Rigidbody playerRigidbody;
 
-    [Header("Debug")]
-    public bool debugLog = true;
-
+    [Header("背包与装备")]
     public PlayerInventoryController
-    inventoryController;
+        inventoryController;
 
     public PlayerEquipmentController
         equipmentController;
+
+    [Header("金币")]
+    [SerializeField]
+    private PlayerCurrencyController
+        currencyController;
+
+    [Header("技能树")]
+    [SerializeField]
+    private PlayerSkillTreeController
+        skillTreeController;
+
+    [Header("Debug")]
+    public bool debugLog = true;
 
     private void Awake()
     {
@@ -43,10 +54,24 @@ public class PlayerSaveController :
             playerRoot = transform;
         }
 
+        ResolveDamageReceiver();
+        ResolveSkillInventory();
+        ResolveInkPouchController();
+        ResolveCharacterStatsController();
+        ResolveMovementComponents();
+        ResolveInventoryController();
+        ResolveEquipmentController();
+        ResolveCurrencyController();
+        ResolveSkillTreeController();
+    }
+
+    private void ResolveDamageReceiver()
+    {
         if (damageReceiver == null)
         {
             damageReceiver =
-                GetComponent<PlayerDamageReceiver>();
+                GetComponent<
+                    PlayerDamageReceiver>();
         }
 
         if (damageReceiver == null)
@@ -55,7 +80,10 @@ public class PlayerSaveController :
                 GetComponentInChildren<
                     PlayerDamageReceiver>(true);
         }
+    }
 
+    private void ResolveSkillInventory()
+    {
         if (skillInventory == null)
         {
             skillInventory =
@@ -69,7 +97,10 @@ public class PlayerSaveController :
                 GetComponentInChildren<
                     PlayerBrushSkillInventory>(true);
         }
+    }
 
+    private void ResolveInkPouchController()
+    {
         if (inkPouchController == null)
         {
             inkPouchController =
@@ -83,7 +114,10 @@ public class PlayerSaveController :
                 GetComponentInChildren<
                     PlayerInkPouchController>(true);
         }
+    }
 
+    private void ResolveCharacterStatsController()
+    {
         if (characterStatsController == null)
         {
             characterStatsController =
@@ -97,7 +131,10 @@ public class PlayerSaveController :
                 GetComponentInChildren<
                     PlayerCharacterStatsController>(true);
         }
+    }
 
+    private void ResolveMovementComponents()
+    {
         if (characterController == null &&
             playerRoot != null)
         {
@@ -118,7 +155,8 @@ public class PlayerSaveController :
             playerRoot != null)
         {
             playerRigidbody =
-                playerRoot.GetComponent<Rigidbody>();
+                playerRoot.GetComponent<
+                    Rigidbody>();
         }
 
         if (playerRigidbody == null &&
@@ -128,7 +166,10 @@ public class PlayerSaveController :
                 playerRoot.GetComponentInChildren<
                     Rigidbody>(true);
         }
+    }
 
+    private void ResolveInventoryController()
+    {
         if (inventoryController == null)
         {
             inventoryController =
@@ -142,7 +183,10 @@ public class PlayerSaveController :
                 GetComponentInChildren<
                     PlayerInventoryController>(true);
         }
+    }
 
+    private void ResolveEquipmentController()
+    {
         if (equipmentController == null)
         {
             equipmentController =
@@ -155,6 +199,40 @@ public class PlayerSaveController :
             equipmentController =
                 GetComponentInChildren<
                     PlayerEquipmentController>(true);
+        }
+    }
+
+    private void ResolveCurrencyController()
+    {
+        if (currencyController == null)
+        {
+            currencyController =
+                GetComponent<
+                    PlayerCurrencyController>();
+        }
+
+        if (currencyController == null)
+        {
+            currencyController =
+                GetComponentInChildren<
+                    PlayerCurrencyController>(true);
+        }
+    }
+
+    private void ResolveSkillTreeController()
+    {
+        if (skillTreeController == null)
+        {
+            skillTreeController =
+                GetComponent<
+                    PlayerSkillTreeController>();
+        }
+
+        if (skillTreeController == null)
+        {
+            skillTreeController =
+                GetComponentInChildren<
+                    PlayerSkillTreeController>(true);
         }
     }
 
@@ -178,107 +256,86 @@ public class PlayerSaveController :
 
         CaptureCharacterStats(saveData);
         CaptureHealth(saveData);
+
+        /*
+         * 先保存技能是否解锁，
+         * 再保存技能树等级。
+         */
         CaptureSkills(saveData);
+        CaptureSkillTree(saveData);
+
         CaptureInk(saveData);
+        CaptureInventory(saveData);
+        CaptureEquipment(saveData);
+        CaptureCurrency(saveData);
+        CaptureCollectedPickups(saveData);
 
         if (debugLog)
         {
+            int availableSkillPoints =
+                skillTreeController != null
+                    ? skillTreeController
+                        .AvailableSkillPoints
+                    : 0;
+
+            int usedSkillPoints =
+                skillTreeController != null
+                    ? skillTreeController
+                        .UsedSkillPoints
+                    : 0;
+
             Debug.Log(
-                $"[PlayerSaveController] " +
-                $"Player data captured. " +
+                "[PlayerSaveController] " +
+                "Player data captured. " +
                 $"Level={saveData.characterLevel}, " +
                 $"EXP={saveData.currentExperience}, " +
-                $"HP={saveData.currentHp}/{saveData.maxHp}, " +
-                $"Ink={saveData.currentInk}/{saveData.maxInk}, " +
+                $"HP={saveData.currentHp}/" +
+                $"{saveData.maxHp}, " +
+                $"Ink={saveData.currentInk}/" +
+                $"{saveData.maxInk}, " +
+                $"Coins={saveData.currentCoins}, " +
+                $"AvailableSP={availableSkillPoints}, " +
+                $"UsedSP={usedSkillPoints}, " +
+                $"ItemCount=" +
+                $"{saveData.inventoryItems.Count}, " +
                 $"SkillCount=" +
-                $"{saveData.unlockedBrushSkills.Count}",
+                $"{saveData.unlockedBrushSkills.Count}, " +
+                $"CollectedPickups=" +
+                $"{saveData.collectedPickupIds.Count}",
                 this
             );
         }
 
-        if (inventoryController != null)
-        {
-            saveData.hasInventoryData = true;
-
-            inventoryController.CaptureSaveData(
-                saveData.inventoryItems
-            );
-        }
-        else
-        {
-            saveData.hasInventoryData = false;
-        }
-
-        if (equipmentController != null)
-        {
-            equipmentController.CaptureSaveData(
-                saveData
-            );
-        }
-
-        saveData.collectedPickupIds.Clear();
-
-        saveData.collectedPickupIds.AddRange(
-            InventoryPickupPersistence
-                .CaptureCollectedIds()
-        );
-
         return saveData;
-    }
-
-    private void RestoreInventoryAndEquipment(
-    PlayerSaveData saveData
-)
-    {
-        if (saveData == null)
-            return;
-
-        // 旧存档没有背包字段时，
-        // 保留 PlayerInventoryController 的 Starting Items。
-        if (!saveData.hasInventoryData)
-            return;
-
-        if (inventoryController != null)
-        {
-            inventoryController.RestoreFromSaveData(
-                saveData.inventoryItems
-            );
-        }
-
-        if (equipmentController != null)
-        {
-            equipmentController.RestoreFromSaveData(
-                saveData
-            );
-        }
     }
 
     private void CaptureCharacterStats(
         PlayerSaveData saveData
     )
     {
-        if (saveData == null)
+        if (saveData == null ||
+            characterStatsController == null)
+        {
             return;
-
-        if (characterStatsController == null)
-            return;
+        }
 
         saveData.characterLevel =
             characterStatsController.CurrentLevel;
 
         saveData.currentExperience =
-            characterStatsController.CurrentExperience;
+            characterStatsController
+                .CurrentExperience;
     }
 
     private void CaptureHealth(
         PlayerSaveData saveData
     )
     {
-        if (saveData == null)
+        if (saveData == null ||
+            damageReceiver == null)
+        {
             return;
-
-        if (damageReceiver == null)
-            return;
+        }
 
         saveData.currentHp =
             damageReceiver.CurrentHp;
@@ -291,16 +348,25 @@ public class PlayerSaveController :
         PlayerSaveData saveData
     )
     {
-        if (saveData == null)
+        if (saveData == null ||
+            skillInventory == null)
+        {
             return;
-
-        if (skillInventory == null)
-            return;
+        }
 
         List<BrushSkillType> unlockedSkills =
             skillInventory.GetUnlockedSkills();
 
+        if (saveData.unlockedBrushSkills == null)
+        {
+            saveData.unlockedBrushSkills =
+                new List<string>();
+        }
+
         saveData.unlockedBrushSkills.Clear();
+
+        if (unlockedSkills == null)
+            return;
 
         for (int i = 0;
              i < unlockedSkills.Count;
@@ -321,21 +387,129 @@ public class PlayerSaveController :
         }
     }
 
+    private void CaptureSkillTree(
+        PlayerSaveData saveData
+    )
+    {
+        if (saveData == null ||
+            skillTreeController == null)
+        {
+            return;
+        }
+
+        /*
+         * 保存内容包括：
+         *
+         * 1. 五个技能当前等级
+         * 2. 是否拥有重新分配资格
+         *
+         * 总技能点与剩余技能点不直接保存，
+         * 会根据人物等级和技能等级重新计算。
+         */
+
+        saveData.skillTreeData =
+            skillTreeController
+                .CaptureSaveData();
+    }
+
     private void CaptureInk(
         PlayerSaveData saveData
     )
     {
-        if (saveData == null)
+        if (saveData == null ||
+            inkPouchController == null)
+        {
             return;
-
-        if (inkPouchController == null)
-            return;
+        }
 
         saveData.currentInk =
             inkPouchController.CurrentInk;
 
         saveData.maxInk =
             inkPouchController.MaxInk;
+    }
+
+    private void CaptureInventory(
+        PlayerSaveData saveData
+    )
+    {
+        if (saveData == null)
+            return;
+
+        if (inventoryController == null)
+        {
+            saveData.hasInventoryData =
+                false;
+
+            return;
+        }
+
+        saveData.hasInventoryData =
+            true;
+
+        inventoryController.CaptureSaveData(
+            saveData.inventoryItems
+        );
+    }
+
+    private void CaptureEquipment(
+        PlayerSaveData saveData
+    )
+    {
+        if (saveData == null ||
+            equipmentController == null)
+        {
+            return;
+        }
+
+        equipmentController.CaptureSaveData(
+            saveData
+        );
+    }
+
+    private void CaptureCurrency(
+        PlayerSaveData saveData
+    )
+    {
+        if (saveData == null)
+            return;
+
+        if (currencyController == null)
+        {
+            saveData.hasCurrencyData =
+                false;
+
+            saveData.currentCoins = 0;
+
+            return;
+        }
+
+        saveData.hasCurrencyData =
+            true;
+
+        saveData.currentCoins =
+            currencyController.CurrentCoins;
+    }
+
+    private void CaptureCollectedPickups(
+        PlayerSaveData saveData
+    )
+    {
+        if (saveData == null)
+            return;
+
+        if (saveData.collectedPickupIds == null)
+        {
+            saveData.collectedPickupIds =
+                new List<string>();
+        }
+
+        saveData.collectedPickupIds.Clear();
+
+        saveData.collectedPickupIds.AddRange(
+            InventoryPickupPersistence
+                .CaptureCollectedIds()
+        );
     }
 
     public void RestorePlayerSaveData(
@@ -353,37 +527,87 @@ public class PlayerSaveController :
             return;
         }
 
-        TeleportPlayer(
-    saveData.position,
-    saveData.eulerAngles
-);
+        ResolveReferences();
 
+        TeleportPlayer(
+            saveData.position,
+            saveData.eulerAngles
+        );
+
+        /*
+         * 先恢复人物等级。
+         * 技能树的总技能点依赖人物等级。
+         */
         RestoreCharacterStats(saveData);
 
-        // 必须先恢复背包和装备。
-        // 因为头盔可能增加 Max HP。
-        RestoreInventoryAndEquipment(saveData);
+        /*
+         * 必须先恢复背包和装备。
+         * 因为头盔等装备可能增加 Max HP。
+         */
+        RestoreInventoryAndEquipment(
+            saveData
+        );
 
-        // 装备属性计算完成后再恢复当前生命值。
+        /*
+         * 装备属性计算完成以后，
+         * 再恢复存档中的准确当前生命值。
+         */
         RestoreHealth(saveData);
 
+        /*
+         * 必须先恢复技能解锁状态，
+         * 再恢复技能树等级。
+         *
+         * 否则技能树不知道哪些技能
+         * 应该至少保持 Lv.1。
+         */
         RestoreSkills(saveData);
-        RestoreInk(saveData);
+        RestoreSkillTree(saveData);
 
-        InventoryPickupPersistence.LoadCollectedIds(
-            saveData.collectedPickupIds
-        );
+        RestoreInk(saveData);
+        RestoreCurrency(saveData);
+        RestoreCollectedPickups(saveData);
+
+        if (debugLog)
+        {
+            int availableSkillPoints =
+                skillTreeController != null
+                    ? skillTreeController
+                        .AvailableSkillPoints
+                    : 0;
+
+            int usedSkillPoints =
+                skillTreeController != null
+                    ? skillTreeController
+                        .UsedSkillPoints
+                    : 0;
+
+            Debug.Log(
+                "[PlayerSaveController] " +
+                "Player data restored. " +
+                $"Level=" +
+                $"{characterStatsController?.CurrentLevel ?? 0}, " +
+                $"HP=" +
+                $"{damageReceiver?.CurrentHp ?? 0}/" +
+                $"{damageReceiver?.MaxHp ?? 0}, " +
+                $"Coins=" +
+                $"{currencyController?.CurrentCoins ?? 0}, " +
+                $"AvailableSP={availableSkillPoints}, " +
+                $"UsedSP={usedSkillPoints}",
+                this
+            );
+        }
     }
 
     private void RestoreCharacterStats(
         PlayerSaveData saveData
     )
     {
-        if (saveData == null)
+        if (saveData == null ||
+            characterStatsController == null)
+        {
             return;
-
-        if (characterStatsController == null)
-            return;
+        }
 
         characterStatsController.SetLevel(
             Mathf.Max(
@@ -401,21 +625,61 @@ public class PlayerSaveController :
         );
     }
 
-    private void RestoreHealth(
+    private void RestoreInventoryAndEquipment(
         PlayerSaveData saveData
     )
     {
         if (saveData == null)
             return;
 
-        if (damageReceiver == null)
+        /*
+         * 旧存档没有背包字段时，
+         * 保留 PlayerInventoryController
+         * 当前配置的 Starting Items。
+         */
+        if (!saveData.hasInventoryData)
             return;
+
+        if (inventoryController != null)
+        {
+            inventoryController.RestoreFromSaveData(
+                saveData.inventoryItems
+            );
+        }
+
+        /*
+         * 必须在背包恢复后再恢复装备。
+         * 装备通过 Instance ID
+         * 查找背包中的装备实例。
+         */
+        if (equipmentController != null)
+        {
+            equipmentController.RestoreFromSaveData(
+                saveData
+            );
+        }
+    }
+
+    private void RestoreHealth(
+        PlayerSaveData saveData
+    )
+    {
+        if (saveData == null ||
+            damageReceiver == null)
+        {
+            return;
+        }
 
         int resolvedMaxHp =
             saveData.maxHp;
 
+        /*
+         * 优先使用人物基础属性与装备属性
+         * 重新计算出来的最终最大生命值。
+         */
         if (characterStatsController != null &&
-            characterStatsController.CombatStats != null)
+            characterStatsController.CombatStats !=
+            null)
         {
             resolvedMaxHp =
                 characterStatsController
@@ -423,8 +687,21 @@ public class PlayerSaveController :
                     .MaxHp;
         }
 
+        resolvedMaxHp =
+            Mathf.Max(
+                1,
+                resolvedMaxHp
+            );
+
+        int resolvedCurrentHp =
+            Mathf.Clamp(
+                saveData.currentHp,
+                0,
+                resolvedMaxHp
+            );
+
         damageReceiver.SetHp(
-            saveData.currentHp,
+            resolvedCurrentHp,
             resolvedMaxHp
         );
     }
@@ -433,11 +710,11 @@ public class PlayerSaveController :
         PlayerSaveData saveData
     )
     {
-        if (saveData == null)
+        if (saveData == null ||
+            skillInventory == null)
+        {
             return;
-
-        if (skillInventory == null)
-            return;
+        }
 
         List<BrushSkillType> loadedSkills =
             new List<BrushSkillType>();
@@ -445,7 +722,8 @@ public class PlayerSaveController :
         if (saveData.unlockedBrushSkills != null)
         {
             for (int i = 0;
-                 i < saveData.unlockedBrushSkills.Count;
+                 i <
+                 saveData.unlockedBrushSkills.Count;
                  i++)
             {
                 string skillName =
@@ -454,6 +732,7 @@ public class PlayerSaveController :
                 bool parsed =
                     System.Enum.TryParse(
                         skillName,
+                        true,
                         out BrushSkillType skillType
                     );
 
@@ -466,10 +745,15 @@ public class PlayerSaveController :
                     continue;
                 }
 
-                if (loadedSkills.Contains(skillType))
+                if (loadedSkills.Contains(
+                        skillType))
+                {
                     continue;
+                }
 
-                loadedSkills.Add(skillType);
+                loadedSkills.Add(
+                    skillType
+                );
             }
         }
 
@@ -478,19 +762,93 @@ public class PlayerSaveController :
         );
     }
 
+    private void RestoreSkillTree(
+        PlayerSaveData saveData
+    )
+    {
+        if (saveData == null ||
+            skillTreeController == null)
+        {
+            return;
+        }
+
+        /*
+         * PlayerSkillTreeController 内部会校正：
+         *
+         * 未解锁技能
+         * → Lv.0
+         *
+         * 已解锁但存档等级小于 1
+         * → Lv.1
+         *
+         * 技能投入点数超过人物等级允许值
+         * → 自动回退多余等级
+         */
+
+        skillTreeController.RestoreFromSaveData(
+            saveData.skillTreeData
+        );
+    }
+
     private void RestoreInk(
+        PlayerSaveData saveData
+    )
+    {
+        if (saveData == null ||
+            inkPouchController == null)
+        {
+            return;
+        }
+
+        inkPouchController.SetInk(
+            saveData.currentInk,
+            saveData.maxInk
+        );
+    }
+
+    private void RestoreCurrency(
+        PlayerSaveData saveData
+    )
+    {
+        if (saveData == null ||
+            currencyController == null)
+        {
+            return;
+        }
+
+        if (saveData.hasCurrencyData)
+        {
+            /*
+             * RestoreCoins 不会触发
+             * CoinsGained 提示，
+             * 避免加载存档时弹出获得金币。
+             */
+            currencyController.RestoreCoins(
+                Mathf.Max(
+                    0,
+                    saveData.currentCoins
+                )
+            );
+        }
+        else
+        {
+            /*
+             * 兼容旧存档。
+             */
+            currencyController
+                .ResetToStartingCoins();
+        }
+    }
+
+    private void RestoreCollectedPickups(
         PlayerSaveData saveData
     )
     {
         if (saveData == null)
             return;
 
-        if (inkPouchController == null)
-            return;
-
-        inkPouchController.SetInk(
-            saveData.currentInk,
-            saveData.maxInk
+        InventoryPickupPersistence.LoadCollectedIds(
+            saveData.collectedPickupIds
         );
     }
 
@@ -536,12 +894,16 @@ public class PlayerSaveController :
                 position;
 
             playerRigidbody.rotation =
-                Quaternion.Euler(eulerAngles);
+                Quaternion.Euler(
+                    eulerAngles
+                );
         }
 
         targetTransform.SetPositionAndRotation(
             position,
-            Quaternion.Euler(eulerAngles)
+            Quaternion.Euler(
+                eulerAngles
+            )
         );
 
         Physics.SyncTransforms();
@@ -555,7 +917,7 @@ public class PlayerSaveController :
         if (debugLog)
         {
             Debug.Log(
-                $"[PlayerSaveController] " +
+                "[PlayerSaveController] " +
                 $"Teleported player to {position}, " +
                 $"rotation {eulerAngles}",
                 this

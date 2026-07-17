@@ -88,6 +88,10 @@ public class BrushSkillConfig : ScriptableObject
     public float waterReachDistance = 0.45f;
     public Vector3 waterTargetOffset = new Vector3(0f, 1f, 0f);
 
+    [Header("Water Explosion Audio - Resources/Audio")]
+    public string waterExplosionSoundName = "Skills/WaterExplosion";
+    public bool waterExplosionSoundSync = true;
+
     [Header("Water Ë®µ¯Åö×²")]
     public LayerMask waterProjectileHitLayer = ~0;
     public bool waterIgnoreAttackerCollision = true;
@@ -161,6 +165,10 @@ public class BrushSkillConfig : ScriptableObject
     public float windSpawnDistance = 8f;
     public float windSpawnYOffset = 0f;
     public float windFieldDuration = 6f;
+
+    [Header("Wind Loop Audio - Resources/Audio")]
+    public string windLoopSoundName = "Skills/WindLoop";
+    public bool windLoopSoundSync = true;
 
     [Header("Wind À­×§")]
     public float windPullRadius = 8f;

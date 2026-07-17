@@ -35,8 +35,10 @@ public class ActionPlayer : MonoBehaviour, IHitStopReceiver
 
     private readonly HashSet<int> triggeredEventIndexes = new HashSet<int>();
     private readonly Dictionary<int, HashSet<Collider>> hitTargets = new Dictionary<int, HashSet<Collider>>();
+    private readonly List<AudioSource> activeLoopAudioSources = new List<AudioSource>();
 
     private Coroutine hitStopCoroutine;
+    private int actionPlaybackVersion;
 
     public bool IsPlaying
     {
@@ -104,7 +106,7 @@ public class ActionPlayer : MonoBehaviour, IHitStopReceiver
         if (elementInfusion == null)
         {
             elementInfusion = GetComponent<PlayerElementInfusion>();
-        }   
+        }
     }
 
     private void Update()
@@ -296,6 +298,9 @@ public class ActionPlayer : MonoBehaviour, IHitStopReceiver
             StopCurrentActionForInterrupt();
         }
 
+        actionPlaybackVersion++;
+        StopActionLoopAudio();
+
         animationController?.BeginAction();
 
         lockedMovementByAction = config.lockMovement;
@@ -336,6 +341,9 @@ public class ActionPlayer : MonoBehaviour, IHitStopReceiver
 
     private void StopCurrentActionForInterrupt()
     {
+        actionPlaybackVersion++;
+        StopActionLoopAudio();
+
         if (currentState != null)
         {
             currentState.Speed = 1f;
@@ -370,6 +378,9 @@ public class ActionPlayer : MonoBehaviour, IHitStopReceiver
 
     public void StopAction()
     {
+        actionPlaybackVersion++;
+        StopActionLoopAudio();
+
         ActionConfig finishedAction = currentAction;
 
         if (currentState != null)
@@ -462,8 +473,68 @@ public class ActionPlayer : MonoBehaviour, IHitStopReceiver
                     TriggerHitStop(actionEvent.hitStop);
                     triggeredEventIndexes.Add(i);
                     break;
+
+                case ActionEventType.Audio:
+                    TriggerAudio(actionEvent.audio);
+                    triggeredEventIndexes.Add(i);
+                    break;
             }
         }
+    }
+
+    private void TriggerAudio(AudioEventData data)
+    {
+        if (data == null || string.IsNullOrEmpty(data.soundName))
+        {
+            return;
+        }
+
+        int playbackVersion = actionPlaybackVersion;
+
+        MusicMgr.Instance.PlaySound(
+            data.soundName,
+            data.loop,
+            data.isSync,
+            source =>
+            {
+                if (source == null)
+                {
+                    return;
+                }
+
+                bool actionIsStillValid =
+                    isPlaying &&
+                    currentAction != null &&
+                    playbackVersion == actionPlaybackVersion;
+
+                if (!actionIsStillValid)
+                {
+                    MusicMgr.Instance.StopSound(source);
+                    return;
+                }
+
+                if (data.loop && data.stopWhenActionEnds &&
+                    !activeLoopAudioSources.Contains(source))
+                {
+                    activeLoopAudioSources.Add(source);
+                }
+            }
+        );
+    }
+
+    private void StopActionLoopAudio()
+    {
+        for (int i = activeLoopAudioSources.Count - 1; i >= 0; i--)
+        {
+            AudioSource source = activeLoopAudioSources[i];
+
+            if (source != null)
+            {
+                MusicMgr.Instance.StopSound(source);
+            }
+        }
+
+        activeLoopAudioSources.Clear();
     }
 
     private void ApplyActiveSpeedEvent(float time)

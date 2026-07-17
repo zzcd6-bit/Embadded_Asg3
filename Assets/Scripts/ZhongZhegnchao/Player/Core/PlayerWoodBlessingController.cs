@@ -71,16 +71,85 @@ public class PlayerWoodBlessingController : MonoBehaviour
         UnbindShieldEvents();
     }
 
-    public void ApplyWoodBlessing(BrushSkillConfig config)
+    public void ApplyWoodBlessing(
+        BrushSkillConfig config
+    )
     {
         if (config == null)
             return;
+
+        float duration =
+            Mathf.Max(
+                0f,
+                config.woodEffectDuration
+            );
+
+        float tickInterval =
+            Mathf.Max(
+                0.05f,
+                config.woodHealTickInterval
+            );
+
+        int tickCount =
+            Mathf.Max(
+                1,
+                Mathf.FloorToInt(
+                    duration /
+                    tickInterval
+                )
+            );
+
+        int totalHealAmount =
+            Mathf.Max(
+                0,
+                config.woodHealAmountPerTick
+            ) * tickCount;
+
+        int shieldAmount =
+            config.woodGrantShield
+                ? Mathf.Max(
+                    0,
+                    config.woodShieldAmount
+                )
+                : 0;
+
+        ApplyWoodBlessing(
+            config,
+            totalHealAmount,
+            shieldAmount
+        );
+    }
+
+    public void ApplyWoodBlessing(
+        BrushSkillConfig config,
+        int totalHealAmount,
+        int shieldAmount
+    )
+    {
+        if (config == null)
+            return;
+
+        totalHealAmount =
+            Mathf.Max(
+                0,
+                totalHealAmount
+            );
+
+        shieldAmount =
+            Mathf.Max(
+                0,
+                shieldAmount
+            );
 
         if (healReceiver == null)
             ResolveHealReceiver();
 
         PlayHealVfxOnce(config);
-        ApplyShield(config);
+
+        ApplyShield(
+            config,
+            shieldAmount
+        );
 
         if (woodRoutine != null)
         {
@@ -88,40 +157,130 @@ public class PlayerWoodBlessingController : MonoBehaviour
             woodRoutine = null;
         }
 
-        woodRoutine = StartCoroutine(WoodHealRoutine(config));
+        woodRoutine =
+            StartCoroutine(
+                WoodHealRoutine(
+                    config,
+                    totalHealAmount
+                )
+            );
 
         if (debugLog)
         {
             Debug.Log(
-                $"[PlayerWoodBlessingController] Wood blessing applied. Duration={config.woodEffectDuration}",
+                "[PlayerWoodBlessingController] " +
+                $"Wood blessing applied. " +
+                $"Duration={config.woodEffectDuration}, " +
+                $"TotalHeal={totalHealAmount}, " +
+                $"Shield={shieldAmount}",
                 this
             );
         }
     }
 
-    private IEnumerator WoodHealRoutine(BrushSkillConfig config)
+    private IEnumerator WoodHealRoutine(
+        BrushSkillConfig config,
+        int totalHealAmount
+    )
     {
+        float duration =
+            Mathf.Max(
+                0f,
+                config.woodEffectDuration
+            );
+
+        float tickInterval =
+            Mathf.Max(
+                0.05f,
+                config.woodHealTickInterval
+            );
+
+        if (totalHealAmount <= 0)
+        {
+            woodRoutine = null;
+            yield break;
+        }
+
+        if (duration <= 0f)
+        {
+            DoHealTick(totalHealAmount);
+
+            woodRoutine = null;
+            yield break;
+        }
+
+        int totalTicks =
+            Mathf.Max(
+                1,
+                Mathf.FloorToInt(
+                    duration /
+                    tickInterval
+                )
+            );
+
+        int baseHealPerTick =
+            totalHealAmount /
+            totalTicks;
+
+        int extraHealTicks =
+            totalHealAmount %
+            totalTicks;
+
         float timer = 0f;
         float tickTimer = 0f;
+        int tickIndex = 0;
 
-        float duration = Mathf.Max(0f, config.woodEffectDuration);
-        float tickInterval = Mathf.Max(0.05f, config.woodHealTickInterval);
-        int healAmount = Mathf.Max(0, config.woodHealAmountPerTick);
-
-        while (timer < duration)
+        while (timer < duration &&
+               tickIndex < totalTicks)
         {
-            float deltaTime = Time.deltaTime;
+            float deltaTime =
+                Time.deltaTime;
 
             timer += deltaTime;
             tickTimer += deltaTime;
 
-            if (tickTimer >= tickInterval)
+            if (tickTimer < tickInterval)
             {
-                tickTimer = 0f;
-                DoHealTick(healAmount);
+                yield return null;
+                continue;
             }
 
+            tickTimer -= tickInterval;
+
+            int healAmount =
+                baseHealPerTick;
+
+            if (tickIndex <
+                extraHealTicks)
+            {
+                healAmount++;
+            }
+
+            DoHealTick(healAmount);
+
+            tickIndex++;
+
             yield return null;
+        }
+
+        /*
+         * Very low frame rate may skip the final ticks.
+         * Apply the remaining planned heal here.
+         */
+        while (tickIndex < totalTicks)
+        {
+            int healAmount =
+                baseHealPerTick;
+
+            if (tickIndex <
+                extraHealTicks)
+            {
+                healAmount++;
+            }
+
+            DoHealTick(healAmount);
+
+            tickIndex++;
         }
 
         woodRoutine = null;
@@ -145,7 +304,6 @@ public class PlayerWoodBlessingController : MonoBehaviour
         activeShieldVfx.transform.position =
             followRoot.position + shieldVfxWorldOffset;
 
-        // 重点：只固定旋转，不跟随 Player 旋转
         activeShieldVfx.transform.rotation = shieldVfxFixedWorldRotation;
     }
 
@@ -180,26 +338,43 @@ public class PlayerWoodBlessingController : MonoBehaviour
         }
     }
 
-    private void ApplyShield(BrushSkillConfig config)
+    private void ApplyShield(
+        BrushSkillConfig config,
+        int shieldAmount
+    )
     {
         if (!config.woodGrantShield)
             return;
 
-        if (shieldController == null)
-            shieldController = GetComponent<PlayerShieldController>();
+        if (shieldAmount <= 0)
+            return;
 
         if (shieldController == null)
-            shieldController = gameObject.AddComponent<PlayerShieldController>();
+        {
+            shieldController =
+                GetComponent<
+                    PlayerShieldController>();
+        }
+
+        if (shieldController == null)
+        {
+            shieldController =
+                gameObject.AddComponent<
+                    PlayerShieldController>();
+        }
 
         BindShieldEvents();
 
         shieldController.ApplyShield(
-            config.woodShieldAmount,
+            shieldAmount,
             config.woodShieldDuration,
             config.woodRefreshShieldWhenReapply
         );
 
-        PlayShieldVfx(config);
+        PlayShieldVfx(
+            config,
+            shieldAmount
+        );
     }
 
     private void PlayHealVfxOnce(BrushSkillConfig config)
@@ -249,9 +424,15 @@ public class PlayerWoodBlessingController : MonoBehaviour
         RecycleHealVfx();
     }
 
-    private void PlayShieldVfx(BrushSkillConfig config)
+    private void PlayShieldVfx(
+        BrushSkillConfig config,
+        int shieldAmount
+    )
     {
         if (!config.woodGrantShield)
+            return;
+
+        if (shieldAmount <= 0)
             return;
 
         RecycleShieldVfx();
@@ -371,8 +552,6 @@ public class PlayerWoodBlessingController : MonoBehaviour
             ? vfxRoot
             : playerRoot;
 
-        // 重点：护盾 VFX 不做 Player 子物体
-        // 否则会继承 Player 旋转
         vfxObject.transform.SetParent(null, true);
 
         shieldVfxFollowPlayerPosition = followPlayerPosition;

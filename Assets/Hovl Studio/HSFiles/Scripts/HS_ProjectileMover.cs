@@ -16,6 +16,7 @@ namespace Hovl
         [SerializeField] protected bool usePool = true;
         [SerializeField] protected string poolName = "";
         public Action<GameObject> OnRecycleRequested;
+        public Action<GameObject, Vector3> OnProjectileHit;
 
         [Header("Arc Homing")]
         [SerializeField] protected bool useArcHoming = true;
@@ -123,6 +124,7 @@ namespace Hovl
         {
             RestoreIgnoredAttackerCollisions();
             StopRunningCoroutines();
+            OnProjectileHit = null;
         }
 
         public virtual void Init(
@@ -489,6 +491,7 @@ namespace Hovl
             collided = true;
             StopRunningCoroutines();
 
+            OnProjectileHit?.Invoke(hitObject, hitPoint);
             ApplyDamageToTarget(hitObject, hitPoint);
 
             if (rb != null)

@@ -15,6 +15,9 @@ public class PlayerWaterAuraShooter : MonoBehaviour
     private Coroutine auraRoutine;
     private BrushSkillConfig activeConfig;
 
+    private float activeDamageMultiplier = 1f;
+    private float activeProjectileSpeedMultiplier = 1f;
+
     private readonly HashSet<GameObject> pooledProjectiles = new HashSet<GameObject>();
 
     private class TargetRecord
@@ -36,15 +39,47 @@ public class PlayerWaterAuraShooter : MonoBehaviour
         }
     }
 
-    public void ActivateWaterAura(BrushSkillConfig config)
+    public void ActivateWaterAura(
+        BrushSkillConfig config
+    )
+    {
+        ActivateWaterAura(
+            config,
+            1f,
+            1f
+        );
+    }
+
+    public void ActivateWaterAura(
+        BrushSkillConfig config,
+        float damageMultiplier,
+        float projectileSpeedMultiplier
+    )
     {
         if (config == null)
         {
-            Debug.LogWarning("[PlayerWaterAuraShooter] Water config is null.", this);
+            Debug.LogWarning(
+                "[PlayerWaterAuraShooter] " +
+                "Water config is null.",
+                this
+            );
+
             return;
         }
 
         activeConfig = config;
+
+        activeDamageMultiplier =
+            Mathf.Max(
+                0f,
+                damageMultiplier
+            );
+
+        activeProjectileSpeedMultiplier =
+            Mathf.Max(
+                0.01f,
+                projectileSpeedMultiplier
+            );
 
         if (auraRoutine != null)
         {
@@ -52,12 +87,23 @@ public class PlayerWaterAuraShooter : MonoBehaviour
             auraRoutine = null;
         }
 
-        auraRoutine = StartCoroutine(WaterAuraRoutine(activeConfig.waterAuraDuration));
+        auraRoutine = StartCoroutine(
+            WaterAuraRoutine(
+                activeConfig.waterAuraDuration
+            )
+        );
 
         if (debugLog)
         {
             Debug.Log(
-                $"[PlayerWaterAuraShooter] Water aura activated. Duration={activeConfig.waterAuraDuration}",
+                "[PlayerWaterAuraShooter] " +
+                $"Water aura activated. " +
+                $"Duration=" +
+                $"{activeConfig.waterAuraDuration}, " +
+                $"DamageMultiplier=" +
+                $"{activeDamageMultiplier:F2}, " +
+                $"SpeedMultiplier=" +
+                $"{activeProjectileSpeedMultiplier:F2}",
                 this
             );
         }
@@ -77,6 +123,8 @@ public class PlayerWaterAuraShooter : MonoBehaviour
         }
 
         activeConfig = null;
+        activeDamageMultiplier = 1f;
+        activeProjectileSpeedMultiplier = 1f;
 
         if (debugLog)
         {
@@ -118,6 +166,8 @@ public class PlayerWaterAuraShooter : MonoBehaviour
 
         auraRoutine = null;
         activeConfig = null;
+        activeDamageMultiplier = 1f;
+        activeProjectileSpeedMultiplier = 1f;
 
         if (debugLog)
         {
@@ -469,19 +519,36 @@ public class PlayerWaterAuraShooter : MonoBehaviour
             mover.OnRecycleRequested =
                 RecycleWaterProjectile;
 
+            string explosionSoundName =
+                activeConfig.waterExplosionSoundName;
+
+            bool explosionSoundSync =
+                activeConfig.waterExplosionSoundSync;
+
+            mover.OnProjectileHit =
+                (hitObject, hitPoint) =>
+                {
+                    PlayWaterExplosionSound(
+                        explosionSoundName,
+                        explosionSoundSync
+                    );
+                };
+
             mover.ApplyWaterConfig(activeConfig);
 
             mover.Init(
                 gameObject,
                 target,
-                activeConfig.waterProjectileDamage,
+                GetResolvedProjectileDamage(),
                 activeConfig.waterProjectileKnockback,
                 activeConfig.wetDuration
             );
 
             float sideOffset = 0f;
             float heightOffset = 0f;
-            float speedOffset = 0f;
+
+            float speedOffset =
+                GetSkillTreeSpeedOffset();
 
             Vector3 extraTargetOffset =
                 isSceneElementTarget
@@ -500,7 +567,7 @@ public class PlayerWaterAuraShooter : MonoBehaviour
                     activeConfig.waterArcHeightRandomMax
                 );
 
-                speedOffset = Random.Range(
+                speedOffset += Random.Range(
                     activeConfig.waterSpeedRandomMin,
                     activeConfig.waterSpeedRandomMax
                 );
@@ -558,6 +625,54 @@ public class PlayerWaterAuraShooter : MonoBehaviour
                 projectileObj
             );
         }
+    }
+
+    private void PlayWaterExplosionSound(
+        string soundName,
+        bool isSync
+    )
+    {
+        if (string.IsNullOrEmpty(soundName))
+            return;
+
+        MusicMgr.Instance.PlaySound(
+            soundName,
+            false,
+            isSync
+        );
+    }
+
+    private int GetResolvedProjectileDamage()
+    {
+        if (activeConfig == null)
+            return 0;
+
+        return Mathf.Max(
+            0,
+            Mathf.RoundToInt(
+                activeConfig.waterProjectileDamage *
+                activeDamageMultiplier
+            )
+        );
+    }
+
+    private float GetSkillTreeSpeedOffset()
+    {
+        if (activeConfig == null)
+            return 0f;
+
+        float baseSpeed =
+            Mathf.Max(
+                0f,
+                activeConfig.waterProjectileSpeed
+            );
+
+        float resolvedSpeed =
+            baseSpeed *
+            activeProjectileSpeedMultiplier;
+
+        return resolvedSpeed -
+               baseSpeed;
     }
 
     private GameObject GetWaterProjectile()

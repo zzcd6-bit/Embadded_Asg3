@@ -32,6 +32,15 @@ public class BrushGestureRecognizer : MonoBehaviour
     [Header("Brush Mode")]
     public bool exitBrushModeOnRecognized = true;
 
+    [Header("Recognition Success Audio - Resources/Audio")]
+    public bool playRecognitionSuccessSound = true;
+    public bool recognitionSoundSync = true;
+    public string slashSuccessSound = "Brush/Recognition/SlashSuccess";
+    public string fireSuccessSound = "Brush/Recognition/FireSuccess";
+    public string waterSuccessSound = "Brush/Recognition/WaterSuccess";
+    public string woodSuccessSound = "Brush/Recognition/WoodSuccess";
+    public string windSuccessSound = "Brush/Recognition/WindSuccess";
+
     [Header("Skill Unlock")]
     [SerializeField]
     private PlayerBrushSkillInventory skillInventory;
@@ -349,6 +358,7 @@ public class BrushGestureRecognizer : MonoBehaviour
         }
 
         ShowRecognitionSuccess(skillType);
+        PlayRecognitionSuccessSound(skillType);
 
         BrushGestureResult brushResult =
             new BrushGestureResult(
@@ -366,6 +376,44 @@ public class BrushGestureRecognizer : MonoBehaviour
         EventCenter.Instance.EventTrigger<BrushGestureResult>(
             E_EventType.E_Brush_GestureRecognized,
             brushResult
+        );
+    }
+
+    private void PlayRecognitionSuccessSound(
+        BrushSkillType skillType
+    )
+    {
+        if (!playRecognitionSuccessSound)
+            return;
+
+        string soundName = null;
+
+        switch (skillType)
+        {
+            case BrushSkillType.Slash:
+                soundName = slashSuccessSound;
+                break;
+            case BrushSkillType.Fire:
+                soundName = fireSuccessSound;
+                break;
+            case BrushSkillType.Water:
+                soundName = waterSuccessSound;
+                break;
+            case BrushSkillType.Wood:
+                soundName = woodSuccessSound;
+                break;
+            case BrushSkillType.Wind:
+                soundName = windSuccessSound;
+                break;
+        }
+
+        if (string.IsNullOrEmpty(soundName))
+            return;
+
+        MusicMgr.Instance.PlaySound(
+            soundName,
+            false,
+            recognitionSoundSync
         );
     }
 

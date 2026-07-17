@@ -104,6 +104,12 @@ public class ActionConfig : ScriptableObject
         AddCleanEvent(ActionEventType.Speed, "New Speed Event");
     }
 
+    [ContextMenu("Add Clean Audio Event")]
+    private void AddCleanAudioEvent()
+    {
+        AddCleanEvent(ActionEventType.Audio, "New Audio Event");
+    }
+
     private void AddCleanEvent(ActionEventType type, string eventName)
     {
         if (events == null)
@@ -120,7 +126,8 @@ public class ActionConfig : ScriptableObject
             vfx = new VFXEventData(),
             hitBox = new HitBoxEventData(),
             hitStop = new HitStopEventData(),
-            speed = new SpeedEventData()
+            speed = new SpeedEventData(),
+            audio = new AudioEventData()
         };
 
         events.Add(newEvent);

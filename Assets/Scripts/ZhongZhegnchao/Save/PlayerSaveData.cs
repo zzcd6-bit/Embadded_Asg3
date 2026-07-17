@@ -46,4 +46,13 @@ public class PlayerSaveData
     [Header("Collected Pickups")]
     public List<string> collectedPickupIds =
         new List<string>();
+
+    [Header("Currency")]
+    public bool hasCurrencyData;
+
+    public int currentCoins;
+
+    [Header("Skill Tree")]
+    public PlayerSkillTreeSaveData skillTreeData =
+    new PlayerSkillTreeSaveData();
 }
