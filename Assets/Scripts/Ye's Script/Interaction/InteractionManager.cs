@@ -54,6 +54,10 @@ public class InteractionManager : MonoBehaviour
 
     private void OnEnable()
     {
+        EventCenter.Instance.AddEventListener<GameModeChangedInfo>(
+            E_EventType.E_GameMode_Changed,
+            OnGameModeChanged);
+
         if (sensor != null)
         {
             sensor.ReactableEntered += HandleReactableEntered;
@@ -70,6 +74,10 @@ public class InteractionManager : MonoBehaviour
 
     private void OnDisable()
     {
+        EventCenter.Instance.RemoveEventListener<GameModeChangedInfo>(
+            E_EventType.E_GameMode_Changed,
+            OnGameModeChanged);
+
         if (sensor != null)
         {
             sensor.ReactableEntered -= HandleReactableEntered;
@@ -93,7 +101,14 @@ public class InteractionManager : MonoBehaviour
 
     private void Update()
     {
-        HandleDirectInput();
+        if (GameModeManager.Instance.CurrentCapabilities.canInteract)
+        {
+            HandleDirectInput();
+        }
+        else
+        {
+            HideInteractionUI();
+        }
 
         if (Time.unscaledTime >= nextCleanupTime)
         {
@@ -105,16 +120,31 @@ public class InteractionManager : MonoBehaviour
 
     public void SubmitInteractInput()
     {
+        if (!GameModeManager.Instance.CurrentCapabilities.canInteract)
+        {
+            return;
+        }
+
         ExecuteSelected();
     }
 
     public void SubmitNextSelectionInput()
     {
+        if (!GameModeManager.Instance.CurrentCapabilities.canInteract)
+        {
+            return;
+        }
+
         MoveSelection(1);
     }
 
     public void SubmitPreviousSelectionInput()
     {
+        if (!GameModeManager.Instance.CurrentCapabilities.canInteract)
+        {
+            return;
+        }
+
         MoveSelection(-1);
     }
 
@@ -165,6 +195,11 @@ public class InteractionManager : MonoBehaviour
 
     private void AddReactable(IReactable reactable)
     {
+        if (!GameModeManager.Instance.CurrentCapabilities.canInteract)
+        {
+            return;
+        }
+
         if (!IsValidReactable(reactable) || entryMap.ContainsKey(reactable))
         {
             return;
@@ -278,6 +313,11 @@ public class InteractionManager : MonoBehaviour
 
     private void ExecuteSelected()
     {
+        if (!GameModeManager.Instance.CurrentCapabilities.canInteract)
+        {
+            return;
+        }
+
         if (lastExecuteFrame == Time.frameCount)
         {
             return;
@@ -374,6 +414,12 @@ public class InteractionManager : MonoBehaviour
             return;
         }
 
+        if (!GameModeManager.Instance.CurrentCapabilities.showInteractionUI)
+        {
+            HideInteractionUI();
+            return;
+        }
+
         displayData.Clear();
         foreach (InteractionEntry entry in entries)
         {
@@ -383,6 +429,30 @@ public class InteractionManager : MonoBehaviour
         }
 
         rollBoxUI.SetOptions(displayData, selectedIndex);
+    }
+
+    private void OnGameModeChanged(GameModeChangedInfo info)
+    {
+        if (info == null)
+        {
+            return;
+        }
+
+        if (!info.newCapabilities.canInteract ||
+            !info.newCapabilities.showInteractionUI)
+        {
+            HideInteractionUI();
+            return;
+        }
+
+        RemoveInvalidEntries();
+        RefreshWholeUI();
+    }
+
+    private void HideInteractionUI()
+    {
+        displayData.Clear();
+        rollBoxUI?.SetOptions(displayData, -1);
     }
 
     private void SortStable()

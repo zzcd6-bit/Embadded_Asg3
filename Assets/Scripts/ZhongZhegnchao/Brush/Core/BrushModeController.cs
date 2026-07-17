@@ -1,5 +1,4 @@
-using DG.Tweening;
-using UnityEngine;
+锘縰sing UnityEngine;
 
 public class BrushModeController : MonoBehaviour
 {
@@ -10,19 +9,16 @@ public class BrushModeController : MonoBehaviour
     [Header("New Player")]
     [SerializeField] private ActionPlayerController newPlayerController;
 
-    [Header("画画模式冷却")]
+    [Header("鐢荤敾妯″紡鍐峰嵈")]
     public BrushModeCooldownController cooldownController;
 
     public bool IsBrushMode { get; private set; }
-
-    private const float DefaultFixedDeltaTime = 0.02f;
-    private Tween timeTween;
 
     private void Awake()
     {
         if (newPlayerController == null)
         {
-            newPlayerController = FindFirstObjectByType<ActionPlayerController>();
+            newPlayerController = FindAnyObjectByType<ActionPlayerController>();
         }
 
         if (cooldownController == null)
@@ -43,41 +39,56 @@ public class BrushModeController : MonoBehaviour
 
     private void OnEnable()
     {
+        EventCenter.Instance.AddEventListener<GameModeChangedInfo>(
+            E_EventType.E_GameMode_Changed,
+            OnGameModeChanged
+        );
+
         EventCenter.Instance.AddEventListener(
             E_EventType.E_Brush_Enter,
-            EnterBrushMode
+            RequestEnterBrushMode
         );
 
         EventCenter.Instance.AddEventListener(
             E_EventType.E_Brush_Exit,
-            ExitBrushMode
+            RequestExitBrushMode
         );
 
         EventCenter.Instance.AddEventListener(
             E_EventType.E_Brush_RequestExit,
-            ExitBrushMode
+            RequestExitBrushMode
         );
+
+        if (GameModeManager.Instance.CurrentMode == GameModeState.BrushBulletTime)
+        {
+            EnterBrushModeInternal();
+        }
     }
 
     private void OnDisable()
     {
+        EventCenter.Instance.RemoveEventListener<GameModeChangedInfo>(
+            E_EventType.E_GameMode_Changed,
+            OnGameModeChanged
+        );
+
         EventCenter.Instance.RemoveEventListener(
             E_EventType.E_Brush_Enter,
-            EnterBrushMode
+            RequestEnterBrushMode
         );
 
         EventCenter.Instance.RemoveEventListener(
             E_EventType.E_Brush_Exit,
-            ExitBrushMode
+            RequestExitBrushMode
         );
 
         EventCenter.Instance.RemoveEventListener(
             E_EventType.E_Brush_RequestExit,
-            ExitBrushMode
+            RequestExitBrushMode
         );
     }
 
-    private void EnterBrushMode()
+    private void RequestEnterBrushMode()
     {
         if (cooldownController != null && !cooldownController.CanEnterBrushMode())
         {
@@ -90,53 +101,71 @@ public class BrushModeController : MonoBehaviour
         }
 
         if (IsBrushMode)
+        {
             return;
+        }
+
+        GameModeManager.Instance.RequestMode(
+            GameModeState.BrushBulletTime,
+            this
+        );
+    }
+
+    private void RequestExitBrushMode()
+    {
+        GameModeManager.Instance.ExitMode(GameModeState.BrushBulletTime);
+    }
+
+    private void OnGameModeChanged(GameModeChangedInfo info)
+    {
+        if (info == null)
+        {
+            return;
+        }
+
+        if (info.newMode == GameModeState.BrushBulletTime)
+        {
+            EnterBrushModeInternal();
+            return;
+        }
+
+        if (IsBrushMode)
+        {
+            ExitBrushModeInternal();
+        }
+    }
+
+    private void EnterBrushModeInternal()
+    {
+        if (IsBrushMode)
+        {
+            return;
+        }
 
         IsBrushMode = true;
 
+        GameTimeScaleService.Instance.SetGameModeTimeScale(
+            brushTimeScale,
+            100,
+            transitionDuration
+        );
+
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.None;
-
-        if (newPlayerController != null)
-        {
-            newPlayerController.SetGameplayControlEnabled(false);
-        }
-
-        EventCenter.Instance.EventTrigger<bool>(
-            E_EventType.E_Player_ControlEnable,
-            false
-        );
-
-        EventCenter.Instance.EventTrigger<bool>(
-            E_EventType.E_Player_CombatEnable,
-            false
-        );
-
-        EventCenter.Instance.EventTrigger<bool>(
-            E_EventType.E_Camera_InputEnable,
-            false
-        );
 
         EventCenter.Instance.EventTrigger<bool>(
             E_EventType.E_Brush_ModeChanged,
             true
         );
-
-        ChangeTimeScale(brushTimeScale);
     }
 
-    private void ExitBrushMode()
+    private void ExitBrushModeInternal()
     {
         if (!IsBrushMode)
+        {
             return;
+        }
 
-        /*
-         * 关键修复：
-         * 先让 BrushLineDrawer 结算当前笔画。
-         * 不然如果先触发 E_Brush_ModeChanged(false)，
-         * BrushLineDrawer 会把 isDrawing / screenPoints 清掉，
-         * 导致 OnDrawEnd 时 screenPoints = 0。
-         */
         EventCenter.Instance.EventTrigger(E_EventType.E_Brush_DrawEnd);
 
         if (cooldownController != null)
@@ -153,50 +182,5 @@ public class BrushModeController : MonoBehaviour
             E_EventType.E_Brush_ModeChanged,
             false
         );
-
-        ChangeTimeScale(1f, () =>
-        {
-            if (newPlayerController != null)
-            {
-                newPlayerController.SetGameplayControlEnabled(true);
-            }
-
-            EventCenter.Instance.EventTrigger<bool>(
-                E_EventType.E_Player_ControlEnable,
-                true
-            );
-
-            EventCenter.Instance.EventTrigger<bool>(
-                E_EventType.E_Player_CombatEnable,
-                true
-            );
-
-            EventCenter.Instance.EventTrigger<bool>(
-                E_EventType.E_Camera_InputEnable,
-                true
-            );
-        });
-    }
-
-    private void ChangeTimeScale(float targetScale, TweenCallback onComplete = null)
-    {
-        if (timeTween != null && timeTween.IsActive())
-        {
-            timeTween.Kill();
-        }
-
-        timeTween = DOVirtual.Float(
-            Time.timeScale,
-            targetScale,
-            transitionDuration,
-            value =>
-            {
-                Time.timeScale = value;
-                Time.fixedDeltaTime =
-                    DefaultFixedDeltaTime * Mathf.Max(value, 0.01f);
-            }
-        )
-        .SetUpdate(true)
-        .OnComplete(onComplete);
     }
 }

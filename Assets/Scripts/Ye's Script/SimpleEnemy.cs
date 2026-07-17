@@ -241,7 +241,7 @@ public class SimpleEnemy : MonoBehaviour
 
     private void UpdateAttack()
     {
-        if (PlayerModeStateController.IsDialogueMode)
+        if (!GameModeManager.Instance.CurrentCapabilities.canBeDetectedByEnemy)
         {
             LosePlayerAndReturnHome();
             return;
@@ -408,7 +408,7 @@ public class SimpleEnemy : MonoBehaviour
 
     private bool CanDetectPlayer()
     {
-        if (PlayerModeStateController.IsDialogueMode)
+        if (!GameModeManager.Instance.CurrentCapabilities.canBeDetectedByEnemy)
             return false;
 
         if (player == null)

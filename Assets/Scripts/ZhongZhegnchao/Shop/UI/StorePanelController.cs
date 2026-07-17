@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -71,10 +71,10 @@ public class StorePanelController : MonoBehaviour
 
     [Header("Display")]
     [SerializeField]
-    private string buyButtonPrefix = "¹ºÂò";
+    private string buyButtonPrefix = "è´­ä¹°";
 
     [SerializeField]
-    private string emptyBuyButtonText = "¹ºÂò";
+    private string emptyBuyButtonText = "è´­ä¹°";
 
     [Header("Input")]
     [SerializeField]
@@ -336,10 +336,6 @@ public class StorePanelController : MonoBehaviour
         }
 
         RefreshProductGrid();
-
-        Cursor.visible = true;
-        Cursor.lockState =
-            CursorLockMode.None;
 
         if (debugLog)
         {
@@ -784,8 +780,8 @@ public class StorePanelController : MonoBehaviour
         if (addedEntry == null)
         {
             /*
-             * ±³°ü¼ÓÈëÊ§°ÜÊ±¾²Ä¬ÍË»¹½ğ±Ò£¬
-             * ²»´¥·¢¡°»ñµÃ½ğ±Ò¡±ÌáÊ¾¡£
+             * èƒŒåŒ…åŠ å…¥å¤±è´¥æ—¶é™é»˜é€€è¿˜é‡‘å¸ï¼Œ
+             * ä¸è§¦å‘â€œè·å¾—é‡‘å¸â€æç¤ºã€‚
              */
             currencyController.RestoreCoins(
                 currencyController.CurrentCoins +

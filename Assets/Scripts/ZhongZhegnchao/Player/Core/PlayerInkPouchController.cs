@@ -1,11 +1,11 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 public class PlayerInkPouchController : MonoBehaviour, IBrushSkillCostReceiver
 {
-    [Header("ÅäÖÃ")]
+    [Header("é…ç½®")]
     public PlayerInkPouchConfig config;
 
-    [Header("µ±Ç°Ä«ÄÒ")]
+    [Header("å½“å‰å¢¨å›Š")]
     [SerializeField] private int currentInk;
     [SerializeField] private int maxInk;
 
@@ -91,6 +91,11 @@ public class PlayerInkPouchController : MonoBehaviour, IBrushSkillCostReceiver
 
     public void RestoreInk(int amount)
     {
+        if (!GameModeManager.Instance.CurrentCapabilities.canRecoverInk)
+        {
+            return;
+        }
+
         amount = Mathf.Max(0, amount);
 
         if (amount <= 0)

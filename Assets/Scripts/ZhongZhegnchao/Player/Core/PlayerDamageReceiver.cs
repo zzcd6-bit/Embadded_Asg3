@@ -1,4 +1,4 @@
-using UnityEngine;
+锘縰sing UnityEngine;
 
 [DisallowMultipleComponent]
 public class PlayerDamageReceiver : MonoBehaviour, IDamageable, IHealable
@@ -46,10 +46,12 @@ public class PlayerDamageReceiver : MonoBehaviour, IDamageable, IHealable
         if (!wasDead && isDead)
         {
             PlayDeathPresentation();
+            GameModeManager.Instance.RequestMode(GameModeState.Dead, this, true);
         }
         else if (wasDead && !isDead)
         {
             ResetDeathPresentation();
+            GameModeManager.Instance.ExitMode(GameModeState.Dead);
         }
     }
 
@@ -89,6 +91,11 @@ public class PlayerDamageReceiver : MonoBehaviour, IDamageable, IHealable
 
     public void TakeDamage(DamageInfo damageInfo)
     {
+        if (!GameModeManager.Instance.CurrentCapabilities.canTakeDamage)
+        {
+            return;
+        }
+
         if (isDead)
         {
             return;
@@ -163,6 +170,7 @@ public class PlayerDamageReceiver : MonoBehaviour, IDamageable, IHealable
         isDead = true;
 
         PlayDeathPresentation();
+        GameModeManager.Instance.RequestMode(GameModeState.Dead, this, true);
 
         EventCenter.Instance.EventTrigger(
             E_EventType.E_Player_Dead,
@@ -188,10 +196,10 @@ public class PlayerDamageReceiver : MonoBehaviour, IDamageable, IHealable
         }
 
         // TODO:
-        // 1. 禁用输入
-        // 2. 播放死亡动画
-        // 3. 打开 GameOver UI
-        // 4. 后续这些都可以通过 E_Player_Dead 的监听器处理
+        // 1. 绂佺敤杈撳叆
+        // 2. 鎾斁姝讳骸鍔ㄧ敾
+        // 3. 鎵撳紑 GameOver UI
+        // 4. 鍚庣画杩欎簺閮藉彲浠ラ�氳繃 E_Player_Dead 鐨勭洃鍚櫒澶勭悊
     }
 
     private void PlayDeathPresentation()
@@ -237,7 +245,7 @@ public class PlayerDamageReceiver : MonoBehaviour, IDamageable, IHealable
 
         if (actualHeal > 0)
         {
-            // 如果你有 HP UI，在这里刷新
+            // 濡傛灉浣犳湁 HP UI锛屽湪杩欓噷鍒锋柊
             // UpdateHpUI();
         }
 
@@ -254,6 +262,7 @@ public class PlayerDamageReceiver : MonoBehaviour, IDamageable, IHealable
         if (wasDead)
         {
             ResetDeathPresentation();
+            GameModeManager.Instance.ExitMode(GameModeState.Dead);
         }
     }
 }

@@ -115,26 +115,51 @@ public class PlayerInputReceiver : MonoBehaviour
 
     private void OnHorizontalInput(float value)
     {
+        if (!GameModeManager.Instance.CurrentCapabilities.canMove)
+        {
+            value = 0f;
+        }
+
         MoveInput = new Vector2(value, MoveInput.y);
     }
 
     private void OnVerticalInput(float value)
     {
+        if (!GameModeManager.Instance.CurrentCapabilities.canMove)
+        {
+            value = 0f;
+        }
+
         MoveInput = new Vector2(MoveInput.x, value);
     }
 
     private void OnJumpInput()
     {
+        if (!GameModeManager.Instance.CurrentCapabilities.canMove)
+        {
+            return;
+        }
+
         jumpPressed = true;
     }
 
     private void OnAttackInput()
     {
+        if (!GameModeManager.Instance.CurrentCapabilities.canAttack)
+        {
+            return;
+        }
+
         AttackPressed?.Invoke();
     }
 
     private void OnLockOnInput()
     {
+        if (!GameModeManager.Instance.CurrentCapabilities.canLockOn)
+        {
+            return;
+        }
+
         LockOnPressed?.Invoke();
     }
 

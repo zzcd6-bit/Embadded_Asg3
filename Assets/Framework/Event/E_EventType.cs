@@ -4,6 +4,10 @@ using UnityEngine;
 
 public enum E_EventType
 {
+    #region Game Mode
+    E_GameMode_Changed,
+    #endregion
+
     #region Scene Events
     E_SceneLoadChange,
     #endregion

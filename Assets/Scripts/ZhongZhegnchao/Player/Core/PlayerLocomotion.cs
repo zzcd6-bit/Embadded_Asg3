@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 [RequireComponent(typeof(CharacterController))]
 public class PlayerLocomotion : MonoBehaviour
@@ -96,6 +96,13 @@ public class PlayerLocomotion : MonoBehaviour
             return;
         }
 
+        if (!GameModeManager.Instance.CurrentCapabilities.canMove)
+        {
+            currentMoveAmount = 0f;
+            animationController?.SetLocomotion(0f, false);
+            return;
+        }
+
         UpdateExternalFaceLockTimer();
         UpdateCameraReference();
 
@@ -104,9 +111,9 @@ public class PlayerLocomotion : MonoBehaviour
 
         bool isGroundedBeforeMove = characterController.isGrounded;
 
-        // ×¢Òâ£º
-        // ²»ÔÙÍêÈ«ÒÀÀµ CanMove ²Å´¦ÀíÊäÈë¡£
-        // ÒòÎª¹¥»÷Ê±¿ÉÄÜ CanMove=false£¬µ«ÎÒÃÇÈÔÈ»Ï£Íû Dodge ÄÜÈ¡Ïû¹¥»÷¡£
+        // æ³¨æ„ï¼š
+        // ä¸å†å®Œå…¨ä¾èµ– CanMove æ‰å¤„ç†è¾“å…¥ã€‚
+        // å› ä¸ºæ”»å‡»æ—¶å¯èƒ½ CanMove=falseï¼Œä½†æˆ‘ä»¬ä»ç„¶å¸Œæœ› Dodge èƒ½å–æ¶ˆæ”»å‡»ã€‚
         HandleActionInput(input, isGroundedBeforeMove);
 
         ApplyGravity(isGroundedBeforeMove);

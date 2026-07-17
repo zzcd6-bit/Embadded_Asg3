@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,25 +8,25 @@ public class BrushGestureBuildAdapter : MonoBehaviour
     [Serializable]
     public class GestureBuildBinding
     {
-        [Header("ÊÖÊÆÃû³Æ")]
-        [Tooltip("±ØĞëºÍ XML Ä£°åÀïµÄ Gesture Name Ò»ÖÂ£¬ÀıÈç Bridge / Wall / BuildWall")]
+        [Header("æ‰‹åŠ¿åç§°")]
+        [Tooltip("å¿…é¡»å’Œ XML æ¨¡æ¿é‡Œçš„ Gesture Name ä¸€è‡´ï¼Œä¾‹å¦‚ Bridge / Wall / BuildWall")]
         public string gestureName;
 
-        [Header("¶ÔÓ¦½¨ÔìÎï")]
-        [Tooltip("Ê¶±ğ¸ÃÊÖÊÆºó£¬Òª½øÈë½¨ÔìµÄ½¨Öş")]
+        [Header("å¯¹åº”å»ºé€ ç‰©")]
+        [Tooltip("è¯†åˆ«è¯¥æ‰‹åŠ¿åï¼Œè¦è¿›å…¥å»ºé€ çš„å»ºç­‘")]
         public BuildableItemData buildableItem;
 
-        [Header("Ê¶±ğÒªÇó")]
+        [Header("è¯†åˆ«è¦æ±‚")]
         public float minScore = 0.65f;
 
-        [Header("Ä«ÄÒÏûºÄ")]
+        [Header("å¢¨å›Šæ¶ˆè€—")]
         public int inkCost = 0;
 
-        [Header("¿ª¹Ø")]
+        [Header("å¼€å…³")]
         public bool enabled = true;
     }
 
-    [Header("Gesture ¡ú Building")]
+    [Header("Gesture â†’ Building")]
     [SerializeField]
     private List<GestureBuildBinding> bindings = new List<GestureBuildBinding>();
 
@@ -198,6 +198,12 @@ public class BrushGestureBuildAdapter : MonoBehaviour
                 this
             );
 
+            pendingBuildRoutine = null;
+            yield break;
+        }
+
+        if (!GameModeManager.Instance.CurrentCapabilities.canEnterBuild)
+        {
             pendingBuildRoutine = null;
             yield break;
         }

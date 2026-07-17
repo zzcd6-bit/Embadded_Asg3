@@ -37,7 +37,8 @@ public class BrushInputRouter : MonoBehaviour
 
     private void OnLeftMouseDown()
     {
-        if (!isBrushMode)
+        if (!isBrushMode ||
+            !GameModeManager.Instance.CurrentCapabilities.canDrawBrush)
             return;
 
         EventCenter.Instance.EventTrigger(E_EventType.E_Brush_DrawStart);

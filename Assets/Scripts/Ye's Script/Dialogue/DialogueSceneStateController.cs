@@ -67,10 +67,7 @@ public class DialogueSceneStateController : MonoBehaviour
     {
         Unsubscribe();
         RestoreDialogueReactables();
-        if (playerModeStateController != null)
-        {
-            playerModeStateController.ExitDialogueState();
-        }
+        GameModeManager.Instance.ExitMode(GameModeState.Dialogue);
     }
 
     private void Update()
@@ -155,10 +152,7 @@ public class DialogueSceneStateController : MonoBehaviour
     private void HandleConversationStarted(Transform actor)
     {
         ResolvePlayerModeStateController();
-        if (playerModeStateController != null)
-        {
-            playerModeStateController.EnterDialogueState();
-        }
+        GameModeManager.Instance.RequestMode(GameModeState.Dialogue, this);
 
         DisableDialogueReactables();
         dialoguePointerMode = false;
@@ -168,10 +162,7 @@ public class DialogueSceneStateController : MonoBehaviour
     private void HandleConversationEnded(Transform actor)
     {
         RestoreDialogueReactables();
-        if (playerModeStateController != null)
-        {
-            playerModeStateController.ExitDialogueState();
-        }
+        GameModeManager.Instance.ExitMode(GameModeState.Dialogue);
 
         dialoguePointerMode = false;
         ApplyNormalCursorState();

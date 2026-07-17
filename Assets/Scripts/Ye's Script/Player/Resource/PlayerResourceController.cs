@@ -132,7 +132,7 @@ public class PlayerResourceController : MonoBehaviour
         if (damageReceiver == null || amount == 0)
             return;
 
-        if (PlayerModeStateController.IsDialogueMode && amount < 0)
+        if (!GameModeManager.Instance.CurrentCapabilities.canTakeDamage && amount < 0)
             return;
 
         SetHp(CurrentHp + amount, MaxHp);
@@ -191,7 +191,7 @@ public class PlayerResourceController : MonoBehaviour
         if (inkPouchController == null || amount == 0)
             return;
 
-        if (PlayerModeStateController.IsDialogueMode && amount > 0)
+        if (!GameModeManager.Instance.CurrentCapabilities.canRecoverInk && amount > 0)
             return;
 
         SetInk(CurrentInk + amount, MaxInk);

@@ -34,11 +34,21 @@ public class BuildModeController : MonoBehaviour
     // Ye build placement input bridge: test hotkey for rune-to-placement flow.
     private void OnEnable()
     {
+        EventCenter.Instance.AddEventListener<GameModeChangedInfo>(
+            E_EventType.E_GameMode_Changed,
+            OnGameModeChanged);
+
         EventCenter.Instance.AddEventListener(E_EventType.E_Build_TestStartItem1, StartTestSlot1Placement);
+
+        SetBuildModeInternal(GameModeManager.Instance.CurrentMode == GameModeState.Build);
     }
 
     private void OnDisable()
     {
+        EventCenter.Instance.RemoveEventListener<GameModeChangedInfo>(
+            E_EventType.E_GameMode_Changed,
+            OnGameModeChanged);
+
         EventCenter.Instance.RemoveEventListener(E_EventType.E_Build_TestStartItem1, StartTestSlot1Placement);
     }
 
@@ -46,12 +56,13 @@ public class BuildModeController : MonoBehaviour
     {
         IsBuildMode = false;
         wasPlacing = false;
-        InputMgr.Instance.SetBuildInputCaptured(false);
 
         if (gridVisual != null)
         {
             gridVisual.SetVisible(false);
         }
+
+        SetBuildModeInternal(GameModeManager.Instance.CurrentMode == GameModeState.Build);
     }
 
     private void Update()
@@ -77,7 +88,11 @@ public class BuildModeController : MonoBehaviour
             return;
         }
 
-        SetBuildMode(true);
+        if (!GameModeManager.Instance.RequestMode(GameModeState.Build, this))
+        {
+            return;
+        }
+
         placementController.StartPlacement(item);
         wasPlacing = placementController.IsPlacing;
     }
@@ -117,21 +132,33 @@ public class BuildModeController : MonoBehaviour
 
     public void SetBuildMode(bool enabled)
     {
+        if (enabled)
+        {
+            GameModeManager.Instance.RequestMode(GameModeState.Build, this);
+            return;
+        }
+
+        GameModeManager.Instance.ExitMode(GameModeState.Build);
+    }
+
+    private void OnGameModeChanged(GameModeChangedInfo info)
+    {
+        if (info == null)
+        {
+            return;
+        }
+
+        SetBuildModeInternal(info.newMode == GameModeState.Build);
+    }
+
+    private void SetBuildModeInternal(bool enabled)
+    {
         if (IsBuildMode == enabled)
         {
             return;
         }
 
         IsBuildMode = enabled;
-
-        // Ye build placement input bridge: capture shared controls only while build mode is active.
-        InputMgr.Instance.SetBuildInputCaptured(enabled);
-
-        EventCenter.Instance.EventTrigger<bool>(E_EventType.E_Player_ControlEnable, !enabled);
-        EventCenter.Instance.EventTrigger<bool>(E_EventType.E_Player_CombatEnable, !enabled);
-        EventCenter.Instance.EventTrigger<bool>(E_EventType.E_Camera_InputEnable, true);
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
 
         if (gridVisual != null)
         {

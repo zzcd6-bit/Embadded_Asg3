@@ -69,9 +69,12 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        HandleCursorReleaseInput();
+        if (GameModeManager.Instance.CurrentCapabilities.canLook)
+        {
+            HandleCursorReleaseInput();
+        }
 
-        if (!hasControl)
+        if (!hasControl || !GameModeManager.Instance.CurrentCapabilities.canMove)
         {
             if (anim != null)
             {
