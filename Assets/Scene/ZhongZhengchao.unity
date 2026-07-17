@@ -656,30 +656,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 368124383558167270, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
-      propertyPath: respawnDelay
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 2520113143535856881, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2520737757993952899, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2520752804948566485, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3662745343256671668, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
-      propertyPath: animancer
-      value: 
-      objectReference: {fileID: 995554232}
-    - target: {fileID: 3662745343256671668, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
-      propertyPath: death._Clip
-      value: 
-      objectReference: {fileID: 7400000, guid: b0de5dbad47bd734380c38c47d357d3e, type: 2}
     - target: {fileID: 6265559545831232069, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
       propertyPath: rollBoxUI
       value: 
@@ -724,10 +700,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8263279031209517386, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 1.5
-      objectReference: {fileID: 0}
     - target: {fileID: 8711962937741669046, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
       propertyPath: m_Name
       value: Player
@@ -735,31 +707,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 8711962937741669046, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 219517376}
-    - targetCorrespondingSourceObject: {fileID: 8711962937741669046, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 219517375}
-    - targetCorrespondingSourceObject: {fileID: 8711962937741669046, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 219517377}
-    - targetCorrespondingSourceObject: {fileID: 8711962937741669046, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 219517389}
-    - targetCorrespondingSourceObject: {fileID: 8711962937741669046, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 219517388}
-    - targetCorrespondingSourceObject: {fileID: 8711962937741669046, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 219517387}
-    - targetCorrespondingSourceObject: {fileID: 8711962937741669046, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 219517399}
-    - targetCorrespondingSourceObject: {fileID: 8711962937741669046, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 219517409}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
 --- !u!1 &219517335 stripped
 GameObject:
@@ -848,123 +796,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3467a708342ab5f409cbb4b888b6cbd0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerTeleportService
---- !u!114 &219517363 stripped
+--- !u!114 &219517389 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7860042217002967190, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
+  m_CorrespondingSourceObject: {fileID: 4487596118243649046, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
   m_PrefabInstance: {fileID: 219517334}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 219517335}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1aab3b9cb62a1064c82bb1891a3bd01a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerInkPouchController
---- !u!114 &219517364 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5932185986845760001, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
-  m_PrefabInstance: {fileID: 219517334}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 219517335}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c3b02d74094f73242ac814cb171b5236, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerDamageReceiver
---- !u!114 &219517372 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8289351068557653306, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
-  m_PrefabInstance: {fileID: 219517334}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 219517335}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 93a7c3df945442141b9a6a1697a478e5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CharacterCombatStats
---- !u!114 &219517375
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 219517335}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1dd1a899596d33445bd19011b735eb84, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CharacterProfileUIController
-  statsController: {fileID: 219517376}
-  playerController: {fileID: 219517336}
-  pauseGameWhenOpen: 1
---- !u!114 &219517376
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 219517335}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0cb6d626bc7986e428cdc486bf14792a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerCharacterStatsController
-  config: {fileID: 11400000, guid: 7eda24b07b11b9241a5a92cc53bfe9f4, type: 2}
-  currentLevel: 1
-  currentExperience: 0
-  combatStats: {fileID: 219517372}
-  damageReceiver: {fileID: 219517364}
-  inkPouchController: {fileID: 219517363}
-  debugLog: 1
---- !u!114 &219517377
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 219517335}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 85488ab63390f4247b95ad578f2423de, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerLevelUpUIFeedback
-  statsController: {fileID: 219517376}
-  debugLog: 1
---- !u!114 &219517387
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 219517335}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e3e8ab9e24cc87045835ed9233e40220, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerItemUseController
-  inventoryController: {fileID: 219517389}
-  equipmentController: {fileID: 219517388}
-  statsController: {fileID: 219517376}
-  damageReceiver: {fileID: 219517364}
-  inkController: {fileID: 219517363}
---- !u!114 &219517388
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 219517335}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec185da09f6358949bc7e98c3f9cde3a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerEquipmentController
-  inventoryController: {fileID: 219517389}
-  statsController: {fileID: 219517376}
---- !u!114 &219517389
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 219517335}
   m_Enabled: 1
@@ -972,38 +807,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d66e3e1ad4fb3444978a937e2b31462, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInventoryController
-  itemDatabase: {fileID: 0}
-  startingItems:
-  - itemData: {fileID: 11400000, guid: 79f022e62d0eb7d4eafc7e355c915c21, type: 2}
-    quantity: 1
-  - itemData: {fileID: 11400000, guid: cc8128e88a43c094990f51d0550a9274, type: 2}
-    quantity: 1
-  - itemData: {fileID: 11400000, guid: 91c5fe3c44415ad4297b75564fbe5cb3, type: 2}
-    quantity: 1
-  - itemData: {fileID: 11400000, guid: c3088be20057f9149966bea1dfa64d0a, type: 2}
-    quantity: 1
-  - itemData: {fileID: 11400000, guid: 14b766f4cd5851143978e9e3124a9813, type: 2}
-    quantity: 1
-  - itemData: {fileID: 11400000, guid: 3d572a27ff3f8d44883e1eeaf5406e30, type: 2}
-    quantity: 10
-  - itemData: {fileID: 11400000, guid: 0886dab5e32f78243ba7d5fb58a0fbaf, type: 2}
-    quantity: 1
-  - itemData: {fileID: 11400000, guid: b51ce47f9953ffb47bd142b4f2f35bdf, type: 2}
-    quantity: 1
-  - itemData: {fileID: 11400000, guid: cb9c0f9d1e37ff3488c72a17f7782f37, type: 2}
-    quantity: 1
-  - itemData: {fileID: 11400000, guid: 0a9df7181885ef64c9ec3d685602e090, type: 2}
-    quantity: 1
-  - itemData: {fileID: 11400000, guid: 4a24e5c686efa2540932831780bbd5cc, type: 2}
-    quantity: 1
-  - itemData: {fileID: 11400000, guid: fc53c984c313b9b449e7e86c803c54a4, type: 2}
-    quantity: 10
-  debugLog: 0
---- !u!114 &219517399
+--- !u!114 &219517399 stripped
 MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 7492192921905286475, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
+  m_PrefabInstance: {fileID: 219517334}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 219517335}
   m_Enabled: 1
@@ -1011,16 +818,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b7484fd91308834796ed1515b2b0fec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCurrencyController
-  startingCoins: 100
-  maximumCoins: 999999
-  currentCoins: 0
-  debugLog: 1
-  debugAmount: 100
---- !u!114 &219517409
+--- !u!114 &219517409 stripped
 MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 6558639689924666471, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
+  m_PrefabInstance: {fileID: 219517334}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 219517335}
   m_Enabled: 1
@@ -1028,12 +829,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5dbfb068e59bbc4cba773806aaf84cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerSkillTreeController
-  config: {fileID: 11400000, guid: f18abc2215850c74d9a918857e8e7164, type: 2}
-  characterStatsController: {fileID: 219517376}
-  skillInventory: {fileID: 219517337}
-  runtimeLevels: []
-  canResetSkills: 0
-  debugLog: 0
 --- !u!1 &248848576
 GameObject:
   m_ObjectHideFlags: 0
@@ -3824,17 +3619,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
---- !u!114 &995554232 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3865185272416509994, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
-  m_PrefabInstance: {fileID: 219517334}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0ad50f81b1d25c441943c37a89ba23f6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Kybernetik.Animancer::Animancer.AnimancerComponent
 --- !u!1001 &1000130662
 PrefabInstance:
   m_ObjectHideFlags: 0

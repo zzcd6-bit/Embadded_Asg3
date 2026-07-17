@@ -25824,7 +25824,7 @@ MonoBehaviour:
   upgradeStatArea: {fileID: 8175740841137276618}
   upgradeButton: {fileID: 272024546238114504}
   upgradeButtonText: {fileID: 1869385729761712969}
-  upgradeText: Upgrade  1 SP
+  upgradeText: + 1 SP
   lockedText: Locked
   noPointText: No Skill Point
   resetAvailableText: Reset Available
