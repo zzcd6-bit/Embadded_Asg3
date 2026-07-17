@@ -46,6 +46,9 @@ public class PlacementController : MonoBehaviour
     private bool hasPlacementPosition;
     private float nextPlacementCheckTime;
     private int placementStartedFrame = -1;
+    private bool placementValidationDirty = true;
+    private bool hasCachedPlacementValidation;
+    private bool cachedPlacementValid;
     private BuildingInstance editingBuilding;
     private Vector2Int originalPivotCell;
     private int originalRotationSteps;
@@ -151,6 +154,7 @@ public class PlacementController : MonoBehaviour
         currentRotation = Quaternion.identity;
         currentRotationSteps = 0;
         manualRotationOffsetSteps = 0;
+        MarkPlacementValidationDirty();
         BeginPlacementSession();
         previewController.CreateNewPreview(item);
         UpdatePreviewPosition();
@@ -177,6 +181,7 @@ public class PlacementController : MonoBehaviour
         originalPosition = building.transform.position;
         originalRotation = building.transform.rotation;
         hasPlacementPosition = true;
+        MarkPlacementValidationDirty();
         BeginPlacementSession();
 
         gridPlacementSystem.ClearOccupied(building);
@@ -230,14 +235,21 @@ public class PlacementController : MonoBehaviour
     public void RotatePreview()
     {
         manualRotationOffsetSteps = NormalizeRotationSteps(manualRotationOffsetSteps + 1);
+        Vector2Int previousPivotCell = currentPivotCell;
+        int previousRotationSteps = currentRotationSteps;
         UpdatePlacementRotationFromCamera();
 
         if (hasPlacementPosition && gridPlacementSystem != null && currentItem != null)
         {
             currentPivotCell = gridPlacementSystem.WorldToPivotCell(currentPlacementPosition, currentItem.Size, currentRotationSteps);
             currentPlacementPosition = gridPlacementSystem.PivotCellToWorld(currentPivotCell, currentItem.Size, currentRotationSteps);
+            MarkPlacementValidationDirtyIfChanged(previousPivotCell, previousRotationSteps, currentPivotCell, currentRotationSteps);
             AlignCurrentPlacementToGround();
             previewController.SetTransform(currentPlacementPosition, currentRotation);
+        }
+        else if (previousRotationSteps != currentRotationSteps)
+        {
+            MarkPlacementValidationDirty();
         }
 
         ValidateCurrentPlacement(true);
@@ -277,7 +289,8 @@ public class PlacementController : MonoBehaviour
         }
 
         cells.Clear();
-        isValid = CanCommitCurrentPlacement();
+        EnsurePlacementValidationCurrent(false);
+        isValid = cachedPlacementValid;
 
         if (!isValid || !UsesAnchorSurfaceRule())
         {
@@ -413,8 +426,18 @@ public class PlacementController : MonoBehaviour
             return false;
         }
 
+        bool hadPlacementPosition = hasPlacementPosition;
+        Vector2Int previousPivotCell = currentPivotCell;
+        int previousRotationSteps = currentRotationSteps;
         currentPivotCell = gridPlacementSystem.WorldToPivotCell(worldPosition, currentItem.Size, currentRotationSteps);
         ApplyBridgeAnchorFocusIfNeeded(worldPosition);
+        if (hadPlacementPosition
+            && previousPivotCell == currentPivotCell
+            && previousRotationSteps == currentRotationSteps)
+        {
+            return true;
+        }
+
         currentPlacementPosition = gridPlacementSystem.PivotCellToWorld(currentPivotCell, currentItem.Size, currentRotationSteps);
         currentRotation = Quaternion.Euler(0f, currentRotation.eulerAngles.y, 0f);
 
@@ -425,6 +448,15 @@ public class PlacementController : MonoBehaviour
 
         AlignCurrentPlacementToGround();
         hasPlacementPosition = true;
+        if (!hadPlacementPosition)
+        {
+            MarkPlacementValidationDirty();
+        }
+        else
+        {
+            MarkPlacementValidationDirtyIfChanged(previousPivotCell, previousRotationSteps, currentPivotCell, currentRotationSteps);
+        }
+
         previewController.SetTransform(currentPlacementPosition, currentRotation);
         return true;
     }
@@ -723,22 +755,66 @@ public class PlacementController : MonoBehaviour
 
     private void ValidateCurrentPlacement(bool force)
     {
+        if (!force && !placementValidationDirty && hasCachedPlacementValidation)
+        {
+            previewController.SetValid(cachedPlacementValid);
+            return;
+        }
+
         if (!force && Time.time < nextPlacementCheckTime)
         {
             return;
         }
 
         nextPlacementCheckTime = Time.time + placementCheckInterval;
-        previewController.SetValid(CanCommitCurrentPlacement());
+        cachedPlacementValid = CalculateCanCommitCurrentPlacement();
+        hasCachedPlacementValidation = true;
+        placementValidationDirty = false;
+        previewController.SetValid(cachedPlacementValid);
     }
 
     private bool CanCommitCurrentPlacement()
+    {
+        EnsurePlacementValidationCurrent(true);
+        return cachedPlacementValid;
+    }
+
+    private void EnsurePlacementValidationCurrent(bool force)
+    {
+        if (!force && !placementValidationDirty && hasCachedPlacementValidation)
+        {
+            return;
+        }
+
+        cachedPlacementValid = CalculateCanCommitCurrentPlacement();
+        hasCachedPlacementValidation = true;
+        placementValidationDirty = false;
+    }
+
+    private bool CalculateCanCommitCurrentPlacement()
     {
         return currentItem != null
             && hasPlacementPosition
             && gridPlacementSystem != null
             && gridPlacementSystem.CanPlace(currentPivotCell, currentItem.Size, currentRotationSteps)
             && IsCurrentPlacementSurfaceValid();
+    }
+
+    private void MarkPlacementValidationDirty()
+    {
+        placementValidationDirty = true;
+    }
+
+    private void MarkPlacementValidationDirtyIfChanged(
+        Vector2Int previousPivotCell,
+        int previousRotationSteps,
+        Vector2Int nextPivotCell,
+        int nextRotationSteps)
+    {
+        if (previousPivotCell != nextPivotCell || previousRotationSteps != nextRotationSteps)
+        {
+            MarkPlacementValidationDirty();
+        }
     }
 
     private bool IsCurrentPlacementSurfaceValid()
@@ -1003,6 +1079,9 @@ public class PlacementController : MonoBehaviour
         currentRotation = Quaternion.identity;
         currentRotationSteps = 0;
         manualRotationOffsetSteps = 0;
+        cachedPlacementValid = false;
+        hasCachedPlacementValidation = false;
+        placementValidationDirty = true;
         previewController.ClearReferences();
     }
 }

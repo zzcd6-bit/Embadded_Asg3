@@ -19,6 +19,11 @@ public class SingletonAutoMono<T> : MonoBehaviour where T : MonoBehaviour
         {
             if (instance == null)
             {
+                instance = FindAnyObjectByType<T>(FindObjectsInactive.Include);
+            }
+
+            if (instance == null)
+            {
                 //动态创建 动态挂载
                 //在场景上创建空物体
                 GameObject obj = new GameObject();

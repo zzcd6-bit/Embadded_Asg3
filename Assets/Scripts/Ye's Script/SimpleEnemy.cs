@@ -241,6 +241,12 @@ public class SimpleEnemy : MonoBehaviour
 
     private void UpdateAttack()
     {
+        if (PlayerModeStateController.IsDialogueMode)
+        {
+            LosePlayerAndReturnHome();
+            return;
+        }
+
         if (player == null)
         {
             LosePlayerAndReturnHome();
@@ -402,6 +408,9 @@ public class SimpleEnemy : MonoBehaviour
 
     private bool CanDetectPlayer()
     {
+        if (PlayerModeStateController.IsDialogueMode)
+            return false;
+
         if (player == null)
             return false;
 

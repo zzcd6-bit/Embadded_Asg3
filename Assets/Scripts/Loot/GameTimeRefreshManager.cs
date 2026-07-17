@@ -175,8 +175,7 @@ public class GameTimeRefreshManager : MonoBehaviour, IGameSaveModule
     private void RegisterSceneSpawners()
     {
         TimedPickupSpawner[] sceneSpawners = FindObjectsByType<TimedPickupSpawner>(
-            FindObjectsInactive.Include,
-            FindObjectsSortMode.None
+            FindObjectsInactive.Include
         );
 
         for (int i = 0; i < sceneSpawners.Length; i++)

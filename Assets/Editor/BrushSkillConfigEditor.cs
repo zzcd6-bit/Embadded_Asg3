@@ -344,8 +344,8 @@ public class BrushSkillConfigEditor : Editor
     {
         serializedObject.Update();
 
-        DrawTitle("¼¼ÄÜÉí·Ý");
-        EditorGUILayout.PropertyField(skillType, new GUIContent("¼¼ÄÜÀàÐÍ"));
+        DrawTitle("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+        EditorGUILayout.PropertyField(skillType, new GUIContent("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"));
 
         DrawCommonSettings();
 
@@ -384,181 +384,181 @@ public class BrushSkillConfigEditor : Editor
 
     private void DrawCommonSettings()
     {
-        DrawTitle("Í¨ÓÃ¼ì²âÉèÖÃ");
+        DrawTitle("Í¨ï¿½Ã¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
         EditorGUILayout.PropertyField(
     targetLayer,
-    new GUIContent("Ä¿±ê Layer")
+    new GUIContent("Ä¿ï¿½ï¿½ Layer")
 );
 
         EditorGUILayout.PropertyField(
             rayDistance,
-            new GUIContent("ÉäÏß / ËÑË÷¾àÀë")
+            new GUIContent("ï¿½ï¿½ï¿½ï¿½ / ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½")
         );
 
         EditorGUILayout.PropertyField(
             fallbackDistance,
-            new GUIContent("Ä¬ÈÏÊÍ·Å¾àÀë")
+            new GUIContent("Ä¬ï¿½ï¿½ï¿½Í·Å¾ï¿½ï¿½ï¿½")
         );
 
-        DrawTitle("³¡¾°ÔªËØ½»»¥");
+        DrawTitle("ï¿½ï¿½ï¿½ï¿½Ôªï¿½Ø½ï¿½ï¿½ï¿½");
 
         EditorGUILayout.PropertyField(
             enableSceneElementInteraction,
-            new GUIContent("ÆôÓÃ³¡¾°ÔªËØ½»»¥")
+            new GUIContent("ï¿½ï¿½ï¿½Ã³ï¿½ï¿½ï¿½Ôªï¿½Ø½ï¿½ï¿½ï¿½")
         );
 
         if (enableSceneElementInteraction.boolValue)
         {
             EditorGUILayout.PropertyField(
                 sceneElementLayer,
-                new GUIContent("³¡¾°ÔªËØ Layer")
+                new GUIContent("ï¿½ï¿½ï¿½ï¿½Ôªï¿½ï¿½ Layer")
             );
         }
 
-        DrawTitle("Ä«ÄÒÏûºÄ");
-        EditorGUILayout.PropertyField(inkCost, new GUIContent("Ä«ÄÒÏûºÄ"));
+        DrawTitle("Ä«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+        EditorGUILayout.PropertyField(inkCost, new GUIContent("Ä«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"));
 
-        DrawTitle("Í¨ÓÃÉËº¦ÉèÖÃ");
-        EditorGUILayout.PropertyField(baseDamage, new GUIContent("»ù´¡ÉËº¦"));
-        EditorGUILayout.PropertyField(knockback, new GUIContent("»÷ÍËÁ¦¶È"));
-        EditorGUILayout.PropertyField(element, new GUIContent("ÔªËØÀàÐÍ"));
-        EditorGUILayout.PropertyField(canApplyElementStatus, new GUIContent("¿É¸½¼ÓÔªËØ×´Ì¬"));
-        EditorGUILayout.PropertyField(skillMultiplier, new GUIContent("¼¼ÄÜ±¶ÂÊ"));
-        EditorGUILayout.PropertyField(damageBonus, new GUIContent("ÉËº¦¼Ó³É"));
-        EditorGUILayout.PropertyField(reactionMultiplier, new GUIContent("·´Ó¦±¶ÂÊ"));
-        EditorGUILayout.PropertyField(canCrit, new GUIContent("ÊÇ·ñ¿É±©»÷"));
+        DrawTitle("Í¨ï¿½ï¿½ï¿½Ëºï¿½ï¿½ï¿½ï¿½ï¿½");
+        EditorGUILayout.PropertyField(baseDamage, new GUIContent("ï¿½ï¿½ï¿½ï¿½ï¿½Ëºï¿½"));
+        EditorGUILayout.PropertyField(knockback, new GUIContent("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"));
+        EditorGUILayout.PropertyField(element, new GUIContent("Ôªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"));
+        EditorGUILayout.PropertyField(canApplyElementStatus, new GUIContent("ï¿½É¸ï¿½ï¿½ï¿½Ôªï¿½ï¿½×´Ì¬"));
+        EditorGUILayout.PropertyField(skillMultiplier, new GUIContent("ï¿½ï¿½ï¿½Ü±ï¿½ï¿½ï¿½"));
+        EditorGUILayout.PropertyField(damageBonus, new GUIContent("ï¿½Ëºï¿½ï¿½Ó³ï¿½"));
+        EditorGUILayout.PropertyField(reactionMultiplier, new GUIContent("ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½"));
+        EditorGUILayout.PropertyField(canCrit, new GUIContent("ï¿½Ç·ï¿½É±ï¿½ï¿½ï¿½"));
     }
 
     private void DrawCooldownSettings()
     {
-        DrawTitle("¼¼ÄÜÀäÈ´");
+        DrawTitle("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È´");
 
         EditorGUILayout.PropertyField(
             useSkillCooldown,
-            new GUIContent("ÆôÓÃ¼¼ÄÜ CD")
+            new GUIContent("ï¿½ï¿½ï¿½Ã¼ï¿½ï¿½ï¿½ CD")
         );
 
         if (useSkillCooldown.boolValue)
         {
             EditorGUILayout.PropertyField(
                 skillCooldown,
-                new GUIContent("CD Ê±¼ä")
+                new GUIContent("CD Ê±ï¿½ï¿½")
             );
         }
     }
 
     private void DrawSlashSettings()
     {
-        DrawTitle("Slash ×¨ÊôÉèÖÃ");
-        EditorGUILayout.PropertyField(slashSphereRadius, new GUIContent("¼ì²â°ë¾¶"));
-        EditorGUILayout.PropertyField(slashSampleCount, new GUIContent("²ÉÑùÊýÁ¿"));
+        DrawTitle("Slash ×¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+        EditorGUILayout.PropertyField(slashSphereRadius, new GUIContent("ï¿½ï¿½ï¿½ë¾¶"));
+        EditorGUILayout.PropertyField(slashSampleCount, new GUIContent("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"));
     }
 
     private void DrawFireSettings()
     {
         DrawCooldownSettings();
 
-        DrawTitle("Fire ·¶Î§ÉËº¦");
-        EditorGUILayout.PropertyField(fireDamageRadius, new GUIContent("»ðÑæ·¶Î§°ë¾¶"));
+        DrawTitle("Fire ï¿½ï¿½Î§ï¿½Ëºï¿½");
+        EditorGUILayout.PropertyField(fireDamageRadius, new GUIContent("ï¿½ï¿½ï¿½æ·¶Î§ï¿½ë¾¶"));
 
-        DrawTitle("Burning È¼ÉÕ×´Ì¬");
-        EditorGUILayout.PropertyField(applyBurning, new GUIContent("ÊÇ·ñ¸½¼ÓÈ¼ÉÕ"));
-        EditorGUILayout.PropertyField(burningDuration, new GUIContent("È¼ÉÕ³ÖÐøÊ±¼ä"));
-        EditorGUILayout.PropertyField(burningTickInterval, new GUIContent("È¼ÉÕ¼ä¸ô"));
-        EditorGUILayout.PropertyField(burningTickDamage, new GUIContent("È¼ÉÕÃ¿ÌøÉËº¦"));
+        DrawTitle("Burning È¼ï¿½ï¿½×´Ì¬");
+        EditorGUILayout.PropertyField(applyBurning, new GUIContent("ï¿½Ç·ñ¸½¼ï¿½È¼ï¿½ï¿½"));
+        EditorGUILayout.PropertyField(burningDuration, new GUIContent("È¼ï¿½Õ³ï¿½ï¿½ï¿½Ê±ï¿½ï¿½"));
+        EditorGUILayout.PropertyField(burningTickInterval, new GUIContent("È¼ï¿½Õ¼ï¿½ï¿½"));
+        EditorGUILayout.PropertyField(burningTickDamage, new GUIContent("È¼ï¿½ï¿½Ã¿ï¿½ï¿½ï¿½Ëºï¿½"));
 
-        DrawTitle("Íæ¼Ò»ð¸½Ä§");
-        EditorGUILayout.PropertyField(applyInfusionToPlayer, new GUIContent("ÊÇ·ñ¸øÍæ¼Ò»ð¸½Ä§"));
-        EditorGUILayout.PropertyField(infusionDuration, new GUIContent("¸½Ä§³ÖÐøÊ±¼ä"));
-        EditorGUILayout.PropertyField(infusionDamageMultiplier, new GUIContent("¸½Ä§ÉËº¦±¶ÂÊ"));
-        EditorGUILayout.PropertyField(infusionApplyBurningOnHit, new GUIContent("¸½Ä§¹¥»÷ÊÇ·ñ¸½¼ÓÈ¼ÉÕ"));
-        EditorGUILayout.PropertyField(infusionBurningDuration, new GUIContent("¸½Ä§È¼ÉÕ³ÖÐøÊ±¼ä"));
-        EditorGUILayout.PropertyField(infusionBurningTickInterval, new GUIContent("¸½Ä§È¼ÉÕ¼ä¸ô"));
-        EditorGUILayout.PropertyField(infusionBurningTickDamage, new GUIContent("¸½Ä§È¼ÉÕÉËº¦"));
+        DrawTitle("ï¿½ï¿½Ò»ï¿½Ä§");
+        EditorGUILayout.PropertyField(applyInfusionToPlayer, new GUIContent("ï¿½Ç·ï¿½ï¿½ï¿½ï¿½Ò»ï¿½Ä§"));
+        EditorGUILayout.PropertyField(infusionDuration, new GUIContent("ï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½"));
+        EditorGUILayout.PropertyField(infusionDamageMultiplier, new GUIContent("ï¿½ï¿½Ä§ï¿½Ëºï¿½ï¿½ï¿½ï¿½ï¿½"));
+        EditorGUILayout.PropertyField(infusionApplyBurningOnHit, new GUIContent("ï¿½ï¿½Ä§ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ñ¸½¼ï¿½È¼ï¿½ï¿½"));
+        EditorGUILayout.PropertyField(infusionBurningDuration, new GUIContent("ï¿½ï¿½Ä§È¼ï¿½Õ³ï¿½ï¿½ï¿½Ê±ï¿½ï¿½"));
+        EditorGUILayout.PropertyField(infusionBurningTickInterval, new GUIContent("ï¿½ï¿½Ä§È¼ï¿½Õ¼ï¿½ï¿½"));
+        EditorGUILayout.PropertyField(infusionBurningTickDamage, new GUIContent("ï¿½ï¿½Ä§È¼ï¿½ï¿½ï¿½Ëºï¿½"));
     }
 
     private void DrawWaterSettings()
     {
         DrawCooldownSettings();
 
-        DrawTitle("Water ¹â»·ÉèÖÃ");
-        EditorGUILayout.PropertyField(waterAuraDuration, new GUIContent("Ë®¹â»·³ÖÐøÊ±¼ä"));
+        DrawTitle("Water ï¿½â»·ï¿½ï¿½ï¿½ï¿½");
+        EditorGUILayout.PropertyField(waterAuraDuration, new GUIContent("Ë®ï¿½â»·ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½"));
 
-        DrawTitle("Water Ë®µ¯Éú³É");
-        EditorGUILayout.PropertyField(waterUsePool, new GUIContent("Ê¹ÓÃ¶ÔÏó³Ø"));
+        DrawTitle("Water Ë®ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+        EditorGUILayout.PropertyField(waterUsePool, new GUIContent("Ê¹ï¿½Ã¶ï¿½ï¿½ï¿½ï¿½"));
 
         if (waterUsePool.boolValue)
         {
-            EditorGUILayout.PropertyField(waterProjectilePoolName, new GUIContent("Ë®µ¯³ØÃû³Æ / Resources Â·¾¶"));
+            EditorGUILayout.PropertyField(waterProjectilePoolName, new GUIContent("Ë®ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ / Resources Â·ï¿½ï¿½"));
         }
         else
         {
-            EditorGUILayout.PropertyField(waterProjectilePrefab, new GUIContent("Ë®µ¯ Prefab"));
+            EditorGUILayout.PropertyField(waterProjectilePrefab, new GUIContent("Ë®ï¿½ï¿½ Prefab"));
         }
 
-        EditorGUILayout.PropertyField(waterShootInterval, new GUIContent("·¢Éä¼ä¸ô"));
-        EditorGUILayout.PropertyField(waterSearchRange, new GUIContent("Ë÷µÐ·¶Î§"));
+        EditorGUILayout.PropertyField(waterShootInterval, new GUIContent("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"));
+        EditorGUILayout.PropertyField(waterSearchRange, new GUIContent("ï¿½ï¿½ï¿½Ð·ï¿½Î§"));
 
-        DrawTitle("Water µ¯Ä»ÉèÖÃ");
-        EditorGUILayout.PropertyField(waterUseBarrage, new GUIContent("Ê¹ÓÃµ¯Ä»·¢Éä"));
+        DrawTitle("Water ï¿½ï¿½Ä»ï¿½ï¿½ï¿½ï¿½");
+        EditorGUILayout.PropertyField(waterUseBarrage, new GUIContent("Ê¹ï¿½Ãµï¿½Ä»ï¿½ï¿½ï¿½ï¿½"));
 
         if (waterUseBarrage.boolValue)
         {
-            EditorGUILayout.PropertyField(waterProjectileCountPerBurst, new GUIContent("Ã¿ÂÖË®µ¯ÊýÁ¿"));
-            EditorGUILayout.PropertyField(waterBarrageAngle, new GUIContent("µ¯Ä»Õ¹¿ª½Ç¶È"));
-            EditorGUILayout.PropertyField(waterBarrageSpawnRadius, new GUIContent("Éú³ÉÀ©É¢°ë¾¶"));
-            EditorGUILayout.PropertyField(waterBarrageVerticalStep, new GUIContent("ÉÏÏÂ´íÎ»¾àÀë"));
-            EditorGUILayout.PropertyField(waterDistributeTargets, new GUIContent("ÊÇ·ñ·ÖÉ¢¹¥»÷¶à¸öÄ¿±ê"));
+            EditorGUILayout.PropertyField(waterProjectileCountPerBurst, new GUIContent("Ã¿ï¿½ï¿½Ë®ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"));
+            EditorGUILayout.PropertyField(waterBarrageAngle, new GUIContent("ï¿½ï¿½Ä»Õ¹ï¿½ï¿½ï¿½Ç¶ï¿½"));
+            EditorGUILayout.PropertyField(waterBarrageSpawnRadius, new GUIContent("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É¢ï¿½ë¾¶"));
+            EditorGUILayout.PropertyField(waterBarrageVerticalStep, new GUIContent("ï¿½ï¿½ï¿½Â´ï¿½Î»ï¿½ï¿½ï¿½ï¿½"));
+            EditorGUILayout.PropertyField(waterDistributeTargets, new GUIContent("ï¿½Ç·ï¿½ï¿½É¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½"));
         }
 
-        DrawTitle("Water Ë®µ¯Åö×²");
-        EditorGUILayout.PropertyField(waterProjectileHitLayer, new GUIContent("Ë®µ¯¿ÉÃüÖÐ Layer"));
-        EditorGUILayout.PropertyField(waterIgnoreAttackerCollision, new GUIContent("ºöÂÔÊÍ·ÅÕßÅö×²"));
-        EditorGUILayout.PropertyField(waterDestroyOnNonHitLayerCollision, new GUIContent("Åöµ½·ÇÄ¿±ê Layer ÊÇ·ñÏûÊ§"));
+        DrawTitle("Water Ë®ï¿½ï¿½ï¿½ï¿½×²");
+        EditorGUILayout.PropertyField(waterProjectileHitLayer, new GUIContent("Ë®ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Layer"));
+        EditorGUILayout.PropertyField(waterIgnoreAttackerCollision, new GUIContent("ï¿½ï¿½ï¿½ï¿½ï¿½Í·ï¿½ï¿½ï¿½ï¿½ï¿½×²"));
+        EditorGUILayout.PropertyField(waterDestroyOnNonHitLayerCollision, new GUIContent("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ Layer ï¿½Ç·ï¿½ï¿½ï¿½Ê§"));
 
-        DrawTitle("Water Ë®µ¯ÉËº¦");
-        EditorGUILayout.PropertyField(waterProjectileDamage, new GUIContent("Ë®µ¯ÉËº¦"));
-        EditorGUILayout.PropertyField(waterProjectileKnockback, new GUIContent("Ë®µ¯»÷ÍË"));
-        EditorGUILayout.PropertyField(wetDuration, new GUIContent("Wet ÊªÈó³ÖÐøÊ±¼ä"));
+        DrawTitle("Water Ë®ï¿½ï¿½ï¿½Ëºï¿½");
+        EditorGUILayout.PropertyField(waterProjectileDamage, new GUIContent("Ë®ï¿½ï¿½ï¿½Ëºï¿½"));
+        EditorGUILayout.PropertyField(waterProjectileKnockback, new GUIContent("Ë®ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"));
+        EditorGUILayout.PropertyField(wetDuration, new GUIContent("Wet Êªï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½"));
 
-        DrawTitle("Water Ë®µ¯µ¯µÀ");
-        EditorGUILayout.PropertyField(waterUseArcHoming, new GUIContent("Ê¹ÓÃ»¡Ïß×·×Ù"));
-        EditorGUILayout.PropertyField(waterProjectileSpeed, new GUIContent("Ë®µ¯ËÙ¶È"));
-        EditorGUILayout.PropertyField(waterProjectileLifeTime, new GUIContent("Ë®µ¯ÉúÃüÖÜÆÚ"));
-        EditorGUILayout.PropertyField(waterArcHeight, new GUIContent("»¡Ïß¸ß¶È"));
-        EditorGUILayout.PropertyField(waterRotateSpeed, new GUIContent("Ðý×ªËÙ¶È"));
-        EditorGUILayout.PropertyField(waterReachDistance, new GUIContent("ÃüÖÐ¾àÀë"));
-        EditorGUILayout.PropertyField(waterTargetOffset, new GUIContent("Ä¿±êÆ«ÒÆ"));
+        DrawTitle("Water Ë®ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+        EditorGUILayout.PropertyField(waterUseArcHoming, new GUIContent("Ê¹ï¿½Ã»ï¿½ï¿½ï¿½×·ï¿½ï¿½"));
+        EditorGUILayout.PropertyField(waterProjectileSpeed, new GUIContent("Ë®ï¿½ï¿½ï¿½Ù¶ï¿½"));
+        EditorGUILayout.PropertyField(waterProjectileLifeTime, new GUIContent("Ë®ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"));
+        EditorGUILayout.PropertyField(waterArcHeight, new GUIContent("ï¿½ï¿½ï¿½ß¸ß¶ï¿½"));
+        EditorGUILayout.PropertyField(waterRotateSpeed, new GUIContent("ï¿½ï¿½×ªï¿½Ù¶ï¿½"));
+        EditorGUILayout.PropertyField(waterReachDistance, new GUIContent("ï¿½ï¿½ï¿½Ð¾ï¿½ï¿½ï¿½"));
+        EditorGUILayout.PropertyField(waterTargetOffset, new GUIContent("Ä¿ï¿½ï¿½Æ«ï¿½ï¿½"));
 
-        DrawTitle("Water ±¬Õ¨ÒôÐ§");
+        DrawTitle("Water ï¿½ï¿½Õ¨ï¿½ï¿½Ð§");
         EditorGUILayout.PropertyField(
             waterExplosionSoundName,
-            new GUIContent("±¬Õ¨ÒôÐ§Ãû³Æ")
+            new GUIContent("ï¿½ï¿½Õ¨ï¿½ï¿½Ð§ï¿½ï¿½ï¿½ï¿½")
         );
         EditorGUILayout.PropertyField(
             waterExplosionSoundSync,
-            new GUIContent("Í¬²½¼ÓÔØÒôÐ§")
+            new GUIContent("Í¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð§")
         );
         EditorGUILayout.HelpBox(
-            "ÌîÐ´ Resources/Audio ÏÂµÄÏà¶ÔÂ·¾¶£¬²»ÐèÒªÀ©Õ¹Ãû¡£ÀýÈç£ºSkills/WaterExplosion",
+            "ï¿½ï¿½Ð´ Resources/Audio ï¿½Âµï¿½ï¿½ï¿½ï¿½Â·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½Õ¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ç£ºSkills/WaterExplosion",
             MessageType.Info
         );
 
-        DrawTitle("Water µ¯Ä»Ëæ»ú¸Ð");
-        EditorGUILayout.PropertyField(waterUseRandomBarrage, new GUIContent("Ê¹ÓÃËæ»úµ¯Ä»"));
+        DrawTitle("Water ï¿½ï¿½Ä»ï¿½ï¿½ï¿½ï¿½ï¿½");
+        EditorGUILayout.PropertyField(waterUseRandomBarrage, new GUIContent("Ê¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä»"));
 
         if (waterUseRandomBarrage.boolValue)
         {
-            EditorGUILayout.PropertyField(waterBurstDelayMin, new GUIContent("×îÐ¡·¢ÉäÑÓ³Ù"));
-            EditorGUILayout.PropertyField(waterBurstDelayMax, new GUIContent("×î´ó·¢ÉäÑÓ³Ù"));
-            EditorGUILayout.PropertyField(waterRandomSpawnRadius, new GUIContent("Ëæ»úÉú³É°ë¾¶"));
-            EditorGUILayout.PropertyField(waterRandomTargetOffsetRadius, new GUIContent("Ëæ»úÄ¿±êÆ«ÒÆ°ë¾¶"));
-            EditorGUILayout.PropertyField(waterArcSideOffsetMin, new GUIContent("×îÐ¡²àÏò»¡ÏßÆ«ÒÆ"));
-            EditorGUILayout.PropertyField(waterArcSideOffsetMax, new GUIContent("×î´ó²àÏò»¡ÏßÆ«ÒÆ"));
-            EditorGUILayout.PropertyField(waterArcHeightRandomMin, new GUIContent("×îÐ¡»¡Ïß¸ß¶ÈËæ»ú"));
-            EditorGUILayout.PropertyField(waterArcHeightRandomMax, new GUIContent("×î´ó»¡Ïß¸ß¶ÈËæ»ú"));
-            EditorGUILayout.PropertyField(waterSpeedRandomMin, new GUIContent("×îÐ¡ËÙ¶ÈËæ»ú"));
-            EditorGUILayout.PropertyField(waterSpeedRandomMax, new GUIContent("×î´óËÙ¶ÈËæ»ú"));
+            EditorGUILayout.PropertyField(waterBurstDelayMin, new GUIContent("ï¿½ï¿½Ð¡ï¿½ï¿½ï¿½ï¿½ï¿½Ó³ï¿½"));
+            EditorGUILayout.PropertyField(waterBurstDelayMax, new GUIContent("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó³ï¿½"));
+            EditorGUILayout.PropertyField(waterRandomSpawnRadius, new GUIContent("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É°ë¾¶"));
+            EditorGUILayout.PropertyField(waterRandomTargetOffsetRadius, new GUIContent("ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½Æ«ï¿½Æ°ë¾¶"));
+            EditorGUILayout.PropertyField(waterArcSideOffsetMin, new GUIContent("ï¿½ï¿½Ð¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ«ï¿½ï¿½"));
+            EditorGUILayout.PropertyField(waterArcSideOffsetMax, new GUIContent("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ«ï¿½ï¿½"));
+            EditorGUILayout.PropertyField(waterArcHeightRandomMin, new GUIContent("ï¿½ï¿½Ð¡ï¿½ï¿½ï¿½ß¸ß¶ï¿½ï¿½ï¿½ï¿½"));
+            EditorGUILayout.PropertyField(waterArcHeightRandomMax, new GUIContent("ï¿½ï¿½ï¿½ï¿½ß¸ß¶ï¿½ï¿½ï¿½ï¿½"));
+            EditorGUILayout.PropertyField(waterSpeedRandomMin, new GUIContent("ï¿½ï¿½Ð¡ï¿½Ù¶ï¿½ï¿½ï¿½ï¿½"));
+            EditorGUILayout.PropertyField(waterSpeedRandomMax, new GUIContent("ï¿½ï¿½ï¿½ï¿½Ù¶ï¿½ï¿½ï¿½ï¿½"));
         }
     }
 
@@ -566,131 +566,131 @@ public class BrushSkillConfigEditor : Editor
     {
         DrawCooldownSettings();
 
-        DrawTitle("Wood »ù´¡ÉèÖÃ");
-        EditorGUILayout.PropertyField(woodEffectDuration, new GUIContent("¼¼ÄÜ³ÖÐøÊ±¼ä"));
+        DrawTitle("Wood ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+        EditorGUILayout.PropertyField(woodEffectDuration, new GUIContent("ï¿½ï¿½ï¿½Ü³ï¿½ï¿½ï¿½Ê±ï¿½ï¿½"));
 
-        DrawTitle("Wood »ØÑªÉèÖÃ");
-        EditorGUILayout.PropertyField(woodHealAmountPerTick, new GUIContent("Ã¿Ìø»ØÑªÁ¿"));
-        EditorGUILayout.PropertyField(woodHealTickInterval, new GUIContent("»ØÑª¼ä¸ô"));
+        DrawTitle("Wood ï¿½ï¿½Ñªï¿½ï¿½ï¿½ï¿½");
+        EditorGUILayout.PropertyField(woodHealAmountPerTick, new GUIContent("Ã¿ï¿½ï¿½ï¿½ï¿½Ñªï¿½ï¿½"));
+        EditorGUILayout.PropertyField(woodHealTickInterval, new GUIContent("ï¿½ï¿½Ñªï¿½ï¿½ï¿½"));
 
-        DrawTitle("Wood ÖÎÁÆ VFX ÉèÖÃ");
-        EditorGUILayout.PropertyField(woodHealVfxUsePool, new GUIContent("Ê¹ÓÃ¶ÔÏó³Ø"));
+        DrawTitle("Wood ï¿½ï¿½ï¿½ï¿½ VFX ï¿½ï¿½ï¿½ï¿½");
+        EditorGUILayout.PropertyField(woodHealVfxUsePool, new GUIContent("Ê¹ï¿½Ã¶ï¿½ï¿½ï¿½ï¿½"));
 
         if (woodHealVfxUsePool.boolValue)
         {
-            EditorGUILayout.PropertyField(woodHealVfxPoolName, new GUIContent("ÖÎÁÆ VFX ³ØÃû³Æ / Resources Â·¾¶"));
+            EditorGUILayout.PropertyField(woodHealVfxPoolName, new GUIContent("ï¿½ï¿½ï¿½ï¿½ VFX ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ / Resources Â·ï¿½ï¿½"));
         }
         else
         {
-            EditorGUILayout.PropertyField(woodHealVfxPrefab, new GUIContent("ÖÎÁÆ VFX Prefab"));
+            EditorGUILayout.PropertyField(woodHealVfxPrefab, new GUIContent("ï¿½ï¿½ï¿½ï¿½ VFX Prefab"));
         }
 
-        EditorGUILayout.PropertyField(woodHealVfxLocalOffset, new GUIContent("ÖÎÁÆ VFX ±¾µØÆ«ÒÆ"));
-        EditorGUILayout.PropertyField(woodHealVfxParentToPlayer, new GUIContent("ÖÎÁÆ VFX ÊÇ·ñ¸úËæ Player"));
-        EditorGUILayout.PropertyField(woodHealVfxRecycleDelay, new GUIContent("ÖÎÁÆ VFX »ØÊÕÑÓ³Ù"));
+        EditorGUILayout.PropertyField(woodHealVfxLocalOffset, new GUIContent("ï¿½ï¿½ï¿½ï¿½ VFX ï¿½ï¿½ï¿½ï¿½Æ«ï¿½ï¿½"));
+        EditorGUILayout.PropertyField(woodHealVfxParentToPlayer, new GUIContent("ï¿½ï¿½ï¿½ï¿½ VFX ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ Player"));
+        EditorGUILayout.PropertyField(woodHealVfxRecycleDelay, new GUIContent("ï¿½ï¿½ï¿½ï¿½ VFX ï¿½ï¿½ï¿½ï¿½ï¿½Ó³ï¿½"));
 
-        DrawTitle("Wood »¤¶Ü VFX ÉèÖÃ");
-        EditorGUILayout.PropertyField(woodShieldVfxUsePool, new GUIContent("Ê¹ÓÃ¶ÔÏó³Ø"));
+        DrawTitle("Wood ï¿½ï¿½ï¿½ï¿½ VFX ï¿½ï¿½ï¿½ï¿½");
+        EditorGUILayout.PropertyField(woodShieldVfxUsePool, new GUIContent("Ê¹ï¿½Ã¶ï¿½ï¿½ï¿½ï¿½"));
 
         if (woodShieldVfxUsePool.boolValue)
         {
-            EditorGUILayout.PropertyField(woodShieldVfxPoolName, new GUIContent("»¤¶Ü VFX ³ØÃû³Æ / Resources Â·¾¶"));
+            EditorGUILayout.PropertyField(woodShieldVfxPoolName, new GUIContent("ï¿½ï¿½ï¿½ï¿½ VFX ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ / Resources Â·ï¿½ï¿½"));
         }
         else
         {
-            EditorGUILayout.PropertyField(woodShieldVfxPrefab, new GUIContent("»¤¶Ü VFX Prefab"));
+            EditorGUILayout.PropertyField(woodShieldVfxPrefab, new GUIContent("ï¿½ï¿½ï¿½ï¿½ VFX Prefab"));
         }
 
-        EditorGUILayout.PropertyField(woodShieldVfxLocalOffset, new GUIContent("»¤¶Ü VFX ±¾µØÆ«ÒÆ"));
-        EditorGUILayout.PropertyField(woodShieldVfxParentToPlayer, new GUIContent("»¤¶Ü VFX ÊÇ·ñ¸úËæ Player Î»ÖÃ"));
-        EditorGUILayout.PropertyField(woodShieldVfxForceLoop, new GUIContent("»¤¶Ü VFX Ç¿ÖÆÑ­»·"));
+        EditorGUILayout.PropertyField(woodShieldVfxLocalOffset, new GUIContent("ï¿½ï¿½ï¿½ï¿½ VFX ï¿½ï¿½ï¿½ï¿½Æ«ï¿½ï¿½"));
+        EditorGUILayout.PropertyField(woodShieldVfxParentToPlayer, new GUIContent("ï¿½ï¿½ï¿½ï¿½ VFX ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ Player Î»ï¿½ï¿½"));
+        EditorGUILayout.PropertyField(woodShieldVfxForceLoop, new GUIContent("ï¿½ï¿½ï¿½ï¿½ VFX Ç¿ï¿½ï¿½Ñ­ï¿½ï¿½"));
 
-        DrawTitle("Wood »¤¶ÜÉèÖÃ");
-        EditorGUILayout.PropertyField(woodGrantShield, new GUIContent("ÊÇ·ñ¸øÓè»¤¶Ü"));
+        DrawTitle("Wood ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+        EditorGUILayout.PropertyField(woodGrantShield, new GUIContent("ï¿½Ç·ï¿½ï¿½ï¿½è»¤ï¿½ï¿½"));
 
         if (woodGrantShield.boolValue)
         {
-            EditorGUILayout.PropertyField(woodShieldAmount, new GUIContent("»¤¶ÜÖµ"));
-            EditorGUILayout.PropertyField(woodShieldDuration, new GUIContent("»¤¶Ü³ÖÐøÊ±¼ä"));
-            EditorGUILayout.PropertyField(woodRefreshShieldWhenReapply, new GUIContent("ÖØ¸´ÊÍ·ÅÊÇ·ñË¢ÐÂ»¤¶Ü"));
+            EditorGUILayout.PropertyField(woodShieldAmount, new GUIContent("ï¿½ï¿½ï¿½ï¿½Öµ"));
+            EditorGUILayout.PropertyField(woodShieldDuration, new GUIContent("ï¿½ï¿½ï¿½Ü³ï¿½ï¿½ï¿½Ê±ï¿½ï¿½"));
+            EditorGUILayout.PropertyField(woodRefreshShieldWhenReapply, new GUIContent("ï¿½Ø¸ï¿½ï¿½Í·ï¿½ï¿½Ç·ï¿½Ë¢ï¿½Â»ï¿½ï¿½ï¿½"));
         }
     }
     private void DrawBridgeSettings()
     {
-        DrawTitle("Bridge ×¨ÊôÉèÖÃ");
-        EditorGUILayout.PropertyField(bridgeTriggerLayer, new GUIContent("ÇÅ´¥·¢Æ÷ Layer"));
-        EditorGUILayout.PropertyField(bridgeCastRadius, new GUIContent("¼ì²â°ë¾¶"));
-        EditorGUILayout.PropertyField(bridgeActiveDuration, new GUIContent("ÇÅ³ÖÐøÊ±¼ä"));
+        DrawTitle("Bridge ×¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+        EditorGUILayout.PropertyField(bridgeTriggerLayer, new GUIContent("ï¿½Å´ï¿½ï¿½ï¿½ï¿½ï¿½ Layer"));
+        EditorGUILayout.PropertyField(bridgeCastRadius, new GUIContent("ï¿½ï¿½ï¿½ë¾¶"));
+        EditorGUILayout.PropertyField(bridgeActiveDuration, new GUIContent("ï¿½Å³ï¿½ï¿½ï¿½Ê±ï¿½ï¿½"));
     }
 
     private void DrawWindSettings()
     {
         DrawCooldownSettings();
 
-        DrawTitle("Wind ·ç³¡Éú³É");
+        DrawTitle("Wind ï¿½ç³¡ï¿½ï¿½ï¿½ï¿½");
 
         EditorGUILayout.PropertyField(
             windFieldPoolName,
-            new GUIContent("·ç³¡¶ÔÏó³ØÂ·¾¶")
+            new GUIContent("ï¿½ç³¡ï¿½ï¿½ï¿½ï¿½ï¿½Â·ï¿½ï¿½")
         );
 
         EditorGUILayout.PropertyField(
             windSpawnDistance,
-            new GUIContent("¾µÍ·Ç°Éú³É¾àÀë")
+            new GUIContent("ï¿½ï¿½Í·Ç°ï¿½ï¿½ï¿½É¾ï¿½ï¿½ï¿½")
         );
 
         EditorGUILayout.PropertyField(
             windSpawnYOffset,
-            new GUIContent("Éú³É Y Æ«ÒÆ")
+            new GUIContent("ï¿½ï¿½ï¿½ï¿½ Y Æ«ï¿½ï¿½")
         );
 
         EditorGUILayout.PropertyField(
             windFieldDuration,
-            new GUIContent("·ç³¡³ÖÐøÊ±¼ä")
+            new GUIContent("ï¿½ç³¡ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½")
         );
 
-        DrawTitle("Wind ³ÖÐøÒôÐ§");
+        DrawTitle("Wind ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð§");
 
         EditorGUILayout.PropertyField(
             windLoopSoundName,
-            new GUIContent("Ñ­»·ÒôÐ§Ãû³Æ")
+            new GUIContent("Ñ­ï¿½ï¿½ï¿½ï¿½Ð§ï¿½ï¿½ï¿½ï¿½")
         );
 
         EditorGUILayout.PropertyField(
             windLoopSoundSync,
-            new GUIContent("Í¬²½¼ÓÔØÒôÐ§")
+            new GUIContent("Í¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð§")
         );
 
         EditorGUILayout.HelpBox(
-            "ÌîÐ´ Resources/Audio ÏÂµÄÏà¶ÔÂ·¾¶£¬²»ÐèÒªÀ©Õ¹Ãû¡£ÀýÈç£ºSkills/WindLoop¡£¸ÃÒôÐ§»áÔÚ·ç³¡´æÔÚÆÚ¼äÑ­»·²¥·Å¡£",
+            "ï¿½ï¿½Ð´ Resources/Audio ï¿½Âµï¿½ï¿½ï¿½ï¿½Â·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½Õ¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ç£ºSkills/WindLoopï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð§ï¿½ï¿½ï¿½Ú·ç³¡ï¿½ï¿½ï¿½ï¿½ï¿½Ú¼ï¿½Ñ­ï¿½ï¿½ï¿½ï¿½ï¿½Å¡ï¿½",
             MessageType.Info
         );
 
-        DrawTitle("Wind À­×§");
+        DrawTitle("Wind ï¿½ï¿½×§");
 
         EditorGUILayout.PropertyField(
             windPullRadius,
-            new GUIContent("À­×§·¶Î§")
+            new GUIContent("ï¿½ï¿½×§ï¿½ï¿½Î§")
         );
 
         EditorGUILayout.PropertyField(
             windPullSpeed,
-            new GUIContent("À­×§ËÙ¶È")
+            new GUIContent("ï¿½ï¿½×§ï¿½Ù¶ï¿½")
         );
 
         EditorGUILayout.PropertyField(
             windCenterRadius,
-            new GUIContent("·ç³¡ÖÐÐÄÅÐ¶¨°ë¾¶")
+            new GUIContent("ï¿½ç³¡ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½ï¿½ë¾¶")
         );
 
-        DrawTitle("Wind ÖÐÐÄ³ÖÐøÉËº¦");
+        DrawTitle("Wind ï¿½ï¿½ï¿½Ä³ï¿½ï¿½ï¿½ï¿½Ëºï¿½");
 
         EditorGUILayout.PropertyField(
             windCenterTickInterval,
-            new GUIContent("³ÖÐøÉËº¦¼ä¸ô")
+            new GUIContent("ï¿½ï¿½ï¿½ï¿½ï¿½Ëºï¿½ï¿½ï¿½ï¿½")
         );
 
-        DrawTitle("Wind À©É¢ÑÕÉ«");
+        DrawTitle("Wind ï¿½ï¿½É¢ï¿½ï¿½É«");
 
         EditorGUILayout.PropertyField(
             windFireColor,
@@ -702,28 +702,28 @@ public class BrushSkillConfigEditor : Editor
             new GUIContent("Water È¾É«")
         );
 
-        DrawTitle("Wind Fire À©É¢");
+        DrawTitle("Wind Fire ï¿½ï¿½É¢");
 
         EditorGUILayout.PropertyField(
             windSpreadFireDuration,
-            new GUIContent("Fire ×´Ì¬³ÖÐøÊ±¼ä")
+            new GUIContent("Fire ×´Ì¬ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½")
         );
 
         EditorGUILayout.PropertyField(
             windSpreadFireTickInterval,
-            new GUIContent("È¼ÉÕ¼ä¸ô")
+            new GUIContent("È¼ï¿½Õ¼ï¿½ï¿½")
         );
 
         EditorGUILayout.PropertyField(
             windSpreadFireTickDamage,
-            new GUIContent("È¼ÉÕÃ¿ÌøÉËº¦")
+            new GUIContent("È¼ï¿½ï¿½Ã¿ï¿½ï¿½ï¿½Ëºï¿½")
         );
 
-        DrawTitle("Wind Water À©É¢");
+        DrawTitle("Wind Water ï¿½ï¿½É¢");
 
         EditorGUILayout.PropertyField(
             windSpreadWetDuration,
-            new GUIContent("Wet ×´Ì¬³ÖÐøÊ±¼ä")
+            new GUIContent("Wet ×´Ì¬ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½")
         );
     }
 

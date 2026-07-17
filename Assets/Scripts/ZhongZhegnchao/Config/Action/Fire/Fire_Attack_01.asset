@@ -244,7 +244,7 @@ MonoBehaviour:
       knockback: 10
       targetLayer:
         serializedVersion: 2
-        m_Bits: 128
+        m_Bits: 131200
       hitOncePerTarget: 1
       queryTriggerInteraction: 2
       triggerHitStopOnHit: 1
