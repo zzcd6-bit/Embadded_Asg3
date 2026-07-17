@@ -117,6 +117,11 @@ MonoBehaviour:
         m_PreInfinity: 2
         m_PostInfinity: 2
         m_RotationOrder: 4
+    audio:
+      soundName: 
+      loop: 0
+      isSync: 1
+      stopWhenActionEnds: 1
   - enabled: 1
     eventName: "\u65B0\u4F4D\u79FB\u4E8B\u4EF6"
     type: 4
@@ -207,6 +212,11 @@ MonoBehaviour:
         m_PreInfinity: 2
         m_PostInfinity: 2
         m_RotationOrder: 4
+    audio:
+      soundName: 
+      loop: 0
+      isSync: 1
+      stopWhenActionEnds: 1
   - enabled: 1
     eventName: "\u65B0\u653B\u51FB\u5224\u5B9A"
     type: 1
@@ -297,6 +307,11 @@ MonoBehaviour:
         m_PreInfinity: 2
         m_PostInfinity: 2
         m_RotationOrder: 4
+    audio:
+      soundName: 
+      loop: 0
+      isSync: 1
+      stopWhenActionEnds: 1
   - enabled: 1
     eventName: "\u65B0\u4F4D\u79FB\u4E8B\u4EF6"
     type: 4
@@ -387,3 +402,103 @@ MonoBehaviour:
         m_PreInfinity: 2
         m_PostInfinity: 2
         m_RotationOrder: 4
+    audio:
+      soundName: 
+      loop: 0
+      isSync: 1
+      stopWhenActionEnds: 1
+  - enabled: 1
+    eventName: "\u65B0\u97F3\u6548\u4E8B\u4EF6"
+    type: 5
+    startTime: 0.05246914
+    duration: 0
+    vfx:
+      prefab: {fileID: 0}
+      usePool: 1
+      poolName: 
+      bindPointName: 
+      attachToBindPoint: 0
+      localPosition: {x: 0, y: 0, z: 0}
+      localEulerAngles: {x: 0, y: 0, z: 0}
+      localScale: {x: 1, y: 1, z: 1}
+      destroyDelay: 2
+    hitBox:
+      shape: 0
+      localOffset: {x: 0, y: 1, z: 1}
+      localEulerAngles: {x: 0, y: 0, z: 0}
+      size: {x: 1, y: 1, z: 1}
+      radius: 1
+      capsuleHeight: 2
+      sectorAngle: 90
+      damage: 10
+      knockback: 3
+      targetLayer:
+        serializedVersion: 2
+        m_Bits: 4294967295
+      hitOncePerTarget: 1
+      queryTriggerInteraction: 2
+      triggerHitStopOnHit: 1
+      hitStopOnHit:
+        stopDuration: 0.06
+        animationSpeedMultiplier: 0.05
+        affectSelf: 1
+        affectObjectsInRange: 0
+        affectedRadius: 3
+        affectedLayer:
+          serializedVersion: 2
+          m_Bits: 4294967295
+      spawnHitVFXOnHit: 1
+      hitVFX:
+        prefab: {fileID: 0}
+        usePool: 1
+        poolName: 
+        bindPointName: 
+        attachToBindPoint: 0
+        localPosition: {x: 0, y: 0, z: 0}
+        localEulerAngles: {x: 0, y: 0, z: 0}
+        localScale: {x: 1, y: 1, z: 1}
+        destroyDelay: 1.5
+    hitStop:
+      stopDuration: 0.06
+      animationSpeedMultiplier: 0.05
+      affectSelf: 1
+      affectObjectsInRange: 0
+      affectedRadius: 3
+      affectedLayer:
+        serializedVersion: 2
+        m_Bits: 4294967295
+    speed:
+      animationSpeed: 1
+    movement:
+      distance: 1
+      localDirection: {x: 0, y: 0, z: 1}
+      horizontalOnly: 1
+      moveCurve:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 0
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 1
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+    audio:
+      soundName: Actions/FireSlash
+      loop: 0
+      isSync: 1
+      stopWhenActionEnds: 1

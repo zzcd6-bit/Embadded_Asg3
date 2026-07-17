@@ -1220,6 +1220,13 @@ MonoBehaviour:
   useRuntimeFireTemplate: 0
   useRuntimeBridgeTemplate: 0
   exitBrushModeOnRecognized: 1
+  playRecognitionSuccessSound: 1
+  recognitionSoundSync: 1
+  slashSuccessSound: Brush/Recognition/Slash
+  fireSuccessSound: Brush/Recognition/Fire
+  waterSuccessSound: Brush/Recognition/Water
+  woodSuccessSound: Brush/Recognition/Wood
+  windSuccessSound: Brush/Recognition/Wind
   skillInventory: {fileID: 219517337}
   debugPointInfo: 1
   debugTemplateInfo: 1

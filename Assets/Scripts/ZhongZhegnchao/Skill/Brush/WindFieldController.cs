@@ -16,6 +16,9 @@ public class WindFieldController : MonoBehaviour
     private bool isRunning;
     private bool isRecycling;
 
+    private AudioSource windLoopAudioSource;
+    private int windAudioRequestVersion;
+
     private ElementType absorbedElement =
         ElementType.None;
 
@@ -116,6 +119,7 @@ public class WindFieldController : MonoBehaviour
 
         RestoreParticleColors();
         RestartParticleSystems();
+        StartWindLoopSound();
 
         if (config == null)
         {
@@ -767,6 +771,54 @@ public class WindFieldController : MonoBehaviour
         releaseBuffer.Clear();
     }
 
+    private void StartWindLoopSound()
+    {
+        StopWindLoopSound();
+
+        if (config == null ||
+            string.IsNullOrEmpty(config.windLoopSoundName))
+        {
+            return;
+        }
+
+        int requestVersion = ++windAudioRequestVersion;
+
+        MusicMgr.Instance.PlaySound(
+            config.windLoopSoundName,
+            true,
+            config.windLoopSoundSync,
+            source =>
+            {
+                if (source == null)
+                    return;
+
+                bool requestIsStillValid =
+                    requestVersion == windAudioRequestVersion &&
+                    isRunning &&
+                    gameObject.activeInHierarchy;
+
+                if (!requestIsStillValid)
+                {
+                    MusicMgr.Instance.StopSound(source);
+                    return;
+                }
+
+                windLoopAudioSource = source;
+            }
+        );
+    }
+
+    private void StopWindLoopSound()
+    {
+        windAudioRequestVersion++;
+
+        if (windLoopAudioSource == null)
+            return;
+
+        MusicMgr.Instance.StopSound(windLoopAudioSource);
+        windLoopAudioSource = null;
+    }
+
     private void RecycleSelf()
     {
         if (isRecycling)
@@ -775,6 +827,7 @@ public class WindFieldController : MonoBehaviour
         isRecycling = true;
         isRunning = false;
 
+        StopWindLoopSound();
         ReleaseAllControlledEnemies();
 
         PoolMgr.Instance.PushObj(gameObject);
@@ -784,6 +837,7 @@ public class WindFieldController : MonoBehaviour
     {
         isRunning = false;
 
+        StopWindLoopSound();
         ReleaseAllControlledEnemies();
 
         nextCenterTickTimes.Clear();

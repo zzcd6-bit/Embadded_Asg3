@@ -60,6 +60,9 @@ public class BrushSkillConfigEditor : Editor
     private SerializedProperty waterReachDistance;
     private SerializedProperty waterTargetOffset;
 
+    private SerializedProperty waterExplosionSoundName;
+    private SerializedProperty waterExplosionSoundSync;
+
     private SerializedProperty waterProjectileHitLayer;
     private SerializedProperty waterIgnoreAttackerCollision;
     private SerializedProperty waterDestroyOnNonHitLayerCollision;
@@ -115,6 +118,9 @@ public class BrushSkillConfigEditor : Editor
     private SerializedProperty windSpawnDistance;
     private SerializedProperty windSpawnYOffset;
     private SerializedProperty windFieldDuration;
+
+    private SerializedProperty windLoopSoundName;
+    private SerializedProperty windLoopSoundSync;
 
     private SerializedProperty windCenterTickInterval;
 
@@ -196,6 +202,12 @@ public class BrushSkillConfigEditor : Editor
         waterReachDistance = serializedObject.FindProperty("waterReachDistance");
         waterTargetOffset = serializedObject.FindProperty("waterTargetOffset");
 
+        waterExplosionSoundName =
+            serializedObject.FindProperty("waterExplosionSoundName");
+
+        waterExplosionSoundSync =
+            serializedObject.FindProperty("waterExplosionSoundSync");
+
         waterProjectileHitLayer = serializedObject.FindProperty("waterProjectileHitLayer");
         waterIgnoreAttackerCollision = serializedObject.FindProperty("waterIgnoreAttackerCollision");
         waterDestroyOnNonHitLayerCollision = serializedObject.FindProperty("waterDestroyOnNonHitLayerCollision");
@@ -265,6 +277,16 @@ public class BrushSkillConfigEditor : Editor
         windFieldDuration =
             serializedObject.FindProperty(
                 "windFieldDuration"
+            );
+
+        windLoopSoundName =
+            serializedObject.FindProperty(
+                "windLoopSoundName"
+            );
+
+        windLoopSoundSync =
+            serializedObject.FindProperty(
+                "windLoopSoundSync"
             );
 
         windPullRadius =
@@ -508,6 +530,20 @@ public class BrushSkillConfigEditor : Editor
         EditorGUILayout.PropertyField(waterReachDistance, new GUIContent("命中距离"));
         EditorGUILayout.PropertyField(waterTargetOffset, new GUIContent("目标偏移"));
 
+        DrawTitle("Water 爆炸音效");
+        EditorGUILayout.PropertyField(
+            waterExplosionSoundName,
+            new GUIContent("爆炸音效名称")
+        );
+        EditorGUILayout.PropertyField(
+            waterExplosionSoundSync,
+            new GUIContent("同步加载音效")
+        );
+        EditorGUILayout.HelpBox(
+            "填写 Resources/Audio 下的相对路径，不需要扩展名。例如：Skills/WaterExplosion",
+            MessageType.Info
+        );
+
         DrawTitle("Water 弹幕随机感");
         EditorGUILayout.PropertyField(waterUseRandomBarrage, new GUIContent("使用随机弹幕"));
 
@@ -611,6 +647,23 @@ public class BrushSkillConfigEditor : Editor
         EditorGUILayout.PropertyField(
             windFieldDuration,
             new GUIContent("风场持续时间")
+        );
+
+        DrawTitle("Wind 持续音效");
+
+        EditorGUILayout.PropertyField(
+            windLoopSoundName,
+            new GUIContent("循环音效名称")
+        );
+
+        EditorGUILayout.PropertyField(
+            windLoopSoundSync,
+            new GUIContent("同步加载音效")
+        );
+
+        EditorGUILayout.HelpBox(
+            "填写 Resources/Audio 下的相对路径，不需要扩展名。例如：Skills/WindLoop。该音效会在风场存在期间循环播放。",
+            MessageType.Info
         );
 
         DrawTitle("Wind 拉拽");

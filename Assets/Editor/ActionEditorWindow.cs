@@ -87,6 +87,7 @@ public class ActionEditorWindow : EditorWindow
         ActionEventType.Speed,
         ActionEventType.Movement,
         ActionEventType.VFX,
+        ActionEventType.Audio,
         ActionEventType.HitBox,
         ActionEventType.HitStop
     };
@@ -885,6 +886,11 @@ public class ActionEditorWindow : EditorWindow
             AddEvent(ActionEventType.HitBox);
         }
 
+        if (GUILayout.Button("添加音效"))
+        {
+            AddEvent(ActionEventType.Audio);
+        }
+
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
@@ -1072,6 +1078,10 @@ public class ActionEditorWindow : EditorWindow
                 DrawRelativeProperty(eventProperty, "hitBox", "HitBox 参数", true);
                 break;
 
+            case ActionEventType.Audio:
+                DrawRelativeProperty(eventProperty, "audio", "音效参数", true);
+                break;
+
             case ActionEventType.HitStop:
                 DrawRelativeProperty(eventProperty, "hitStop", "HitStop 参数", true);
                 break;
@@ -1148,7 +1158,8 @@ public class ActionEditorWindow : EditorWindow
             hitBox = new HitBoxEventData(),
             hitStop = new HitStopEventData(),
             speed = new SpeedEventData(),
-            movement = new MovementEventData()
+            movement = new MovementEventData(),
+            audio = new AudioEventData()
         };
 
         config.events.Add(newEvent);
@@ -1243,6 +1254,11 @@ public class ActionEditorWindow : EditorWindow
         if (actionEvent.speed == null)
         {
             actionEvent.speed = new SpeedEventData();
+        }
+
+        if (actionEvent.audio == null)
+        {
+            actionEvent.audio = new AudioEventData();
         }
     }
 
@@ -2037,6 +2053,9 @@ public class ActionEditorWindow : EditorWindow
             case ActionEventType.Movement:
                 return "新位移事件";
 
+            case ActionEventType.Audio:
+                return "新音效事件";
+
             default:
                 return "新事件";
         }
@@ -2061,6 +2080,9 @@ public class ActionEditorWindow : EditorWindow
             case ActionEventType.Movement:
                 return "位移";
 
+            case ActionEventType.Audio:
+                return "音效";
+
             default:
                 return type.ToString();
         }
@@ -2084,6 +2106,9 @@ public class ActionEditorWindow : EditorWindow
 
             case ActionEventType.Movement:
                 return new Color(0.65f, 0.35f, 1.0f);
+
+            case ActionEventType.Audio:
+                return new Color(0.15f, 0.85f, 0.9f);
 
             default:
                 return Color.gray;

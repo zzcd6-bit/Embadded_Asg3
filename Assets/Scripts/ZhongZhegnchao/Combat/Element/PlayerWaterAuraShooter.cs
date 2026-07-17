@@ -519,6 +519,21 @@ public class PlayerWaterAuraShooter : MonoBehaviour
             mover.OnRecycleRequested =
                 RecycleWaterProjectile;
 
+            string explosionSoundName =
+                activeConfig.waterExplosionSoundName;
+
+            bool explosionSoundSync =
+                activeConfig.waterExplosionSoundSync;
+
+            mover.OnProjectileHit =
+                (hitObject, hitPoint) =>
+                {
+                    PlayWaterExplosionSound(
+                        explosionSoundName,
+                        explosionSoundSync
+                    );
+                };
+
             mover.ApplyWaterConfig(activeConfig);
 
             mover.Init(
@@ -610,6 +625,21 @@ public class PlayerWaterAuraShooter : MonoBehaviour
                 projectileObj
             );
         }
+    }
+
+    private void PlayWaterExplosionSound(
+        string soundName,
+        bool isSync
+    )
+    {
+        if (string.IsNullOrEmpty(soundName))
+            return;
+
+        MusicMgr.Instance.PlaySound(
+            soundName,
+            false,
+            isSync
+        );
     }
 
     private int GetResolvedProjectileDamage()
