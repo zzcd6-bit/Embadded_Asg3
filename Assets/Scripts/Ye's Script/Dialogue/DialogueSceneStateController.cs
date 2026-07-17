@@ -27,6 +27,13 @@ public class DialogueSceneStateController : MonoBehaviour
     [SerializeField] private float scrollThreshold = 0.1f;
     [SerializeField] private bool focusFirstSelectable = true;
 
+    [Header("Sentence Skip")]
+    [SerializeField] private string canSkipSentenceFieldName = "canSkipSentence";
+    [SerializeField] private bool defaultCanSkipSentence = true;
+    [SerializeField] private KeyCode skipSentenceKey = KeyCode.E;
+    [SerializeField] private KeyCode alternateSkipSentenceKey = KeyCode.Space;
+    [SerializeField] private int skipSentenceMouseButton = 0;
+
     private readonly List<DialogueSystemReactable> disabledReactables = new();
     private readonly List<Selectable> dialogueSelectables = new();
     private PlayerModeStateController playerModeStateController;
@@ -238,6 +245,11 @@ public class DialogueSceneStateController : MonoBehaviour
             EnsureDialogueSelection();
         }
 
+        if (IsSentenceSkipInputDown() && TrySkipCurrentSentence())
+        {
+            return;
+        }
+
         float scroll = Input.mouseScrollDelta.y;
         if (scroll > scrollThreshold || Input.GetKeyDown(previousResponseKey))
         {
@@ -336,6 +348,79 @@ public class DialogueSceneStateController : MonoBehaviour
 
         BaseEventData eventData = new(eventSystem);
         ExecuteEvents.Execute(selected, eventData, ExecuteEvents.submitHandler);
+    }
+
+    private bool IsSentenceSkipInputDown()
+    {
+        return Input.GetKeyDown(skipSentenceKey) ||
+               Input.GetKeyDown(alternateSkipSentenceKey) ||
+               Input.GetMouseButtonDown(skipSentenceMouseButton);
+    }
+
+    private bool TrySkipCurrentSentence()
+    {
+        if (!CanSkipCurrentSentence() || IsResponseMenuActive())
+        {
+            return false;
+        }
+
+        AbstractDialogueUI dialogueUi = GetActiveDialogueUi();
+        if (dialogueUi == null || !dialogueUi.isOpen)
+        {
+            return false;
+        }
+
+        dialogueUi.OnContinue();
+        return true;
+    }
+
+    private bool CanSkipCurrentSentence()
+    {
+        ConversationState state = DialogueManager.currentConversationState;
+        DialogueEntry entry = state != null && state.subtitle != null
+            ? state.subtitle.dialogueEntry
+            : null;
+
+        if (entry == null || entry.fields == null)
+        {
+            return defaultCanSkipSentence;
+        }
+
+        string fieldValue = Field.LookupValue(entry.fields, canSkipSentenceFieldName);
+        return string.IsNullOrWhiteSpace(fieldValue)
+            ? defaultCanSkipSentence
+            : Tools.StringToBool(fieldValue);
+    }
+
+    private bool IsResponseMenuActive()
+    {
+        RefreshDialogueSelectables();
+        for (int i = 0; i < dialogueSelectables.Count; i++)
+        {
+            Selectable selectable = dialogueSelectables[i];
+            if (selectable == null)
+            {
+                continue;
+            }
+
+            if (selectable.GetComponent<UnityUIResponseButton>() != null ||
+                selectable.GetComponent<StandardUIResponseButton>() != null)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private AbstractDialogueUI GetActiveDialogueUi()
+    {
+        if (dialogueUiObject == null)
+        {
+            return null;
+        }
+
+        return dialogueUiObject.GetComponentInChildren<AbstractDialogueUI>(true);
     }
 
     private Selectable FindFirstDialogueSelectable()

@@ -144,6 +144,10 @@ MonoBehaviour:
         value: 
         type: 0
         typeString: 
+      - title: canSkipSentence
+        value: True
+        type: 2
+        typeString: CustomFieldType_Boolean
       conversationID: 100
       isRoot: 1
       isGroup: 0
@@ -187,6 +191,10 @@ MonoBehaviour:
         value: "\u524D\u9762\u7684\u8DEF\u8D70\u4E0D\u901A\u4E86\u3002"
         type: 0
         typeString: 
+      - title: canSkipSentence
+        value: True
+        type: 2
+        typeString: CustomFieldType_Boolean
       conversationID: 100
       isRoot: 0
       isGroup: 0
@@ -230,6 +238,10 @@ MonoBehaviour:
         value: "\u90A3\u4E0D\u662F\u666E\u901A\u7AF9\u5899\uFF0C\u800C\u662F\u4E00\u53EA\u85CF\u8FDB\u7AF9\u6797\u91CC\u7684\u7AF9\u866B\u3002"
         type: 0
         typeString: 
+      - title: canSkipSentence
+        value: True
+        type: 2
+        typeString: CustomFieldType_Boolean
       conversationID: 100
       isRoot: 0
       isGroup: 0
@@ -273,6 +285,10 @@ MonoBehaviour:
         value: "\u7AF9\u866B\u80FD\u53D8\u6210\u4E00\u6574\u9762\u5899\uFF1F"
         type: 0
         typeString: 
+      - title: canSkipSentence
+        value: True
+        type: 2
+        typeString: CustomFieldType_Boolean
       conversationID: 100
       isRoot: 0
       isGroup: 0
@@ -316,6 +332,10 @@ MonoBehaviour:
         value: "\u5B83\u4F1A\u85CF\u5728\u7AF9\u8282\u548C\u6839\u987B\u4E4B\u95F4\uFF0C\u770B\u8D77\u6765\u548C\u5468\u56F4\u7AF9\u5B50\u6CA1\u6709\u533A\u522B\u3002"
         type: 0
         typeString: 
+      - title: canSkipSentence
+        value: True
+        type: 2
+        typeString: CustomFieldType_Boolean
       conversationID: 100
       isRoot: 0
       isGroup: 0
@@ -359,6 +379,10 @@ MonoBehaviour:
         value: "\u666E\u901A\u653B\u51FB\u60CA\u4E0D\u52A8\u5B83\uFF0C\u53EA\u6709\u706B\u5143\u7D20\u80FD\u7834\u574F\u4F2A\u88C5\u3002"
         type: 0
         typeString: 
+      - title: canSkipSentence
+        value: True
+        type: 2
+        typeString: CustomFieldType_Boolean
       conversationID: 100
       isRoot: 0
       isGroup: 0
@@ -416,6 +440,10 @@ MonoBehaviour:
         value: Continue()
         type: 0
         typeString: 
+      - title: canSkipSentence
+        value: True
+        type: 2
+        typeString: CustomFieldType_Boolean
       conversationID: 100
       isRoot: 0
       isGroup: 0
@@ -464,6 +492,10 @@ MonoBehaviour:
         value: "\u6211\u51C6\u5907\u597D\u540E\u518D\u6765\u3002"
         type: 0
         typeString: 
+      - title: canSkipSentence
+        value: True
+        type: 2
+        typeString: CustomFieldType_Boolean
       conversationID: 100
       isRoot: 0
       isGroup: 0
@@ -505,6 +537,10 @@ MonoBehaviour:
         value: Continue()
         type: 0
         typeString: 
+      - title: canSkipSentence
+        value: True
+        type: 2
+        typeString: CustomFieldType_Boolean
       conversationID: 100
       isRoot: 0
       isGroup: 0
@@ -590,6 +626,10 @@ MonoBehaviour:
         value: 
         type: 0
         typeString: 
+      - title: canSkipSentence
+        value: True
+        type: 2
+        typeString: CustomFieldType_Boolean
       conversationID: 101
       isRoot: 1
       isGroup: 0
@@ -633,6 +673,10 @@ MonoBehaviour:
         value: "\u5B88\u6797\u4EBA\u628A\u4E00\u679A\u706B\u79CD\u653E\u5728\u4E86\u9644\u8FD1\u3002"
         type: 0
         typeString: 
+      - title: canSkipSentence
+        value: True
+        type: 2
+        typeString: CustomFieldType_Boolean
       conversationID: 101
       isRoot: 0
       isGroup: 0
@@ -676,6 +720,10 @@ MonoBehaviour:
         value: "\u62FE\u53D6\u5B83\u540E\uFF0C\u518D\u5C1D\u8BD5\u7528\u706B\u5143\u7D20\u653B\u51FB\u90A3\u9762\u5F02\u5E38\u7AF9\u5899\u3002"
         type: 0
         typeString: 
+      - title: canSkipSentence
+        value: True
+        type: 2
+        typeString: CustomFieldType_Boolean
       conversationID: 101
       isRoot: 0
       isGroup: 0
@@ -719,6 +767,10 @@ MonoBehaviour:
         value: "\u4F60\u4E0D\u9700\u8981\u70E7\u6BC1\u6574\u7247\u7AF9\u6797\u3002"
         type: 0
         typeString: 
+      - title: canSkipSentence
+        value: True
+        type: 2
+        typeString: CustomFieldType_Boolean
       conversationID: 101
       isRoot: 0
       isGroup: 0
@@ -762,6 +814,10 @@ MonoBehaviour:
         value: "\u53EA\u8981\u8BA9\u706B\u5143\u7D20\u78B0\u5230\u90A3\u9762\u5F02\u5E38\u7AF9\u5899\uFF0C\u7AF9\u866B\u5C31\u65E0\u6CD5\u7EF4\u6301\u4F2A\u88C5\u3002"
         type: 0
         typeString: 
+      - title: canSkipSentence
+        value: True
+        type: 2
+        typeString: CustomFieldType_Boolean
       conversationID: 101
       isRoot: 0
       isGroup: 0
@@ -805,6 +861,10 @@ MonoBehaviour:
         value: "\u524D\u65B9\u989C\u8272\u7A0D\u6697\u3001\u7AF9\u53F6\u6CA1\u6709\u968F\u98CE\u6446\u52A8\u7684\u5730\u65B9\uFF0C\u5C31\u662F\u5B83\u3002"
         type: 0
         typeString: 
+      - title: canSkipSentence
+        value: True
+        type: 2
+        typeString: CustomFieldType_Boolean
       conversationID: 101
       isRoot: 0
       isGroup: 0
@@ -890,6 +950,10 @@ MonoBehaviour:
         value: 
         type: 0
         typeString: 
+      - title: canSkipSentence
+        value: True
+        type: 2
+        typeString: CustomFieldType_Boolean
       conversationID: 102
       isRoot: 1
       isGroup: 0
@@ -933,6 +997,10 @@ MonoBehaviour:
         value: "\u706B\u5143\u7D20\u5DF2\u7ECF\u4EA4\u7ED9\u4F60\u4E86\u3002\u53BB\u653B\u51FB\u90A3\u9762\u5F02\u5E38\u7684\u7AF9\u5899\u3002"
         type: 0
         typeString: 
+      - title: canSkipSentence
+        value: True
+        type: 2
+        typeString: CustomFieldType_Boolean
       conversationID: 102
       isRoot: 0
       isGroup: 0
@@ -976,6 +1044,10 @@ MonoBehaviour:
         value: "\u666E\u901A\u653B\u51FB\u53EA\u4F1A\u88AB\u5F39\u5F00\uFF0C\u5E26\u7740\u706B\u7130\u7684\u653B\u51FB\u624D\u80FD\u89E3\u9664\u7AF9\u866B\u4F2A\u88C5\u3002"
         type: 0
         typeString: 
+      - title: canSkipSentence
+        value: True
+        type: 2
+        typeString: CustomFieldType_Boolean
       conversationID: 102
       isRoot: 0
       isGroup: 0
@@ -1061,6 +1133,10 @@ MonoBehaviour:
         value: 
         type: 0
         typeString: 
+      - title: canSkipSentence
+        value: True
+        type: 2
+        typeString: CustomFieldType_Boolean
       conversationID: 103
       isRoot: 1
       isGroup: 0
@@ -1104,6 +1180,10 @@ MonoBehaviour:
         value: "\u7AF9\u866B\u7684\u4F2A\u88C5\u5DF2\u7ECF\u89E3\u9664\uFF0C\u524D\u65B9\u9053\u8DEF\u5F00\u653E\u4E86\u3002"
         type: 0
         typeString: 
+      - title: canSkipSentence
+        value: True
+        type: 2
+        typeString: CustomFieldType_Boolean
       conversationID: 103
       isRoot: 0
       isGroup: 0
@@ -1147,6 +1227,10 @@ MonoBehaviour:
         value: "\u7EE7\u7EED\u6DF1\u5165\u7AF9\u6797\u5427\uFF0C\u4F46\u522B\u628A\u6574\u7247\u6797\u5B50\u90FD\u70B9\u7740\u3002"
         type: 0
         typeString: 
+      - title: canSkipSentence
+        value: True
+        type: 2
+        typeString: CustomFieldType_Boolean
       conversationID: 103
       isRoot: 0
       isGroup: 0

@@ -7,6 +7,7 @@ public class BambooBugBarrierDamageReceiver : MonoBehaviour, IDamageable, IGameS
 {
     [Header("Gate")]
     [SerializeField] private MazeGate gate;
+    [SerializeField] private MazeGateTriggerOpener gateOpener;
     [SerializeField] private Transform feedbackShakeTarget;
 
     [Header("Quest")]
@@ -37,6 +38,11 @@ public class BambooBugBarrierDamageReceiver : MonoBehaviour, IDamageable, IGameS
         if (gate == null)
         {
             gate = GetComponent<MazeGate>();
+        }
+
+        if (gateOpener == null)
+        {
+            gateOpener = GetComponentInChildren<MazeGateTriggerOpener>(true);
         }
 
         if (feedbackShakeTarget == null)
@@ -118,7 +124,7 @@ public class BambooBugBarrierDamageReceiver : MonoBehaviour, IDamageable, IGameS
             return;
         }
 
-        OpenByRequiredElement();
+        OpenByRequiredElement(damageInfo);
     }
 
     public void CaptureGameSaveData(GameSaveData saveData)
@@ -155,24 +161,29 @@ public class BambooBugBarrierDamageReceiver : MonoBehaviour, IDamageable, IGameS
     [ContextMenu("Debug/Open Barrier")]
     public void OpenByRequiredElement()
     {
+        OpenByRequiredElement(null);
+    }
+
+    private void OpenByRequiredElement(DamageInfo? damageInfo)
+    {
         if (isOpened)
         {
             return;
         }
-
-        isOpened = true;
 
         if (questService == null)
         {
             questService = BurnBambooBarrierQuestService.GetOrCreate();
         }
 
-        questService?.CompleteBambooBarrierObjectiveAndQuest();
-
-        if (gate != null)
+        if (!OpenGateThroughUnifiedOpener(damageInfo))
         {
-            gate.SetOpen();
+            ShowFeedback(normalHitMessage);
+            return;
         }
+
+        isOpened = true;
+        questService?.CompleteBambooBarrierObjectiveAndQuest();
 
         ShowFeedback(openedMessage);
         onOpened?.Invoke();
@@ -185,7 +196,7 @@ public class BambooBugBarrierDamageReceiver : MonoBehaviour, IDamageable, IGameS
 
     private void RefreshFromQuestState()
     {
-        if (questService != null && questService.IsBambooBarrierOpened)
+        if (questService != null && questService.IsBambooBarrierOpened && !isOpened)
         {
             ApplyOpenedInstant();
         }
@@ -220,6 +231,31 @@ public class BambooBugBarrierDamageReceiver : MonoBehaviour, IDamageable, IGameS
         }
 
         return infusion != null && infusion.IsFireInfused;
+    }
+
+    private bool OpenGateThroughUnifiedOpener(DamageInfo? damageInfo)
+    {
+        Vector3 openerPosition = transform.position;
+        Object opener = this;
+
+        if (damageInfo.HasValue && damageInfo.Value.attacker != null)
+        {
+            opener = damageInfo.Value.attacker;
+            openerPosition = damageInfo.Value.attacker.transform.position;
+        }
+
+        if (gateOpener == null)
+        {
+            gateOpener = GetComponentInChildren<MazeGateTriggerOpener>(true);
+        }
+
+        if (gateOpener != null)
+        {
+            return gateOpener.OpenFromPosition(openerPosition, opener);
+        }
+
+        Debug.LogWarning("[BambooBugBarrier] Missing MazeGateTriggerOpener. Barrier opening is intentionally routed through the unified gate opener.", this);
+        return false;
     }
 
     private void PlayNormalHitFeedback()

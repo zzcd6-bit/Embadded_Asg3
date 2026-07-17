@@ -75,12 +75,13 @@ public static class BurnBambooBarrierStage4To10Deployer
         mazeGate.edgeType = MazeEdgeType.BidirectionalDoorClosed;
         mazeGate.state = GateState.Closed;
 
-        DisableBuiltInWalkOpenTrigger(gateObject);
+        MazeGateTriggerOpener gateOpener = ConfigureAttackOnlyGateOpening(gateObject);
         ConfigureWallColliderForAttackDetection(gateObject);
 
         BambooBugBarrierDamageReceiver receiver = GetOrAddComponent<BambooBugBarrierDamageReceiver>(gateObject);
         SerializedObject serialized = new SerializedObject(receiver);
         serialized.FindProperty("gate").objectReferenceValue = mazeGate;
+        serialized.FindProperty("gateOpener").objectReferenceValue = gateOpener;
         serialized.FindProperty("questService").objectReferenceValue = questService;
         serialized.FindProperty("requireQuestActive").boolValue = true;
         serialized.FindProperty("saveImmediatelyOnOpen").boolValue = true;
@@ -93,19 +94,28 @@ public static class BurnBambooBarrierStage4To10Deployer
         return gateObject;
     }
 
-    private static void DisableBuiltInWalkOpenTrigger(GameObject gateObject)
+    private static MazeGateTriggerOpener ConfigureAttackOnlyGateOpening(GameObject gateObject)
     {
         MazeGateTriggerOpener[] openers = gateObject.GetComponentsInChildren<MazeGateTriggerOpener>(true);
         for (int i = 0; i < openers.Length; i++)
         {
-            openers[i].enabled = false;
+            openers[i].enabled = true;
+
+            SerializedObject openerObject = new SerializedObject(openers[i]);
+            SerializedProperty triggerProperty = openerObject.FindProperty("openOnTriggerEnter");
+            if (triggerProperty != null)
+            {
+                triggerProperty.boolValue = false;
+            }
+
+            openerObject.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(openers[i]);
         }
 
         Transform trigger = gateObject.transform.Find("Trigger");
         if (trigger == null)
         {
-            return;
+            return openers.Length > 0 ? openers[0] : null;
         }
 
         Collider[] triggerColliders = trigger.GetComponentsInChildren<Collider>(true);
@@ -114,6 +124,8 @@ public static class BurnBambooBarrierStage4To10Deployer
             triggerColliders[i].enabled = false;
             EditorUtility.SetDirty(triggerColliders[i]);
         }
+
+        return openers.Length > 0 ? openers[0] : null;
     }
 
     private static void ConfigureWallColliderForAttackDetection(GameObject gateObject)

@@ -4,38 +4,58 @@ public class MazeGateTriggerOpener : MonoBehaviour
 {
     [SerializeField] private MazeGate gate;
     [SerializeField] private MazeGraphController graph;
+    [SerializeField] private bool openOnTriggerEnter = true;
     [SerializeField] private string requiredTag = "Player";
     [SerializeField] private bool logOpen = true;
 
     private void Awake()
+    {
+        ResolveReferences();
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (!openOnTriggerEnter || gate == null || gate.IsOpen)
+            return;
+
+        if (!string.IsNullOrEmpty(requiredTag) && !other.CompareTag(requiredTag))
+            return;
+
+        OpenFromPosition(other.transform.position, other);
+    }
+
+    public bool OpenFromPosition(Vector3 openerPosition, Object opener = null)
+    {
+        ResolveReferences();
+
+        if (gate == null || gate.IsOpen)
+            return false;
+
+        MazeNode openerSideNode = GetOpenerSideNode(openerPosition);
+        MazeNode moveNode = gate.ownerNode != null ? gate.ownerNode : openerSideNode;
+
+        LogOpenRequest(opener, openerSideNode, moveNode);
+
+        if (graph != null)
+            return graph.TryMoveGate(gate, moveNode);
+
+        gate.SetOpen();
+        return true;
+    }
+
+    public bool OpenFromTransform(Transform opener)
+    {
+        Vector3 openerPosition = opener != null ? opener.position : transform.position;
+        return OpenFromPosition(openerPosition, opener);
+    }
+
+    private void ResolveReferences()
     {
         if (gate == null)
             gate = GetComponentInParent<MazeGate>();
 
         if (graph == null)
             graph = GetComponentInParent<MazeGraphController>();
-
-        if (graph == null)
-            graph = FindAnyObjectByType<MazeGraphController>();
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (gate == null || gate.IsOpen)
-            return;
-
-        if (!string.IsNullOrEmpty(requiredTag) && !other.CompareTag(requiredTag))
-            return;
-
-        MazeNode openerSideNode = GetOpenerSideNode(other.transform.position);
-        MazeNode moveNode = gate.ownerNode != null ? gate.ownerNode : openerSideNode;
-
-        LogOpenRequest(other, openerSideNode, moveNode);
-
-        if (graph != null)
-            graph.MoveGate(gate, moveNode);
-        else
-            gate.SetOpen();
     }
 
     private MazeNode GetOpenerSideNode(Vector3 openerPosition)
@@ -47,11 +67,12 @@ public class MazeGateTriggerOpener : MonoBehaviour
         return openerSideNode;
     }
 
-    private void LogOpenRequest(Collider opener, MazeNode openerSideNode, MazeNode moveNode)
+    private void LogOpenRequest(Object opener, MazeNode openerSideNode, MazeNode moveNode)
     {
         if (!logOpen)
             return;
 
+        string openerName = opener != null ? opener.name : "Unknown";
         string openerNodeName = openerSideNode != null ? openerSideNode.name : "Unknown";
         string moveNodeName = moveNode != null ? moveNode.name : "Unknown";
         string edgeStates = moveNode != null
@@ -59,7 +80,7 @@ public class MazeGateTriggerOpener : MonoBehaviour
             : "No node found.";
 
         Debug.Log(
-            $"[MazeGateTrigger] {opener.name} opens {gate.name} from player side node {openerNodeName}. Move node: {moveNodeName}. Connected edges: {edgeStates}",
+            $"[MazeGateTrigger] {openerName} opens {gate.name} from side node {openerNodeName}. Move node: {moveNodeName}. Connected edges: {edgeStates}",
             this);
     }
 }
