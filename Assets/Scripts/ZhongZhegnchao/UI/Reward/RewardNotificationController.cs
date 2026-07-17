@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -31,7 +31,7 @@ public class RewardNotificationController :
     private Sprite coinIcon;
 
     [SerializeField]
-    private string coinDisplayName = "½ğ±Ò";
+    private string coinDisplayName = "é‡‘å¸";
 
     [Header("Timing")]
     [SerializeField]
@@ -59,17 +59,17 @@ public class RewardNotificationController :
     private bool debugLog;
 
     /*
-     * ¼ÇÂ¼µ±Ç°±³°ü×´Ì¬¡£
-     * ÓÃÓÚÅĞ¶Ï InventoryChanged ºó£¬
-     * ÄÄĞ©ÎïÆ·µÄÊıÁ¿ÕæÕıÔö¼ÓÁË¡£
+     * è®°å½•å½“å‰èƒŒåŒ…çŠ¶æ€ã€‚
+     * ç”¨äºåˆ¤æ–­ InventoryChanged åï¼Œ
+     * å“ªäº›ç‰©å“çš„æ•°é‡çœŸæ­£å¢åŠ äº†ã€‚
      */
     private readonly Dictionary<string, int>
         inventorySnapshot =
             new Dictionary<string, int>();
 
     /*
-     * µ±Ç°Í¨ÖªÃæ°åÖĞÒÑ¾­ÏÔÊ¾µÄ½±Àø¡£
-     * ÏàÍ¬½±Àø»áºÏ²¢ÊıÁ¿¡£
+     * å½“å‰é€šçŸ¥é¢æ¿ä¸­å·²ç»æ˜¾ç¤ºçš„å¥–åŠ±ã€‚
+     * ç›¸åŒå¥–åŠ±ä¼šåˆå¹¶æ•°é‡ã€‚
      */
     private readonly Dictionary<
         string,
@@ -103,7 +103,7 @@ public class RewardNotificationController :
     private void Start()
     {
         /*
-         * Ä³Ğ©Çé¿öÏÂ Player ¿ÉÄÜ±È UI ÍíÉú³É¡£
+         * æŸäº›æƒ…å†µä¸‹ Player å¯èƒ½æ¯” UI æ™šç”Ÿæˆã€‚
          */
         if (inventoryController == null ||
             currencyController == null)
@@ -147,14 +147,14 @@ public class RewardNotificationController :
         if (inventoryController == null)
         {
             inventoryController =
-                FindFirstObjectByType<
+                FindAnyObjectByType<
                     PlayerInventoryController>();
         }
 
         if (currencyController == null)
         {
             currencyController =
-                FindFirstObjectByType<
+                FindAnyObjectByType<
                     PlayerCurrencyController>();
         }
     }
@@ -185,9 +185,9 @@ public class RewardNotificationController :
             !inventorySubscribed)
         {
             /*
-             * ÏÈ¼ÇÂ¼µ±Ç°ÒÑÓĞÎïÆ·£¬
-             * ±ÜÃâÓÎÏ·¿ª¾ÖÊ±°Ñ Starting Items
-             * µ±³É¸Õ¸Õ»ñµÃµÄ½±Àø¡£
+             * å…ˆè®°å½•å½“å‰å·²æœ‰ç‰©å“ï¼Œ
+             * é¿å…æ¸¸æˆå¼€å±€æ—¶æŠŠ Starting Items
+             * å½“æˆåˆšåˆšè·å¾—çš„å¥–åŠ±ã€‚
              */
             CaptureInventorySnapshot();
 
@@ -376,8 +376,7 @@ public class RewardNotificationController :
                 itemData.ItemId
             )
                 ? itemData.ItemId
-                : itemData.GetInstanceID()
-                    .ToString();
+                : itemData.name;
 
         ShowReward(
             $"item_{itemKey}",

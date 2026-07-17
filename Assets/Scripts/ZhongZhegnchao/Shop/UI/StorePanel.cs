@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -145,7 +145,7 @@ public class StorePanel : BasePanel
     }
 
     /// <summary>
-    /// UIMgr ´´½¨Íê StorePanel ºóµ÷ÓÃ¡£
+    /// UIMgr åˆ›å»ºå®Œ StorePanel åè°ƒç”¨ã€‚
     /// </summary>
     public void Bind(
         ShopData shopData,
@@ -354,21 +354,21 @@ public class StorePanel : BasePanel
         if (inventoryController == null)
         {
             inventoryController =
-                FindFirstObjectByType<
+                FindAnyObjectByType<
                     PlayerInventoryController>();
         }
 
         if (equipmentController == null)
         {
             equipmentController =
-                FindFirstObjectByType<
+                FindAnyObjectByType<
                     PlayerEquipmentController>();
         }
 
         if (currencyController == null)
         {
             currencyController =
-                FindFirstObjectByType<
+                FindAnyObjectByType<
                     PlayerCurrencyController>();
         }
     }
@@ -802,8 +802,8 @@ public class StorePanel : BasePanel
         if (addedEntry == null)
         {
             /*
-             * ¼ÓÈë±³°üÊ§°ÜÊ±ÍË»Ø½ğ±Ò¡£
-             * RestoreCoins ²»»á´¥·¢¡°»ñµÃ½ğ±Ò¡±ÌáÊ¾¡£
+             * åŠ å…¥èƒŒåŒ…å¤±è´¥æ—¶é€€å›é‡‘å¸ã€‚
+             * RestoreCoins ä¸ä¼šè§¦å‘â€œè·å¾—é‡‘å¸â€æç¤ºã€‚
              */
 
             currencyController.RestoreCoins(
@@ -869,8 +869,8 @@ public class StorePanel : BasePanel
             closeCallback;
 
         /*
-         * ÏÈ½â³ı°ó¶¨£¬
-         * ±ÜÃâ UIMgr Ïú»ÙÊ±ÔÙ´Î´¥·¢×´Ì¬¡£
+         * å…ˆè§£é™¤ç»‘å®šï¼Œ
+         * é¿å… UIMgr é”€æ¯æ—¶å†æ¬¡è§¦å‘çŠ¶æ€ã€‚
          */
 
         Unbind();

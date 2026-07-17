@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using TMPro;
 using UnityEngine;
 
@@ -78,7 +78,7 @@ public class CurrencyAmountView :
         }
 
         currencyController =
-            FindFirstObjectByType<
+            FindAnyObjectByType<
                 PlayerCurrencyController>();
     }
 

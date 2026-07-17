@@ -42,6 +42,9 @@ public class BrushGestureBuildAdapter : MonoBehaviour
     private BrushModeController brushModeController;
 
     [SerializeField]
+    private BuildModeController buildModeController;
+
+    [SerializeField]
     private float extraDelay = 0.05f;
 
     [Header("Debug")]
@@ -60,9 +63,10 @@ public class BrushGestureBuildAdapter : MonoBehaviour
 
         if (brushModeController == null)
         {
-            brushModeController = FindFirstObjectByType<BrushModeController>();
+            brushModeController = FindAnyObjectByType<BrushModeController>();
         }
 
+        ResolveBuildModeController();
         ResolveInkReceiver();
     }
 
@@ -183,13 +187,7 @@ public class BrushGestureBuildAdapter : MonoBehaviour
             yield return null;
         }
 
-        BuildModeController buildModeController =
-            BuildModeController.Instance;
-
-        if (buildModeController == null)
-        {
-            buildModeController = FindFirstObjectByType<BuildModeController>();
-        }
+        ResolveBuildModeController();
 
         if (buildModeController == null)
         {
@@ -266,6 +264,21 @@ public class BrushGestureBuildAdapter : MonoBehaviour
         }
 
         return true;
+    }
+
+    private void ResolveBuildModeController()
+    {
+        if (buildModeController != null)
+        {
+            return;
+        }
+
+        buildModeController = BuildModeController.Instance;
+
+        if (buildModeController == null)
+        {
+            buildModeController = FindAnyObjectByType<BuildModeController>();
+        }
     }
 
     private void ResolveInkReceiver()

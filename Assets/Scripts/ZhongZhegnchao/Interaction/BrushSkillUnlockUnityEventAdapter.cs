@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class BrushSkillUnlockUnityEventAdapter : MonoBehaviour
 {
@@ -19,7 +19,7 @@ public class BrushSkillUnlockUnityEventAdapter : MonoBehaviour
     {
         if (skillInventory == null)
         {
-            skillInventory = FindFirstObjectByType<PlayerBrushSkillInventory>();
+            skillInventory = FindAnyObjectByType<PlayerBrushSkillInventory>();
         }
     }
 

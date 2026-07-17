@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 [DisallowMultipleComponent]
 public class SkillTreeCheckpointResetGrant : MonoBehaviour
@@ -31,7 +31,7 @@ public class SkillTreeCheckpointResetGrant : MonoBehaviour
             return;
 
         skillTreeController =
-            FindFirstObjectByType<
+            FindAnyObjectByType<
                 PlayerSkillTreeController>();
     }
 }

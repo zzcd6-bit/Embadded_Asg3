@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using Unity.Cinemachine;
 
 public class PlayerLockOnCameraTargetGroup : MonoBehaviour
@@ -68,8 +68,8 @@ public class PlayerLockOnCameraTargetGroup : MonoBehaviour
     {
         Unbind();
 
-        // ²»ÒªÔÚ Disable ½×¶Î²Ù×÷ TargetGroup¡£
-        // Õâ¸ö½×¶Î Unity ¿ÉÄÜÒÑ¾­¿ªÊ¼Ïú»Ù targetGroup ÁË¡£
+        // ä¸è¦åœ¨ Disable é˜¶æ®µæ“ä½œ TargetGroupã€‚
+        // è¿™ä¸ªé˜¶æ®µ Unity å¯èƒ½å·²ç»å¼€å§‹é”€æ¯ targetGroup äº†ã€‚
         currentEnemyTargetPoint = null;
     }
 
@@ -140,11 +140,11 @@ public class PlayerLockOnCameraTargetGroup : MonoBehaviour
             return;
         }
 
-        cinemachineCamera = FindObjectOfType<CinemachineCamera>();
+        cinemachineCamera = FindAnyObjectByType<CinemachineCamera>();
 
         if (cinemachineCamera == null)
         {
-            Debug.LogWarning("[LockOnCameraTargetGroup] Scene ÖĞÕÒ²»µ½ CinemachineCamera¡£");
+            Debug.LogWarning("[LockOnCameraTargetGroup] Scene ä¸­æ‰¾ä¸åˆ° CinemachineCameraã€‚");
         }
     }
 
@@ -180,19 +180,19 @@ public class PlayerLockOnCameraTargetGroup : MonoBehaviour
 
         if (playerCameraTarget == null)
         {
-            Debug.LogWarning("[LockOnCameraTargetGroup] playerCameraTarget Îª¿Õ£¬ÎŞ·¨ÉèÖÃ Cinemachine Target¡£");
+            Debug.LogWarning("[LockOnCameraTargetGroup] playerCameraTarget ä¸ºç©ºï¼Œæ— æ³•è®¾ç½® Cinemachine Targetã€‚");
             return;
         }
 
         CameraTarget cameraTargetData = cinemachineCamera.Target;
 
-        // ÖØµã£º
-        // Tracking Target »¹ÊÇ CameraTarget¡£
-        // ÕâÑùÄãµÄÊó±êĞı×ª¾µÍ·²»»áÊ§Ğ§¡£
+        // é‡ç‚¹ï¼š
+        // Tracking Target è¿˜æ˜¯ CameraTargetã€‚
+        // è¿™æ ·ä½ çš„é¼ æ ‡æ—‹è½¬é•œå¤´ä¸ä¼šå¤±æ•ˆã€‚
         cameraTargetData.TrackingTarget = playerCameraTarget;
 
-        // LookAt Target ²ÅÊ¹ÓÃ TargetGroup¡£
-        // ÕâÑùËø¶¨µĞÈËÊ±£¬¾µÍ·ÊÓÏß»á¼æ¹Ë Player + Enemy¡£
+        // LookAt Target æ‰ä½¿ç”¨ TargetGroupã€‚
+        // è¿™æ ·é”å®šæ•Œäººæ—¶ï¼Œé•œå¤´è§†çº¿ä¼šå…¼é¡¾ Player + Enemyã€‚
         cameraTargetData.CustomLookAtTarget = true;
         cameraTargetData.LookAtTarget = targetGroup.transform;
 

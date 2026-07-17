@@ -411,21 +411,21 @@ public class StorePanelController : MonoBehaviour
         if (inventoryController == null)
         {
             inventoryController =
-                FindFirstObjectByType<
+                FindAnyObjectByType<
                     PlayerInventoryController>();
         }
 
         if (equipmentController == null)
         {
             equipmentController =
-                FindFirstObjectByType<
+                FindAnyObjectByType<
                     PlayerEquipmentController>();
         }
 
         if (currencyController == null)
         {
             currencyController =
-                FindFirstObjectByType<
+                FindAnyObjectByType<
                     PlayerCurrencyController>();
         }
     }
