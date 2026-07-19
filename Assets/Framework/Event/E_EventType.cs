@@ -77,6 +77,7 @@ public enum E_EventType
     E_Enemy_Spawned,
     E_Enemy_Dead,
     E_Enemy_Damaged,
+    E_Enemy_CombatChanged,
     #endregion
 
     #region Quest

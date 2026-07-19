@@ -66,3 +66,11 @@ public class GameModeChangedInfo : EventInfoBase
     public GameModeCapabilities oldCapabilities;
     public GameModeCapabilities newCapabilities;
 }
+
+public class EnemyCombatChangedInfo : EventInfoBase
+{
+    public UnityEngine.Object source;
+    public UnityEngine.GameObject enemyObject;
+    public bool isActive;
+    public string reason;
+}

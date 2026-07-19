@@ -87,6 +87,7 @@ public class GameModeManager : SingletonAutoMono<GameModeManager>
 
     private void Awake()
     {
+        _ = GameCombatCoordinator.Instance;
         EnsureCapabilities();
         ApplyModeSideEffects(currentCapabilities);
     }
