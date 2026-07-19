@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: 41e3c0b734c1c714eb9b4f56fe8d88a6
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - footSource: {instanceID: 0}
+  - footLoop: {fileID: 8300000, guid: ac7e0ca228b339e48849d30786d9f38d, type: 3}
+  - oneShotSource: {instanceID: 0}
+  - growlSource: {instanceID: 0}
+  - growlClip: {fileID: 8300000, guid: fb356d47e83c3bd47920be4199abe37a, type: 3}
+  - attackClip: {fileID: 8300000, guid: a8dae42d718d36d4480827b659b04af7, type: 3}
+  - shoutClip: {fileID: 8300000, guid: f2ca27dab7b6ff740bc600906e6537a4, type: 3}
+  - attackedClip: {fileID: 8300000, guid: 16b5b81df7238724588b1b88aac5c199, type: 3}
+  - deathClip: {fileID: 8300000, guid: c55efdb823910ff47ac7dc9571a80c5a, type: 3}
+  - animator: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

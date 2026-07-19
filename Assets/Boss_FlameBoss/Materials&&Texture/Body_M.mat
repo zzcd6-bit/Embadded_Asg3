@@ -1,0 +1,215 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-619266759341241901
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Editor::UnityEditor.Rendering.Universal.AssetVersion
+  version: 10
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Body_M
+  m_Shader: {fileID: 4800000, guid: 933532a4fcc9baf4fa0491de14d08ed7, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords:
+  - _EMISSION
+  - _NORMALMAP
+  m_InvalidKeywords:
+  - _ALBEDO_ADJUST
+  - _RIM_INNER
+  - _RIM_OUTER
+  - _SPECULAR_GGX
+  m_LightmapFlags: 1
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap:
+    RenderType: Opaque
+  disabledShaderPasses:
+  - MOTIONVECTORS
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BaseMap:
+        m_Texture: {fileID: 2800000, guid: c971282b04a18d64c9ee7b0a8640f81a, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BumpMap:
+        m_Texture: {fileID: 2800000, guid: a39d27ce6cfc2f5438f48d9a087d4a64, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BumpTex:
+        m_Texture: {fileID: 2800000, guid: a39d27ce6cfc2f5438f48d9a087d4a64, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailAlbedoMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailBumpMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailNormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DissolveTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EmissionMap:
+        m_Texture: {fileID: 2800000, guid: 296f0c61d4b0deb4b9146583d93fc580, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EmissionMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _LayerTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: c971282b04a18d64c9ee7b0a8640f81a, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _OcclusionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ParallaxMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SpecGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SpecularMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_Lightmaps:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_LightmapsInd:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_ShadowMasks:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _AddPrecomputedVelocity: 0
+    - _AlphaClip: 0
+    - _AlphaToMask: 0
+    - _Blend: 0
+    - _BlendMode: 0
+    - _BlendModePreserveSpecular: 1
+    - _BloomSuppress: 2
+    - _BumpIntensity: 1.5
+    - _BumpScale: 1
+    - _ClearCoatMask: 0
+    - _ClearCoatSmoothness: 0
+    - _Cull: 2
+    - _Cutoff: 0.5
+    - _CutoffThreshold: -1
+    - _DetailAlbedoMapScale: 1
+    - _DetailNormalMapScale: 1
+    - _DstBlend: 0
+    - _DstBlendAlpha: 0
+    - _EnvironmentReflections: 1
+    - _FresnelIntensity: 0.38
+    - _GlossMapScale: 1
+    - _Glossiness: 0.27
+    - _GlossyReflections: 1
+    - _Metallic: 0.75
+    - _Mode: 0
+    - _OcclusionStrength: 1
+    - _Parallax: 0.02
+    - _QueueOffset: 0
+    - _ReceiveShadows: 1
+    - _ReflectionMips: 5
+    - _RimInner: 0.13
+    - _RimOuter: 0.6
+    - _Smoothness: 0.27
+    - _SmoothnessTextureChannel: 0
+    - _SpecularHighlights: 1
+    - _SpecularIntensity: 4
+    - _SrcBlend: 1
+    - _SrcBlendAlpha: 1
+    - _Surface: 0
+    - _UVSec: 0
+    - _WorkflowMode: 1
+    - _XRMotionVectorsPass: 1
+    - _ZWrite: 1
+    - __cutoff_adjust: 0
+    - __dest_alpha_blend: 0
+    - __dest_color_blend: 0
+    - __source_alpha_blend: 1
+    - __source_color_blend: 1
+    - __z_write: 1
+    m_Colors:
+    - _AlbedoAdd: {r: 0, g: 0, b: 0, a: 0}
+    - _AlbedoMul: {r: 1.204, g: 1.204, b: 1.204, a: 1}
+    - _BaseColor: {r: 1.204, g: 1.204, b: 1.204, a: 1}
+    - _Color: {r: 1.204, g: 1.204, b: 1.204, a: 1}
+    - _DetailMap_ST: {r: 1, g: 1, b: 0, a: 0}
+    - _DetailScale: {r: 2, g: 0, b: 1, a: 0}
+    - _DiffuseAdjust: {r: 1, g: 0, b: 0, a: 0}
+    - _DiffuseParam: {r: 1, g: 1.323, b: 2.1397452, a: 2.1397452}
+    - _EmissionColor: {r: 0.447, g: 0.25233284, b: 0.07559558, a: 1}
+    - _Fresnel: {r: 0.59, g: 0.2736, b: 1, a: 0.9931667}
+    - _LayerB_SpecularColor: {r: 0.9411765, g: 0, b: 0, a: 1}
+    - _LayerB_SpecularColor_Original: {r: 0.9411765, g: 0, b: 0, a: 1}
+    - _LayerB_SpecularParam: {r: 1, g: 0, b: 10, a: 0}
+    - _LayerG_SpecularColor: {r: 0.3455882, g: 0.0076232767, b: 0.0076232767, a: 1}
+    - _LayerG_SpecularColor_Original: {r: 0.3455882, g: 0.0076232767, b: 0.0076232767, a: 1}
+    - _LayerG_SpecularParam: {r: 1, g: 0, b: 10, a: 0.33}
+    - _LayerR_SpecularColor: {r: 1, g: 0.2690583, b: 0, a: 1}
+    - _LayerR_SpecularColor_Original: {r: 1, g: 0.2690583, b: 0, a: 1}
+    - _LayerR_SpecularParam: {r: 1.39, g: 1.42, b: 10, a: 1.09}
+    - _OcclusionStrength: {r: 0, g: 1, b: 0, a: 0}
+    - _OverlightParam: {r: 0.55, g: 1.5873016, b: 0.8730159, a: -0}
+    - _RimInnerAdd: {r: -0, g: -0, b: -0, a: 1}
+    - _RimInnerColor: {r: 0, g: 0, b: 0, a: 1}
+    - _RimInnerMul: {r: 0, g: 0, b: 0, a: 1}
+    - _RimOuterAdd: {r: 0.4967213, g: 0.19234096, b: 0.08035196, a: 1}
+    - _RimOuterColor: {r: 0.5, g: 0.19361053, b: 0.08088234, a: 0}
+    - _RimOuterMul: {r: -0.8278688, g: -0.32056823, b: -0.13391994, a: 1}
+    - _RoughnessGGX: {r: 2, g: 0.31830987, b: 0, a: 1}
+    - _RoughnessVisibility: {r: 0, g: 1, b: 1, a: 0.00001}
+    - _Roughness_Phong: {r: 0, g: 0.2, b: 1.1180886, a: 1}
+    - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
+    - _SpecularColor: {r: 1, g: 0.26896554, b: 0, a: 1}
+    - _SpecularColor_Original: {r: 1, g: 0.26896554, b: 0, a: 1}
+    - _SpecularMetallic: {r: -1, g: -0.55799997, b: 4, a: 0}
+    - _SpecularParam: {r: 1.53, g: 0, b: 10, a: 1}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1

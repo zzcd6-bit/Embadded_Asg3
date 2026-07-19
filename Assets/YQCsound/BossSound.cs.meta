@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 8151925bb74afd64684a3e95df1d1a73
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - sfx: {instanceID: 0}
+  - Boss_Roar: {fileID: 8300000, guid: 5c65d03ac30761d499a0d567b6b4d330, type: 3}
+  - Boss_Attack: {fileID: 8300000, guid: 39c5c314efff1f24da0ed0600b5bb8d3, type: 3}
+  - Boss_AOE: {fileID: 8300000, guid: 78d005caf710b45448d27709c94b3b74, type: 3}
+  - Boss_Summon: {fileID: 8300000, guid: c9b53b05882664d4f89c72d25ef30ee3, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
