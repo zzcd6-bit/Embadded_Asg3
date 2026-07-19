@@ -6,9 +6,10 @@ using UnityEngine.UI;
 [RequireComponent(typeof(RectTransform))]
 public sealed class NavigationHUDIndicator : MonoBehaviour
 {
+    public static NavigationHUDIndicator Instance { get; private set; }
+
     [Header("Target")]
     [SerializeField] private Transform target;
-    [SerializeField] private string autoFindTargetName = "Sample Mission Target";
     [SerializeField] private Vector3 targetWorldOffset = new(0f, 2f, 0f);
     [SerializeField] private bool hideWhenNoTarget = true;
     [SerializeField] private bool hideWhenBehindCamera;
@@ -62,6 +63,22 @@ public sealed class NavigationHUDIndicator : MonoBehaviour
     public bool IsOnEllipseBoundary => currentIsClamped;
     public Vector2 CenterToPivotDirection => currentCenterToPivotDirection;
 
+    private void Awake()
+    {
+        if (Instance == null || Instance == this)
+        {
+            Instance = this;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this)
+        {
+            Instance = null;
+        }
+    }
+
     private void Reset()
     {
         ResolveReferences();
@@ -96,22 +113,36 @@ public sealed class NavigationHUDIndicator : MonoBehaviour
         UpdateIndicator();
     }
 
-#if UNITY_EDITOR
-    public void EditorConfigureSceneReferences(
-        Transform newTarget,
-        Canvas newCanvas,
-        RectTransform newEllipseSpace,
-        Camera newWorldCamera)
+    public void StartFollowing(GameObject targetObject)
     {
-        target = newTarget;
-        canvas = newCanvas;
-        ellipseSpace = newEllipseSpace;
-        worldCamera = newWorldCamera;
-        ResolveReferences();
-        UpdateIndicator();
-        UnityEditor.EditorUtility.SetDirty(this);
+        StartFollowing(targetObject, HUDNavigationCueKind.NonTask);
     }
-#endif
+
+    public void StartFollowing(GameObject targetObject, HUDNavigationCueKind cueKind)
+    {
+        target = targetObject != null ? targetObject.transform : null;
+        SetCueColor(HUDNavigationCuePalette.GetColor(cueKind));
+        UpdateIndicator();
+    }
+
+    public void StopFollowing(GameObject targetObject)
+    {
+        if (targetObject == null || target != targetObject.transform)
+        {
+            return;
+        }
+
+        target = null;
+        SetVisible(false);
+        UpdateArrow(false, Vector2.right);
+    }
+
+    public void SetCueColor(Color color)
+    {
+        baseColor = color;
+        peakColor = Color.Lerp(color, Color.white, 0.42f);
+        glowColor = color;
+    }
 
     private void ResolveReferences()
     {
@@ -135,15 +166,6 @@ public sealed class NavigationHUDIndicator : MonoBehaviour
         if (worldCamera == null)
         {
             worldCamera = Camera.main;
-        }
-
-        if (target == null && !string.IsNullOrWhiteSpace(autoFindTargetName))
-        {
-            GameObject targetObject = GameObject.Find(autoFindTargetName);
-            if (targetObject != null)
-            {
-                target = targetObject.transform;
-            }
         }
 
         EnsureImages();
@@ -418,6 +440,7 @@ public sealed class NavigationHUDIndicator : MonoBehaviour
         arrow.ApplyNavigationState(
             isClamped,
             centerToPivotDirection,
+            glowColor,
             glowColor,
             glowMaterial,
             shaderGlowIntensity,

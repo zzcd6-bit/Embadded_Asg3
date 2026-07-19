@@ -50,6 +50,9 @@ public class DialogueUIVisualBinder : MonoBehaviour
     private bool continuePointerDown;
     private bool autoPlayEnabled;
     private bool autoPlayWaiting;
+    private bool continueRequestInProgress;
+    private Coroutine autoPlayCoroutine;
+    private Coroutine continueRequestUnlockCoroutine;
     private string lastSpeakerName;
 
     private void Awake()
@@ -81,6 +84,9 @@ public class DialogueUIVisualBinder : MonoBehaviour
 
     private void OnDisable()
     {
+        CancelPendingAutoPlay();
+        ClearContinueRequestLock();
+
         if (DialogueManager.instance != null)
         {
             DialogueManager.instance.conversationStarted -= OnConversationStarted;
@@ -411,7 +417,7 @@ public class DialogueUIVisualBinder : MonoBehaviour
 
     public bool RequestContinueFromUser()
     {
-        if (!CanUseContinueNow())
+        if (!CanUseContinueNow() || !BeginContinueRequest())
         {
             return false;
         }
@@ -423,7 +429,7 @@ public class DialogueUIVisualBinder : MonoBehaviour
 
     public bool RequestContinueFromAutoPlay()
     {
-        if (!CanUseContinueNow() || IsTypewriterPlaying())
+        if (!CanUseContinueNow() || IsTypewriterPlaying() || !BeginContinueRequest())
         {
             return false;
         }
@@ -435,7 +441,11 @@ public class DialogueUIVisualBinder : MonoBehaviour
     public void SetAutoPlayEnabled(bool value)
     {
         autoPlayEnabled = value;
-        autoPlayWaiting = false;
+        if (!autoPlayEnabled)
+        {
+            CancelPendingAutoPlay();
+        }
+
         ForceDialogueSystemManualContinueMode();
         RefreshAutoPlayVisual();
     }
@@ -596,7 +606,7 @@ public class DialogueUIVisualBinder : MonoBehaviour
             return;
         }
 
-        StartCoroutine(AutoPlayContinueAfterDelay());
+        autoPlayCoroutine = StartCoroutine(AutoPlayContinueAfterDelay());
     }
 
     private IEnumerator AutoPlayContinueAfterDelay()
@@ -613,6 +623,53 @@ public class DialogueUIVisualBinder : MonoBehaviour
             !IsTypewriterPlaying())
         {
             RequestContinueFromAutoPlay();
+        }
+
+        autoPlayWaiting = false;
+        autoPlayCoroutine = null;
+    }
+
+    private bool BeginContinueRequest()
+    {
+        if (continueRequestInProgress)
+        {
+            return false;
+        }
+
+        continueRequestInProgress = true;
+        if (continueRequestUnlockCoroutine != null)
+        {
+            StopCoroutine(continueRequestUnlockCoroutine);
+        }
+
+        continueRequestUnlockCoroutine = StartCoroutine(UnlockContinueRequestAtEndOfFrame());
+        return true;
+    }
+
+    private IEnumerator UnlockContinueRequestAtEndOfFrame()
+    {
+        yield return null;
+        continueRequestInProgress = false;
+        continueRequestUnlockCoroutine = null;
+    }
+
+    private void ClearContinueRequestLock()
+    {
+        if (continueRequestUnlockCoroutine != null)
+        {
+            StopCoroutine(continueRequestUnlockCoroutine);
+            continueRequestUnlockCoroutine = null;
+        }
+
+        continueRequestInProgress = false;
+    }
+
+    private void CancelPendingAutoPlay()
+    {
+        if (autoPlayCoroutine != null)
+        {
+            StopCoroutine(autoPlayCoroutine);
+            autoPlayCoroutine = null;
         }
 
         autoPlayWaiting = false;
@@ -659,7 +716,8 @@ public class DialogueUIVisualBinder : MonoBehaviour
             autoPlayEnabled = false;
         }
 
-        autoPlayWaiting = false;
+        CancelPendingAutoPlay();
+        ClearContinueRequestLock();
         ForceDialogueSystemManualContinueMode();
         RefreshSpeakerName();
         RefreshAutoPlayVisual();
@@ -668,7 +726,8 @@ public class DialogueUIVisualBinder : MonoBehaviour
     private void OnConversationEnded(Transform actor)
     {
         autoPlayEnabled = false;
-        autoPlayWaiting = false;
+        CancelPendingAutoPlay();
+        ClearContinueRequestLock();
         lastSpeakerName = null;
         ForceDialogueSystemManualContinueMode();
         RefreshSpeakerName();

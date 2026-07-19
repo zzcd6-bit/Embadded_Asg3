@@ -8,7 +8,6 @@ public sealed class NavigationHUDArrow : MonoBehaviour
 {
     [SerializeField] private Image arrowImage;
     [SerializeField] private float radius = -1f;
-    [SerializeField] private Color color = new(1f, 0.86f, 0.12f, 1f);
     [SerializeField, Min(0f)] private float glowIntensityMultiplier = 1f;
 
     private RectTransform rectTransform;
@@ -42,6 +41,7 @@ public sealed class NavigationHUDArrow : MonoBehaviour
     public void ApplyNavigationState(
         bool indicatorIsOnBoundary,
         Vector2 centerToPivotDirection,
+        Color arrowColor,
         Color glowColor,
         Material sourceMaterial,
         float shaderGlowIntensity,
@@ -67,7 +67,7 @@ public sealed class NavigationHUDArrow : MonoBehaviour
 
         if (arrowImage != null)
         {
-            arrowImage.color = color;
+            arrowImage.color = arrowColor;
             arrowImage.material = GetMaterialInstance(sourceMaterial);
             if (arrowImage.material != null)
             {
