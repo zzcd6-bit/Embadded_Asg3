@@ -70,6 +70,7 @@ public class InteractionRollBoxUI : MonoBehaviour
 
     public event Action<int> OptionClicked;
     public event Action<int> OptionHovered;
+    public event Action<int> OptionExited;
     public event Action<int> OptionSliderSelected;
 
     public static bool BlocksCameraZoom => visibleRollBoxCount > 0;
@@ -91,7 +92,7 @@ public class InteractionRollBoxUI : MonoBehaviour
             }
 
             InteractionDisplayData data = options[i];
-            optionViews[i].Bind(i, data.OptionName, HandleOptionClicked, HandleOptionHovered);
+            optionViews[i].Bind(i, data.OptionName, HandleOptionClicked, HandleOptionHovered, HandleOptionExited);
             optionViews[i].SetSelected(i == selectedIndex);
         }
 
@@ -203,6 +204,11 @@ public class InteractionRollBoxUI : MonoBehaviour
     private void HandleOptionHovered(int index)
     {
         OptionHovered?.Invoke(index);
+    }
+
+    private void HandleOptionExited(int index)
+    {
+        OptionExited?.Invoke(index);
     }
 
     private void SelectBySliderLocalY(float localY)

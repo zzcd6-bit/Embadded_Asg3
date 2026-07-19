@@ -20,6 +20,12 @@ public class InteractionManager : MonoBehaviour
     [SerializeField] private KeyCode primaryInteractKey = KeyCode.Return;
     [SerializeField] private bool enableAlternativeKey = true;
     [SerializeField] private KeyCode alternativeInteractKey = KeyCode.E;
+    [SerializeField] private KeyCode previousSelectionKey = KeyCode.W;
+    [SerializeField] private KeyCode alternatePreviousSelectionKey = KeyCode.UpArrow;
+    [SerializeField] private KeyCode nextSelectionKey = KeyCode.S;
+    [SerializeField] private KeyCode alternateNextSelectionKey = KeyCode.DownArrow;
+    [SerializeField] private KeyCode pointerModeKey = KeyCode.LeftAlt;
+    [SerializeField] private KeyCode alternatePointerModeKey = KeyCode.RightAlt;
     [SerializeField] private bool invertMouseWheel;
 
     [Header("Behaviour")]
@@ -35,6 +41,7 @@ public class InteractionManager : MonoBehaviour
     private int selectedIndex = -1;
     private float nextCleanupTime;
     private int lastExecuteFrame = -1;
+    private bool pointerModeWasActive;
 
     public int Count => entries.Count;
     public IReactable CurrentSelection => selectedReactable;
@@ -68,6 +75,7 @@ public class InteractionManager : MonoBehaviour
         {
             rollBoxUI.OptionClicked += HandleOptionClicked;
             rollBoxUI.OptionHovered += HandleOptionHovered;
+            rollBoxUI.OptionExited += HandleOptionExited;
             rollBoxUI.OptionSliderSelected += HandleOptionSliderSelected;
         }
     }
@@ -88,6 +96,7 @@ public class InteractionManager : MonoBehaviour
         {
             rollBoxUI.OptionClicked -= HandleOptionClicked;
             rollBoxUI.OptionHovered -= HandleOptionHovered;
+            rollBoxUI.OptionExited -= HandleOptionExited;
             rollBoxUI.OptionSliderSelected -= HandleOptionSliderSelected;
         }
 
@@ -103,6 +112,7 @@ public class InteractionManager : MonoBehaviour
     {
         if (GameModeManager.Instance.CurrentCapabilities.canInteract)
         {
+            RefreshPointerModeState();
             HandleDirectInput();
         }
         else
@@ -120,7 +130,7 @@ public class InteractionManager : MonoBehaviour
 
     public void SubmitInteractInput()
     {
-        if (!GameModeManager.Instance.CurrentCapabilities.canInteract)
+        if (!GameModeManager.Instance.CurrentCapabilities.canInteract || IsPointerModeActive())
         {
             return;
         }
@@ -130,7 +140,7 @@ public class InteractionManager : MonoBehaviour
 
     public void SubmitNextSelectionInput()
     {
-        if (!GameModeManager.Instance.CurrentCapabilities.canInteract)
+        if (!GameModeManager.Instance.CurrentCapabilities.canInteract || IsPointerModeActive())
         {
             return;
         }
@@ -140,7 +150,7 @@ public class InteractionManager : MonoBehaviour
 
     public void SubmitPreviousSelectionInput()
     {
-        if (!GameModeManager.Instance.CurrentCapabilities.canInteract)
+        if (!GameModeManager.Instance.CurrentCapabilities.canInteract || IsPointerModeActive())
         {
             return;
         }
@@ -151,6 +161,11 @@ public class InteractionManager : MonoBehaviour
     private void HandleDirectInput()
     {
         if (entries.Count == 0)
+        {
+            return;
+        }
+
+        if (IsPointerModeActive())
         {
             return;
         }
@@ -166,6 +181,17 @@ public class InteractionManager : MonoBehaviour
             {
                 MoveSelection(invertMouseWheel ? -1 : 1);
             }
+        }
+
+        if (Input.GetKeyDown(previousSelectionKey) ||
+            Input.GetKeyDown(alternatePreviousSelectionKey))
+        {
+            MoveSelection(-1);
+        }
+        else if (Input.GetKeyDown(nextSelectionKey) ||
+                 Input.GetKeyDown(alternateNextSelectionKey))
+        {
+            MoveSelection(1);
         }
 
         if (!pollKeyboardInput)
@@ -345,6 +371,14 @@ public class InteractionManager : MonoBehaviour
         SelectByIndex(index, false);
     }
 
+    private void HandleOptionExited(int index)
+    {
+        if (IsPointerModeActive() && index == selectedIndex)
+        {
+            rollBoxUI?.SetSelected(-1, false);
+        }
+    }
+
     private void HandleOptionClicked(int index)
     {
         SelectByIndex(index, false);
@@ -418,6 +452,11 @@ public class InteractionManager : MonoBehaviour
         {
             HideInteractionUI();
             return;
+        }
+
+        if (entries.Count > 0 && !IsValidReactable(selectedReactable))
+        {
+            SelectReactable(entries[0].Reactable);
         }
 
         displayData.Clear();
@@ -513,5 +552,34 @@ public class InteractionManager : MonoBehaviour
         }
 
         return reactable is not UnityEngine.Object unityObject || unityObject != null;
+    }
+
+    private bool IsPointerModeActive()
+    {
+        return Input.GetKey(pointerModeKey) || Input.GetKey(alternatePointerModeKey);
+    }
+
+    private void RefreshPointerModeState()
+    {
+        bool pointerModeActive = IsPointerModeActive();
+        if (pointerModeActive == pointerModeWasActive)
+        {
+            return;
+        }
+
+        pointerModeWasActive = pointerModeActive;
+        if (pointerModeActive)
+        {
+            rollBoxUI?.SetSelected(-1, false);
+        }
+        else
+        {
+            if (entries.Count > 0 && !IsValidReactable(selectedReactable))
+            {
+                SelectReactable(entries[0].Reactable);
+            }
+
+            rollBoxUI?.SetSelected(selectedIndex, false);
+        }
     }
 }

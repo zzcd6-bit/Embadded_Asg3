@@ -59,7 +59,7 @@ public class BurnBambooBarrierEntranceTrigger : MonoBehaviour
 
         if (logTrigger)
         {
-            Debug.Log("已接取任务：燃尽竹障", this);
+            Debug.Log("Quest accepted: Burn the Bamboo Barrier", this);
         }
     }
 }

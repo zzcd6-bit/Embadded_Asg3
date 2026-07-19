@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class InteractionOptionUI : MonoBehaviour, IPointerEnterHandler
+public class InteractionOptionUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     [Header("References")]
     [SerializeField] private TMP_Text optionText;
@@ -24,14 +24,16 @@ public class InteractionOptionUI : MonoBehaviour, IPointerEnterHandler
     private int index;
     private Action<int> clickCallback;
     private Action<int> hoverCallback;
+    private Action<int> exitCallback;
 
     public RectTransform RectTransform => transform as RectTransform;
 
-    public void Bind(int optionIndex, string displayName, Action<int> onClick, Action<int> onHover)
+    public void Bind(int optionIndex, string displayName, Action<int> onClick, Action<int> onHover, Action<int> onExit)
     {
         index = optionIndex;
         clickCallback = onClick;
         hoverCallback = onHover;
+        exitCallback = onExit;
 
         if (button != null)
         {
@@ -70,6 +72,11 @@ public class InteractionOptionUI : MonoBehaviour, IPointerEnterHandler
     public void OnPointerEnter(PointerEventData eventData)
     {
         hoverCallback?.Invoke(index);
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        exitCallback?.Invoke(index);
     }
 
     private void HandleButtonClicked()
