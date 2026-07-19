@@ -1,4 +1,3 @@
-using System.Collections;
 using PixelCrushers.DialogueSystem;
 using UnityEngine;
 using UnityEngine.Events;
@@ -23,7 +22,8 @@ public class BambooBugBarrierDamageReceiver : MonoBehaviour, IDamageable, IGameS
     [Header("Feedback")]
     [SerializeField] private string normalHitMessage = "Ordinary attacks cannot break this disguise.";
     [SerializeField] private string openedMessage = "The bamboo grub's disguise is broken. The path ahead is open.";
-    [SerializeField] private float normalHitFeedbackDelay = 0.05f;
+    [SerializeField] private float feedbackDisplayDuration = 4f;
+    [SerializeField] private bool suppressDuplicateFeedbackWhileVisible = true;
     [SerializeField] private bool showDialogueSystemAlerts = true;
     [SerializeField] private bool logHits = true;
 
@@ -34,7 +34,8 @@ public class BambooBugBarrierDamageReceiver : MonoBehaviour, IDamageable, IGameS
     private bool isOpened;
     private Vector3 shakeStartLocalPosition;
     private float shakeTimer;
-    private Coroutine pendingNormalHitFeedback;
+    private string visibleFeedbackMessage;
+    private float visibleFeedbackUntil;
 
     private void Awake()
     {
@@ -123,7 +124,7 @@ public class BambooBugBarrierDamageReceiver : MonoBehaviour, IDamageable, IGameS
 
         if (!IsRequiredElementHit(damageInfo))
         {
-            ScheduleNormalHitFeedback();
+            PlayNormalHitFeedback();
             return;
         }
 
@@ -185,7 +186,6 @@ public class BambooBugBarrierDamageReceiver : MonoBehaviour, IDamageable, IGameS
             return;
         }
 
-        CancelPendingNormalHitFeedback();
         isOpened = true;
         questService?.CompleteBambooBarrierObjectiveAndQuest();
 
@@ -274,37 +274,6 @@ public class BambooBugBarrierDamageReceiver : MonoBehaviour, IDamageable, IGameS
         onNormalHit?.Invoke();
     }
 
-    private void ScheduleNormalHitFeedback()
-    {
-        CancelPendingNormalHitFeedback();
-
-        if (normalHitFeedbackDelay <= 0f)
-        {
-            PlayNormalHitFeedback();
-            return;
-        }
-
-        pendingNormalHitFeedback = StartCoroutine(PlayNormalHitFeedbackAfterDelay());
-    }
-
-    private IEnumerator PlayNormalHitFeedbackAfterDelay()
-    {
-        yield return new WaitForSeconds(normalHitFeedbackDelay);
-        pendingNormalHitFeedback = null;
-        PlayNormalHitFeedback();
-    }
-
-    private void CancelPendingNormalHitFeedback()
-    {
-        if (pendingNormalHitFeedback == null)
-        {
-            return;
-        }
-
-        StopCoroutine(pendingNormalHitFeedback);
-        pendingNormalHitFeedback = null;
-    }
-
     private void ShowFeedback(string message)
     {
         if (string.IsNullOrWhiteSpace(message))
@@ -312,9 +281,19 @@ public class BambooBugBarrierDamageReceiver : MonoBehaviour, IDamageable, IGameS
             return;
         }
 
+        if (suppressDuplicateFeedbackWhileVisible &&
+            string.Equals(visibleFeedbackMessage, message) &&
+            Time.time < visibleFeedbackUntil)
+        {
+            return;
+        }
+
+        visibleFeedbackMessage = message;
+        visibleFeedbackUntil = Time.time + Mathf.Max(0f, feedbackDisplayDuration);
+
         if (showDialogueSystemAlerts && DialogueManager.instance != null)
         {
-            DialogueManager.ShowAlert(message);
+            DialogueManager.ShowAlert(message, feedbackDisplayDuration);
         }
 
         if (logHits)

@@ -87,7 +87,8 @@ public static class BurnBambooBarrierStage4To10Deployer
         serialized.FindProperty("saveImmediatelyOnOpen").boolValue = true;
         serialized.FindProperty("requiredElement").enumValueIndex = (int)ElementType.Fire;
         serialized.FindProperty("acceptFireInfusedAttacker").boolValue = false;
-        serialized.FindProperty("normalHitFeedbackDelay").floatValue = 0.05f;
+        serialized.FindProperty("feedbackDisplayDuration").floatValue = 4f;
+        serialized.FindProperty("suppressDuplicateFeedbackWhileVisible").boolValue = true;
         serialized.ApplyModifiedPropertiesWithoutUndo();
 
         EditorUtility.SetDirty(mazeGate);

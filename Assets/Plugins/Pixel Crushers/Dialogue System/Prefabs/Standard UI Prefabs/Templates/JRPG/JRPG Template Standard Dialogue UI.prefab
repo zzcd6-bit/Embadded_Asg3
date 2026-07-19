@@ -839,8 +839,8 @@ GameObject:
   m_Component:
   - component: {fileID: 22435526}
   - component: {fileID: 11454534}
-  - component: {fileID: 2326502908696486538}
-  - component: {fileID: 3522010264637744910}
+  - component: {fileID: 11004860874742658}
+  - component: {fileID: 5085365928124604942}
   m_Layer: 5
   m_Name: Speaker Name Panel
   m_TagString: Untagged
@@ -936,7 +936,7 @@ MonoBehaviour:
   m_hasFocus: 1
   m_isFocusing: 1
   m_actorOverridingPanel: {fileID: 0}
---- !u!222 &2326502908696486538
+--- !u!222 &11004860874742658
 CanvasRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -944,7 +944,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 154320}
   m_CullTransparentMesh: 1
---- !u!114 &3522010264637744910
+--- !u!114 &5085365928124604942
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1335,12 +1335,11 @@ GameObject:
   m_Component:
   - component: {fileID: 22426882}
   - component: {fileID: 11457010}
-  - component: {fileID: 1149027759283882470}
-  - component: {fileID: 62198027663651368}
-  - component: {fileID: 4462861383489251942}
-  - component: {fileID: 8161173299221565199}
   - component: {fileID: 9047667415629724702}
-  - component: {fileID: 1270596728573762738}
+  - component: {fileID: 4779316823507082644}
+  - component: {fileID: 9094563458489968328}
+  - component: {fileID: 1503601831241035348}
+  - component: {fileID: 7444113860093528218}
   m_Layer: 5
   m_Name: JRPG Template Standard Dialogue UI
   m_TagString: Untagged
@@ -1411,7 +1410,7 @@ MonoBehaviour:
     - {fileID: 0}
   addEventSystemIfNeeded: 1
   verifyPanelAssignments: 1
---- !u!114 &1149027759283882470
+--- !u!114 &9047667415629724702
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1428,42 +1427,7 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &62198027663651368
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 177140}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1f6d7c1ce9b94214a9413fe725c2b35d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DialogueUIVisualBinder
-  dialogueUI: {fileID: 11457010}
-  subtitlePanel: {fileID: 11454534}
-  typewriterEffect: {fileID: 11467904}
-  continueButton: {fileID: 11443574}
-  continueButtonChosenImage: {fileID: 5964283487372267446}
-  continueButtonNormalImage: {fileID: 7850126698376618101}
-  autoPlaySwitch: {fileID: 5898138903730232502}
-  autoPlaySwitchOnImage: {fileID: 7226905924314027579}
-  autoPlaySwitchOffImage: {fileID: 8883776479127986700}
-  autoPlayDelay: 2
-  speakerNamePanel: {fileID: 154320}
-  speakerNameText: {fileID: 11401728}
-  subtitleBodyTextMeshPro: {fileID: 0}
-  subtitleBodyText: {fileID: 0}
-  generatedSubtitleBodyName: Subtitle Body Text
-  generatedSubtitleFontSize: 24
-  generatedSubtitleColor: {r: 1, g: 1, b: 1, a: 1}
-  createLegacyFallbackBodyTextIfMissing: 0
-  narrationSpeakerNames:
-  - Narrator
-  - "\u65C1\u767D"
-  canSkipSentenceFieldName: canSkipSentence
-  defaultCanSkipSentence: 1
---- !u!223 &4462861383489251942
+--- !u!223 &4779316823507082644
 Canvas:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1487,7 +1451,7 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 100
   m_TargetDisplay: 0
---- !u!114 &8161173299221565199
+--- !u!114 &9094563458489968328
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1510,7 +1474,7 @@ MonoBehaviour:
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
   m_PresetInfoIsWorld: 0
---- !u!114 &9047667415629724702
+--- !u!114 &1503601831241035348
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1527,7 +1491,7 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &1270596728573762738
+--- !u!114 &7444113860093528218
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1549,13 +1513,15 @@ MonoBehaviour:
   autoPlaySwitchOnImage: {fileID: 7226905924314027579}
   autoPlaySwitchOffImage: {fileID: 8883776479127986700}
   autoPlayDelay: 2
+  resetAutoPlayOnConversationStart: 1
+  forceManualContinueMode: 1
   speakerNamePanel: {fileID: 154320}
   speakerNameText: {fileID: 11401728}
-  subtitleBodyTextMeshPro: {fileID: 0}
+  subtitleBodyTextMeshPro: {fileID: 2047857507106382349}
   subtitleBodyText: {fileID: 0}
   generatedSubtitleBodyName: Subtitle Body Text
-  generatedSubtitleFontSize: 24
-  generatedSubtitleColor: {r: 1, g: 1, b: 1, a: 1}
+  generatedSubtitleFontSize: 25
+  generatedSubtitleColor: {r: 0, g: 0, b: 0, a: 1}
   createLegacyFallbackBodyTextIfMissing: 0
   narrationSpeakerNames:
   - Narrator
@@ -2172,7 +2138,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1298153136841013691
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2567,7 +2533,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1701953718592775630
 RectTransform:
   m_ObjectHideFlags: 0

@@ -25,6 +25,8 @@ public class DialogueUIVisualBinder : MonoBehaviour
     [SerializeField] private GameObject autoPlaySwitchOnImage;
     [SerializeField] private GameObject autoPlaySwitchOffImage;
     [SerializeField] private float autoPlayDelay = 2f;
+    [SerializeField] private bool resetAutoPlayOnConversationStart = true;
+    [SerializeField] private bool forceManualContinueMode = true;
 
     [Header("Speaker Name")]
     [SerializeField] private GameObject speakerNamePanel;
@@ -52,6 +54,9 @@ public class DialogueUIVisualBinder : MonoBehaviour
 
     private void Awake()
     {
+        ForceDialogueSystemManualContinueMode();
+        autoPlayEnabled = false;
+        autoPlayWaiting = false;
         ResolveReferences();
         BindSubtitleBodyText();
         ConfigureContinueButton();
@@ -64,6 +69,7 @@ public class DialogueUIVisualBinder : MonoBehaviour
 
     private void OnEnable()
     {
+        ForceDialogueSystemManualContinueMode();
         ResolveReferences();
         BindSubtitleBodyText();
         if (DialogueManager.instance != null)
@@ -84,6 +90,7 @@ public class DialogueUIVisualBinder : MonoBehaviour
 
     private void Update()
     {
+        ForceDialogueSystemManualContinueMode();
         RefreshContinueButtonVisibility();
         RefreshContinueVisual();
         RefreshAutoPlayVisual();
@@ -429,6 +436,7 @@ public class DialogueUIVisualBinder : MonoBehaviour
     {
         autoPlayEnabled = value;
         autoPlayWaiting = false;
+        ForceDialogueSystemManualContinueMode();
         RefreshAutoPlayVisual();
     }
 
@@ -646,15 +654,39 @@ public class DialogueUIVisualBinder : MonoBehaviour
 
     private void OnConversationStarted(Transform actor)
     {
+        if (resetAutoPlayOnConversationStart)
+        {
+            autoPlayEnabled = false;
+        }
+
         autoPlayWaiting = false;
+        ForceDialogueSystemManualContinueMode();
         RefreshSpeakerName();
+        RefreshAutoPlayVisual();
     }
 
     private void OnConversationEnded(Transform actor)
     {
+        autoPlayEnabled = false;
         autoPlayWaiting = false;
         lastSpeakerName = null;
+        ForceDialogueSystemManualContinueMode();
         RefreshSpeakerName();
+        RefreshAutoPlayVisual();
+    }
+
+    private void ForceDialogueSystemManualContinueMode()
+    {
+        if (!forceManualContinueMode ||
+            DialogueManager.instance == null ||
+            DialogueManager.displaySettings == null ||
+            DialogueManager.displaySettings.subtitleSettings == null)
+        {
+            return;
+        }
+
+        DialogueManager.displaySettings.subtitleSettings.continueButton =
+            DisplaySettings.SubtitleSettings.ContinueButtonMode.Always;
     }
 
     private GameObject FindDeepChildGameObject(string childName)
