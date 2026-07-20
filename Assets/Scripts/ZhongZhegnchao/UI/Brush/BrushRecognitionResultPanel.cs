@@ -145,6 +145,28 @@ public class BrushRecognitionResultPanel : BasePanel
         PlayFailureAnimation();
     }
 
+    public void ShowCooldown(
+    BrushSkillType skillType,
+    float remainingSeconds
+)
+    {
+        ShowMe();
+
+        if (resultText != null)
+        {
+            resultText.text =
+                "SKILL COOLDOWN";
+        }
+
+        if (skillText != null)
+        {
+            skillText.text =
+                $"{GetSkillDisplayName(skillType)} READY IN {remainingSeconds:F1}s";
+        }
+
+        PlayFailureAnimation();
+    }
+
     public void ShowLevelUp(int newLevel)
     {
         ShowMe();
@@ -647,8 +669,8 @@ public class BrushRecognitionResultPanel : BasePanel
     }
 
     private string GetSkillDisplayName(
-        BrushSkillType skillType
-    )
+    BrushSkillType skillType
+)
     {
         switch (skillType)
         {
@@ -666,6 +688,9 @@ public class BrushRecognitionResultPanel : BasePanel
 
             case BrushSkillType.Bridge:
                 return "Bridge";
+
+            case BrushSkillType.Ladder:
+                return "Ladder";
 
             case BrushSkillType.Wind:
                 return "Wind";

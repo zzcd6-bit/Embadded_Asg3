@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03b98bfee72b72e489e7159dda782745, type: 3}
+  m_Name: apprentice_ink_brush
+  m_EditorClassIdentifier: Assembly-CSharp::EquipmentData
+  itemId: apprentice_ink_brush
+  displayName: apprentice ink brush
+  description: 'A basic set worn by apprentice ink casters.
+
+    It provides balanced
+    protection and stable combat support for beginners who are still learning to
+    control brush-based skills.'
+  icon: {fileID: 547968394, guid: a0c24bf5ea8eae44ebe3242781f49ef6, type: 3}
+  quality: 0
+  canDiscard: 1
+  maxStack: 99
+  slotType: 3
+  equipmentSet: {fileID: 11400000, guid: 3ea01c6af3790194b9a128934d9df0ac, type: 2}
+  maxHpBonus: 30
+  defenseBonus: 15
+  resistanceElement: 0
+  elementResistanceBonus: 0
+  damageBonus: 0.1
+  damageElement: 0
+  elementDamageBonus: 0
+  baseAttackPower: 10
+  attackPowerPerLevel: 2
+  criticalRateBonus: 0.3
+  criticalDamageBonus: 0.3
+  weaponMaxLevel: 20
+  levelOneExperienceRequirement: 100
+  experienceIncreasePerLevel: 25

@@ -648,6 +648,220 @@ MonoBehaviour:
   onDeselected:
     m_PersistentCalls:
       m_Calls: []
+--- !u!1 &207702336
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 207702342}
+  - component: {fileID: 207702341}
+  - component: {fileID: 207702340}
+  - component: {fileID: 207702339}
+  - component: {fileID: 207702338}
+  - component: {fileID: 207702337}
+  m_Layer: 15
+  m_Name: Water Demo Chest
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &207702337
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 207702336}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfd86d6293c346b6972c18c429733aee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DropReward
+  entries:
+  - prefab: {fileID: 1109474992964951815, guid: 83d9ef5c0d54e7f4594bddc38bd496d4, type: 3}
+    chance: 1
+    minCount: 1
+    maxCount: 1
+  - prefab: {fileID: 1535309134463592354, guid: 5ae40b754afe54c4fb0e973076d43f7c, type: 3}
+    chance: 1
+    minCount: 1
+    maxCount: 1
+  - prefab: {fileID: 5404160465685758368, guid: 8a30f79c2a4122748954eeba074ea8b6, type: 3}
+    chance: 1
+    minCount: 1
+    maxCount: 1
+  - prefab: {fileID: 2151732939608472192, guid: 449925ce0a832c344911d93831905044, type: 3}
+    chance: 1
+    minCount: 1
+    maxCount: 1
+  dropOrigin: {fileID: 0}
+  parentDropsToScene: 1
+  grantInstantRewards: 1
+  grantInstantRewardsOnlyOnce: 1
+  grantCoins: 0
+  coinChance: 1
+  minCoins: 0
+  maxCoins: 0
+  coinRewardReason: 2
+  grantExperience: 0
+  experienceChance: 1
+  minExperience: 0
+  maxExperience: 0
+  currencyController: {fileID: 0}
+  experienceReceiver: {fileID: 0}
+  spawnRadius: 0.45
+  spawnHeight: 0.35
+  randomYaw: 1
+  applyInitialVelocity: 1
+  addRigidbodyIfMissing: 1
+  minHorizontalSpeed: 0
+  maxHorizontalSpeed: 0.15
+  minUpwardSpeed: 1.2
+  maxUpwardSpeed: 1.8
+  onDropped:
+    m_PersistentCalls:
+      m_Calls: []
+  onCoinsRewarded:
+    m_PersistentCalls:
+      m_Calls: []
+  onExperienceRewarded:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &207702338
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 207702336}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41122fe184fa4fe7ae323a87b1b863b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Chest
+  chestId: YeScene_LootDemoChest_001
+  openOptionName: Open Fire Chest
+  lockedOptionName: Locked Fire Chest
+  category: 1
+  interactionPoint: {fileID: 0}
+  showInteractionWhenLocked: 1
+  canOpen: 1
+  isOpen: 0
+  dropReward: {fileID: 207702337}
+  dropOrigin: {fileID: 1742371848}
+  animator: {fileID: 0}
+  openTrigger: Open
+  openedBool: IsOpen
+  destroyDelayAfterOpen: 3
+  fadeBeforeDestroy: 1
+  saveImmediatelyOnOpen: 1
+  onUnlocked:
+    m_PersistentCalls:
+      m_Calls: []
+  onOpened:
+    m_PersistentCalls:
+      m_Calls: []
+  onOpenFailed:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!23 &207702339
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 207702336}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 1
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &207702340
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 207702336}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!33 &207702341
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 207702336}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &207702342
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 207702336}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.59, y: 0.5, z: -10.01}
+  m_LocalScale: {x: 1.5, y: 0.8, z: 0.8}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1742371848}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &219517334
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -656,6 +870,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4487596118243649046, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
+      propertyPath: startingItems.Array.data[0].itemData
+      value: 
+      objectReference: {fileID: 11400000, guid: 18a0ab3d505fca74b808619096600f41, type: 2}
+    - target: {fileID: 4487596118243649046, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
+      propertyPath: startingItems.Array.data[1].itemData
+      value: 
+      objectReference: {fileID: 11400000, guid: ddc3234b89151e043a7f0852b1b7d9c0, type: 2}
+    - target: {fileID: 4487596118243649046, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
+      propertyPath: startingItems.Array.data[2].itemData
+      value: 
+      objectReference: {fileID: 11400000, guid: cbc585c1f58f1df46a96ac4e891003a3, type: 2}
+    - target: {fileID: 4487596118243649046, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
+      propertyPath: startingItems.Array.data[3].itemData
+      value: 
+      objectReference: {fileID: 11400000, guid: c0e10be3dd754434f8d045d603078690, type: 2}
     - target: {fileID: 6265559545831232069, guid: 56d2a112d28d4ce4e969ffbd57ff036b, type: 3}
       propertyPath: rollBoxUI
       value: 
@@ -1084,10 +1314,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BrushGestureTemplateRecorder
   recognizer: {fileID: 248848584}
-  templateName: Wind
+  templateName: Ladder
   saveNextStrokeKey: 286
   reloadTemplatesKey: 287
-  customGestureFolderName: GestureTemplates/Wind
+  customGestureFolderName: GestureTemplates/Ladder
   minPointCount: 6
   reloadRecognizerAfterSave: 1
   keepWaitingIfInvalidStroke: 1
@@ -1145,9 +1375,15 @@ MonoBehaviour:
     minScore: 0.65
     inkCost: 0
     enabled: 1
+  - gestureName: Ladder
+    buildableItem: {fileID: 11400000, guid: 481c81b7e80778d4c9d1ff57741e6def, type: 2}
+    minScore: 0.65
+    inkCost: 0
+    enabled: 1
   caster: {fileID: 219517335}
   consumeInk: 1
   brushModeController: {fileID: 248848578}
+  buildModeController: {fileID: 0}
   extraDelay: 0.05
   debugLog: 1
 --- !u!114 &248848592
@@ -1255,12 +1491,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DropReward
   entries:
-  - prefab: {fileID: 4583653846881512202, guid: e517895bdb7f0a7479058cf75ac8267b, type: 3}
+  - prefab: {fileID: 6786468988838745923, guid: fdffdcd994290be43b6c8ccfb36a76f9, type: 3}
     chance: 1
     minCount: 1
-    maxCount: 3
+    maxCount: 1
   dropOrigin: {fileID: 0}
   parentDropsToScene: 1
+  grantInstantRewards: 1
+  grantInstantRewardsOnlyOnce: 1
+  grantCoins: 1
+  coinChance: 1
+  minCoins: 20
+  maxCoins: 20
+  coinRewardReason: 1
+  grantExperience: 1
+  experienceChance: 1
+  minExperience: 100
+  maxExperience: 100
+  currencyController: {fileID: 0}
+  experienceReceiver: {fileID: 0}
   spawnRadius: 0.45
   spawnHeight: 0.35
   randomYaw: 1
@@ -1271,6 +1520,12 @@ MonoBehaviour:
   minUpwardSpeed: 1.2
   maxUpwardSpeed: 1.8
   onDropped:
+    m_PersistentCalls:
+      m_Calls: []
+  onCoinsRewarded:
+    m_PersistentCalls:
+      m_Calls: []
+  onExperienceRewarded:
     m_PersistentCalls:
       m_Calls: []
 --- !u!114 &320192462
@@ -1495,6 +1750,220 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 381842592}
   m_CullTransparentMesh: 1
+--- !u!1 &393703043
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 393703049}
+  - component: {fileID: 393703048}
+  - component: {fileID: 393703047}
+  - component: {fileID: 393703046}
+  - component: {fileID: 393703045}
+  - component: {fileID: 393703044}
+  m_Layer: 15
+  m_Name: Fire Demo Chest
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &393703044
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 393703043}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfd86d6293c346b6972c18c429733aee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DropReward
+  entries:
+  - prefab: {fileID: 5639467424163986912, guid: 3127a2317b5f0d84f889f3ad7849948d, type: 3}
+    chance: 1
+    minCount: 1
+    maxCount: 1
+  - prefab: {fileID: 8435082828558530627, guid: 5efed6b0d827f7742afe42b71e056d65, type: 3}
+    chance: 1
+    minCount: 1
+    maxCount: 1
+  - prefab: {fileID: 459464699569319800, guid: 7ad117befc344f54ba1b571d1fb87321, type: 3}
+    chance: 1
+    minCount: 1
+    maxCount: 1
+  - prefab: {fileID: 1791283450875119858, guid: 34c0ad45079c8524fafb1d4e550c11d5, type: 3}
+    chance: 1
+    minCount: 1
+    maxCount: 1
+  dropOrigin: {fileID: 0}
+  parentDropsToScene: 1
+  grantInstantRewards: 1
+  grantInstantRewardsOnlyOnce: 1
+  grantCoins: 0
+  coinChance: 1
+  minCoins: 0
+  maxCoins: 0
+  coinRewardReason: 2
+  grantExperience: 0
+  experienceChance: 1
+  minExperience: 0
+  maxExperience: 0
+  currencyController: {fileID: 0}
+  experienceReceiver: {fileID: 0}
+  spawnRadius: 0.45
+  spawnHeight: 0.35
+  randomYaw: 1
+  applyInitialVelocity: 1
+  addRigidbodyIfMissing: 1
+  minHorizontalSpeed: 0
+  maxHorizontalSpeed: 0.15
+  minUpwardSpeed: 1.2
+  maxUpwardSpeed: 1.8
+  onDropped:
+    m_PersistentCalls:
+      m_Calls: []
+  onCoinsRewarded:
+    m_PersistentCalls:
+      m_Calls: []
+  onExperienceRewarded:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &393703045
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 393703043}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41122fe184fa4fe7ae323a87b1b863b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Chest
+  chestId: YeScene_LootDemoChest_001
+  openOptionName: Open Fire Chest
+  lockedOptionName: Locked Fire Chest
+  category: 1
+  interactionPoint: {fileID: 0}
+  showInteractionWhenLocked: 1
+  canOpen: 1
+  isOpen: 0
+  dropReward: {fileID: 393703044}
+  dropOrigin: {fileID: 1888203266}
+  animator: {fileID: 0}
+  openTrigger: Open
+  openedBool: IsOpen
+  destroyDelayAfterOpen: 3
+  fadeBeforeDestroy: 1
+  saveImmediatelyOnOpen: 1
+  onUnlocked:
+    m_PersistentCalls:
+      m_Calls: []
+  onOpened:
+    m_PersistentCalls:
+      m_Calls: []
+  onOpenFailed:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!23 &393703046
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 393703043}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 1
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &393703047
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 393703043}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!33 &393703048
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 393703043}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &393703049
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 393703043}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.59, y: 0.5, z: -8.01}
+  m_LocalScale: {x: 1.5, y: 0.8, z: 0.8}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1888203266}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &419819334
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1996,7 +2465,7 @@ MonoBehaviour:
   fullHealDuration: 3
   destroyOnDeath: 0
   destroyDelay: 2
-  experienceReward: 100
+  experienceReward: 0
   simpleEnemy: {fileID: 611657354}
   notifySimpleEnemyOnDamaged: 1
   letSimpleEnemyApplyOwnKnockback: 0
@@ -2046,6 +2515,19 @@ MonoBehaviour:
     maxCount: 2
   dropOrigin: {fileID: 0}
   parentDropsToScene: 1
+  grantInstantRewards: 1
+  grantInstantRewardsOnlyOnce: 1
+  grantCoins: 1
+  coinChance: 1
+  minCoins: 20
+  maxCoins: 20
+  coinRewardReason: 2
+  grantExperience: 1
+  experienceChance: 1
+  minExperience: 100
+  maxExperience: 100
+  currencyController: {fileID: 0}
+  experienceReceiver: {fileID: 0}
   spawnRadius: 0.45
   spawnHeight: 0.35
   randomYaw: 1
@@ -2056,6 +2538,12 @@ MonoBehaviour:
   minUpwardSpeed: 1.2
   maxUpwardSpeed: 1.8
   onDropped:
+    m_PersistentCalls:
+      m_Calls: []
+  onCoinsRewarded:
+    m_PersistentCalls:
+      m_Calls: []
+  onExperienceRewarded:
     m_PersistentCalls:
       m_Calls: []
 --- !u!114 &611657354
@@ -2646,7 +3134,7 @@ MonoBehaviour:
   fullHealDuration: 3
   destroyOnDeath: 0
   destroyDelay: 2
-  experienceReward: 20
+  experienceReward: 0
   simpleEnemy: {fileID: 0}
   notifySimpleEnemyOnDamaged: 1
   letSimpleEnemyApplyOwnKnockback: 0
@@ -2734,6 +3222,30 @@ MonoBehaviour:
       thunder: 0
       earth: 0
       wind: 0
+  temporaryModifiers:
+    maxHp: 0
+    attackPower: 0
+    defense: 0
+    damageBonus: 0
+    critRate: 0
+    critDamage: 0
+    elementDamageBonus:
+      physical: 0
+      fire: 0
+      water: 0
+      ice: 0
+      thunder: 0
+      earth: 0
+      wind: 0
+    elementResistance:
+      physical: 0
+      fire: 0
+      water: 0
+      ice: 0
+      thunder: 0
+      earth: 0
+      wind: 0
+  debugTemporaryBuffs: 1
 --- !u!114 &718873966
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2790,6 +3302,164 @@ MonoBehaviour:
   vaporizeInternalCooldown: 0.8
   nextVaporizeAllowedTime: 0
   debugLog: 1
+--- !u!1 &758413304
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 758413310}
+  - component: {fileID: 758413309}
+  - component: {fileID: 758413308}
+  - component: {fileID: 758413307}
+  - component: {fileID: 758413306}
+  - component: {fileID: 758413305}
+  m_Layer: 15
+  m_Name: NPCB
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &758413305
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 758413304}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8495118181bfd8847b21e2f31c84f511, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ShopVendor
+  shopData: {fileID: 11400000, guid: 1f06b42eacdc70c459e3d907e6087dc7, type: 2}
+  panelLayer: 2
+  useSynchronousLoading: 1
+  automaticallySetOptionName: 1
+  optionPrefix: 'Open '
+  debugLog: 0
+--- !u!114 &758413306
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 758413304}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7509ad1e08e512a438c32642b6bacbb6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ReactableObject
+  optionName: Open  Shop Equipment
+  category: 1
+  interactionPoint: {fileID: 0}
+  interactable: 1
+  disableAfterInteraction: 0
+  onInteract:
+    m_PersistentCalls:
+      m_Calls: []
+  onSelected:
+    m_PersistentCalls:
+      m_Calls: []
+  onDeselected:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!65 &758413307
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 758413304}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 5, y: 5, z: 5}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!23 &758413308
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 758413304}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &758413309
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 758413304}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &758413310
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 758413304}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: -20.749998, y: 0.5, z: 20.250004}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &760347730
 GameObject:
   m_ObjectHideFlags: 0
@@ -3935,6 +4605,30 @@ MonoBehaviour:
       thunder: 0
       earth: 0
       wind: 0
+  temporaryModifiers:
+    maxHp: 0
+    attackPower: 0
+    defense: 0
+    damageBonus: 0
+    critRate: 0
+    critDamage: 0
+    elementDamageBonus:
+      physical: 0
+      fire: 0
+      water: 0
+      ice: 0
+      thunder: 0
+      earth: 0
+      wind: 0
+    elementResistance:
+      physical: 0
+      fire: 0
+      water: 0
+      ice: 0
+      thunder: 0
+      earth: 0
+      wind: 0
+  debugTemporaryBuffs: 1
 --- !u!114 &1029940140
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3968,7 +4662,7 @@ MonoBehaviour:
   fullHealDuration: 3
   destroyOnDeath: 0
   destroyDelay: 2
-  experienceReward: 20
+  experienceReward: 0
   simpleEnemy: {fileID: 0}
   notifySimpleEnemyOnDamaged: 1
   letSimpleEnemyApplyOwnKnockback: 0
@@ -4341,6 +5035,220 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1115554141}
   m_CullTransparentMesh: 1
+--- !u!1 &1133537814
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1133537820}
+  - component: {fileID: 1133537819}
+  - component: {fileID: 1133537818}
+  - component: {fileID: 1133537817}
+  - component: {fileID: 1133537816}
+  - component: {fileID: 1133537815}
+  m_Layer: 15
+  m_Name: Wind Demo Chest
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1133537815
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1133537814}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfd86d6293c346b6972c18c429733aee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DropReward
+  entries:
+  - prefab: {fileID: 5949060990077714816, guid: 8867a2940e4e59844bfe2dd736a3b290, type: 3}
+    chance: 1
+    minCount: 1
+    maxCount: 1
+  - prefab: {fileID: 1278119899154569210, guid: 729e65d1ca6b2b540b96b31c9a5d1793, type: 3}
+    chance: 1
+    minCount: 1
+    maxCount: 1
+  - prefab: {fileID: 3102190163032019140, guid: 4aa49b3c9aaac5b4bb52e04aae703b85, type: 3}
+    chance: 1
+    minCount: 1
+    maxCount: 1
+  - prefab: {fileID: 1256107622937886791, guid: 8d6aa962231fc7d449af948d81512f3a, type: 3}
+    chance: 1
+    minCount: 1
+    maxCount: 1
+  dropOrigin: {fileID: 0}
+  parentDropsToScene: 1
+  grantInstantRewards: 1
+  grantInstantRewardsOnlyOnce: 1
+  grantCoins: 0
+  coinChance: 1
+  minCoins: 0
+  maxCoins: 0
+  coinRewardReason: 2
+  grantExperience: 0
+  experienceChance: 1
+  minExperience: 0
+  maxExperience: 0
+  currencyController: {fileID: 0}
+  experienceReceiver: {fileID: 0}
+  spawnRadius: 0.45
+  spawnHeight: 0.35
+  randomYaw: 1
+  applyInitialVelocity: 1
+  addRigidbodyIfMissing: 1
+  minHorizontalSpeed: 0
+  maxHorizontalSpeed: 0.15
+  minUpwardSpeed: 1.2
+  maxUpwardSpeed: 1.8
+  onDropped:
+    m_PersistentCalls:
+      m_Calls: []
+  onCoinsRewarded:
+    m_PersistentCalls:
+      m_Calls: []
+  onExperienceRewarded:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &1133537816
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1133537814}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41122fe184fa4fe7ae323a87b1b863b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Chest
+  chestId: YeScene_LootDemoChest_001
+  openOptionName: Open Fire Chest
+  lockedOptionName: Locked Fire Chest
+  category: 1
+  interactionPoint: {fileID: 0}
+  showInteractionWhenLocked: 1
+  canOpen: 1
+  isOpen: 0
+  dropReward: {fileID: 1133537815}
+  dropOrigin: {fileID: 1716995505}
+  animator: {fileID: 0}
+  openTrigger: Open
+  openedBool: IsOpen
+  destroyDelayAfterOpen: 3
+  fadeBeforeDestroy: 1
+  saveImmediatelyOnOpen: 1
+  onUnlocked:
+    m_PersistentCalls:
+      m_Calls: []
+  onOpened:
+    m_PersistentCalls:
+      m_Calls: []
+  onOpenFailed:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!23 &1133537817
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1133537814}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 1
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &1133537818
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1133537814}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!33 &1133537819
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1133537814}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &1133537820
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1133537814}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.59, y: 0.5, z: -12.01}
+  m_LocalScale: {x: 1.5, y: 0.8, z: 0.8}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1716995505}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1141059244
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5404,9 +6312,6 @@ MonoBehaviour:
   useSynchronousLoading: 1
   automaticallySetOptionName: 1
   optionPrefix: 'Open '
-  disablePlayerControl: 1
-  pauseGame: 1
-  unlockCursor: 1
   debugLog: 0
 --- !u!114 &1344276105
 MonoBehaviour:
@@ -5723,7 +6628,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 520485569}
   m_HandleRect: {fileID: 520485567}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -6080,7 +6985,7 @@ MonoBehaviour:
   m_OverrideVoxelSize: 0
   m_VoxelSize: 0.16666667
   m_MinRegionArea: 2
-  m_NavMeshData: {fileID: 23800000, guid: 52e2c93259a43de49989c8e7e5a02418, type: 2}
+  m_NavMeshData: {fileID: 23800000, guid: 49107f452fc744449a87bee32be87fee, type: 2}
   m_BuildHeightMesh: 0
 --- !u!4 &1661278355
 Transform:
@@ -6154,6 +7059,7 @@ MonoBehaviour:
   content: {fileID: 2019189574}
   optionScrollbar: {fileID: 0}
   sliderHandle: {fileID: 0}
+  minimumOptionsToShowSlider: 2
   useHalfScreenHeightAsSliderBaseY: 1
   sliderBaseYOffset: -960
   sliderLength: 260
@@ -6287,6 +7193,68 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1716995504
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1716995505}
+  m_Layer: 15
+  m_Name: DropOrigin
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1716995505
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1716995504}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.9, z: 0.9}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1133537820}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1742371847
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1742371848}
+  m_Layer: 15
+  m_Name: DropOrigin
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1742371848
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1742371847}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.9, z: 0.9}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 207702342}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1760726809
 GameObject:
@@ -6456,6 +7424,37 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1835446020}
   m_CullTransparentMesh: 1
+--- !u!1 &1888203265
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1888203266}
+  m_Layer: 15
+  m_Name: DropOrigin
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1888203266
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1888203265}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.9, z: 0.9}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 393703049}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1905178363
 GameObject:
   m_ObjectHideFlags: 0
@@ -7197,6 +8196,7 @@ SceneRoots:
   - {fileID: 907863196}
   - {fileID: 792876179}
   - {fileID: 1344276109}
+  - {fileID: 758413310}
   - {fileID: 1638622795}
   - {fileID: 1661278355}
   - {fileID: 1192432517}
@@ -7205,3 +8205,6 @@ SceneRoots:
   - {fileID: 593985558}
   - {fileID: 1280039902}
   - {fileID: 320192466}
+  - {fileID: 393703049}
+  - {fileID: 207702342}
+  - {fileID: 1133537820}

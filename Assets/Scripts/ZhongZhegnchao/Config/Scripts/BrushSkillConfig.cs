@@ -22,7 +22,7 @@ public class BrushSkillConfig : ScriptableObject
     public int inkCost = 1;
 
     [Header("技能冷却")]
-    public bool useSkillCooldown = false;
+    public bool useSkillCooldown = true;
 
     [Tooltip("技能冷却时间，单位：秒")]
     public float skillCooldown = 3f;

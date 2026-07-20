@@ -15,10 +15,17 @@ public class PlayerItemUseController : MonoBehaviour
     private PlayerCharacterStatsController statsController;
 
     [SerializeField]
+    private CharacterCombatStats combatStats;
+
+    [SerializeField]
     private PlayerDamageReceiver damageReceiver;
 
     [SerializeField]
     private PlayerInkPouchController inkController;
+
+    [Header("Debug")]
+    [SerializeField]
+    private bool debugLog = true;
 
     public event Action<ConsumableItemData>
         TemporaryBuffRequested;
@@ -63,6 +70,27 @@ public class PlayerItemUseController : MonoBehaviour
             inkController =
                 GetComponent<
                     PlayerInkPouchController>();
+        }
+
+        if (combatStats == null &&
+            statsController != null)
+        {
+            combatStats =
+                statsController.CombatStats;
+        }
+
+        if (combatStats == null)
+        {
+            combatStats =
+                GetComponent<
+                    CharacterCombatStats>();
+        }
+
+        if (combatStats == null)
+        {
+            combatStats =
+                GetComponentInChildren<
+                    CharacterCombatStats>(true);
         }
     }
 
@@ -150,10 +178,12 @@ public class PlayerItemUseController : MonoBehaviour
             case ConsumableEffectType
                 .ElementResistanceBuff:
 
-                if (TemporaryBuffRequested != null)
+                used =
+                    TryApplyTemporaryBuff(data);
+
+                if (used)
                 {
-                    TemporaryBuffRequested.Invoke(data);
-                    used = true;
+                    TemporaryBuffRequested?.Invoke(data);
                 }
 
                 break;
@@ -166,6 +196,60 @@ public class PlayerItemUseController : MonoBehaviour
             entry,
             1
         );
+
+        return true;
+    }
+
+    private bool TryApplyTemporaryBuff(
+        ConsumableItemData data
+    )
+    {
+        ResolveReferences();
+
+        if (combatStats == null &&
+            statsController != null)
+        {
+            statsController.Init();
+            combatStats =
+                statsController.CombatStats;
+        }
+
+        if (combatStats == null)
+        {
+            Debug.LogWarning(
+                "[PlayerItemUseController] " +
+                "CharacterCombatStats not found. " +
+                "Temporary buff was not applied.",
+                this
+            );
+
+            return false;
+        }
+
+        bool applied =
+            combatStats
+                .TryApplyTemporaryConsumableBuff(data);
+
+        if (!applied)
+            return false;
+
+        if (statsController != null)
+        {
+            statsController.RefreshStats();
+        }
+
+        if (debugLog)
+        {
+            Debug.Log(
+                "[PlayerItemUseController] Temporary buff used. " +
+                $"Item={data.DisplayName}, " +
+                $"Effect={data.EffectType}, " +
+                $"Element={data.Element}, " +
+                $"Value={data.PercentageValue:P0}, " +
+                $"Duration={data.Duration:F1}s",
+                this
+            );
+        }
 
         return true;
     }

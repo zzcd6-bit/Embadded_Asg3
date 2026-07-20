@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03b98bfee72b72e489e7159dda782745, type: 3}
+  m_Name: tidecaller_shoes
+  m_EditorClassIdentifier: Assembly-CSharp::EquipmentData
+  itemId: tidecaller_shoes
+  displayName: tidecaller shoes
+  description: 'Light shoes blessed by tidal energy.
+
+    They allow the wearer
+    to move smoothly while channeling water-element skills.'
+  icon: {fileID: -2083025344, guid: 1441de5fc8ec1a445a3ed4530b4a738b, type: 3}
+  quality: 4
+  canDiscard: 1
+  maxStack: 99
+  slotType: 2
+  equipmentSet: {fileID: 11400000, guid: 3213b46f6a2ffeb438e03995f8b1c3f9, type: 2}
+  maxHpBonus: 30
+  defenseBonus: 15
+  resistanceElement: 0
+  elementResistanceBonus: 0
+  damageBonus: 0.3
+  damageElement: 3
+  elementDamageBonus: 0.2
+  baseAttackPower: 0
+  attackPowerPerLevel: 0
+  criticalRateBonus: 0
+  criticalDamageBonus: 0
+  weaponMaxLevel: 20
+  levelOneExperienceRequirement: 100
+  experienceIncreasePerLevel: 25

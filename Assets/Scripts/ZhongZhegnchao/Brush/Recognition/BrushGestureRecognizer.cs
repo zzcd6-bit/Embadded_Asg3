@@ -51,7 +51,7 @@ public class BrushGestureRecognizer : MonoBehaviour
     public bool debugTopMatches = true;
     public int debugTopMatchCount = 5;
 
-
+    private BrushSkillBase[] brushSkills;
 
     private readonly List<Gesture> trainingSet = new List<Gesture>();
 
@@ -59,7 +59,80 @@ public class BrushGestureRecognizer : MonoBehaviour
     {
         InitializeUI();
         ResolveSkillInventory();
+        ResolveBrushSkills();
         ReloadTemplates();
+    }
+
+    private void ResolveBrushSkills()
+    {
+        Transform root = transform.root;
+
+        if (root != null)
+        {
+            brushSkills =
+                root.GetComponentsInChildren<BrushSkillBase>(true);
+        }
+
+        if (brushSkills == null || brushSkills.Length == 0)
+        {
+            brushSkills =
+                FindObjectsOfType<BrushSkillBase>(true);
+        }
+    }
+
+    private bool IsSkillCoolingDown(
+        BrushSkillType skillType,
+        out float remainingCooldown
+    )
+    {
+        remainingCooldown = 0f;
+
+        if (brushSkills == null || brushSkills.Length == 0)
+        {
+            ResolveBrushSkills();
+        }
+
+        if (brushSkills == null)
+            return false;
+
+        for (int i = 0; i < brushSkills.Length; i++)
+        {
+            BrushSkillBase skill = brushSkills[i];
+
+            if (skill == null)
+                continue;
+
+            if (skill.PublicSkillType != skillType)
+                continue;
+
+            if (!skill.IsCoolingDown)
+                return false;
+
+            remainingCooldown = skill.CooldownRemaining;
+            return true;
+        }
+
+        return false;
+    }
+
+    private void ShowRecognitionCooldown(
+        BrushSkillType skillType,
+        float remainingCooldown
+    )
+    {
+        UIMgr.Instance.ShowPanel<
+            BrushRecognitionResultPanel
+        >(
+            E_UILayer.Top,
+            panel =>
+            {
+                panel.ShowCooldown(
+                    skillType,
+                    remainingCooldown
+                );
+            },
+            true
+        );
     }
 
     private void ResolveSkillInventory()
@@ -357,6 +430,21 @@ public class BrushGestureRecognizer : MonoBehaviour
             return;
         }
 
+        if (IsSkillCoolingDown(skillType, out float remainingCooldown))
+        {
+            ShowRecognitionCooldown(
+                skillType,
+                remainingCooldown
+            );
+
+            Debug.Log(
+                $"[BrushGestureRecognizer] Skill is cooling down: {skillType}, Remaining={remainingCooldown:F1}s",
+                this
+            );
+
+            return;
+        }
+
         ShowRecognitionSuccess(skillType);
         PlayRecognitionSuccessSound(skillType);
 
@@ -481,6 +569,9 @@ public class BrushGestureRecognizer : MonoBehaviour
             case BrushSkillType.Bridge:
                 return false;
 
+            case BrushSkillType.Ladder:
+                return false;
+
             default:
                 return false;
         }
@@ -512,6 +603,9 @@ public class BrushGestureRecognizer : MonoBehaviour
 
             case "wind":
                 return BrushSkillType.Wind;
+
+            case "ladder":
+                return BrushSkillType.Ladder;
 
             default:
                 return BrushSkillType.None;

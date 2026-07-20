@@ -23,5 +23,5 @@ MonoBehaviour:
   effectType: 4
   amount: 3
   element: 2
-  percentageValue: 0.2
+  percentageValue: 0.15
   duration: 30
