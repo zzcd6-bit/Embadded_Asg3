@@ -29,10 +29,10 @@ MonoBehaviour:
   damageBonus: 0
   damageElement: 1
   elementDamageBonus: 0
-  baseAttackPower: 20
-  attackPowerPerLevel: 2
+  baseAttackPower: 26
+  attackPowerPerLevel: 4
   criticalRateBonus: 0.05
-  criticalDamageBonus: 0.15
+  criticalDamageBonus: 0.1
   weaponMaxLevel: 20
   levelOneExperienceRequirement: 100
   experienceIncreasePerLevel: 35

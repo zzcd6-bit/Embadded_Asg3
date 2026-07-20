@@ -24,7 +24,7 @@ MonoBehaviour:
       unlockLevel: 1
       growthMode: 0
       baseValue: 1
-      valuePerLevel: 0.1
+      valuePerLevel: 0.2
       maximumBonus: 0
       softCapCurve: 1
       valueFormat: 2
@@ -65,7 +65,7 @@ MonoBehaviour:
       unlockLevel: 1
       growthMode: 0
       baseValue: 1
-      valuePerLevel: 0.08
+      valuePerLevel: 0.5
       maximumBonus: 0
       softCapCurve: 1
       valueFormat: 2
@@ -77,7 +77,7 @@ MonoBehaviour:
       unlockLevel: 1
       growthMode: 0
       baseValue: 1
-      valuePerLevel: 0.06
+      valuePerLevel: 0.1
       maximumBonus: 0
       softCapCurve: 1
       valueFormat: 2
@@ -130,7 +130,7 @@ MonoBehaviour:
       unlockLevel: 1
       growthMode: 0
       baseValue: 1
-      valuePerLevel: 0.08
+      valuePerLevel: 0.2
       maximumBonus: 0
       softCapCurve: 1
       valueFormat: 2
@@ -147,7 +147,7 @@ MonoBehaviour:
       unlockLevel: 1
       growthMode: 0
       baseValue: 1
-      valuePerLevel: 0.1
+      valuePerLevel: 0.3
       maximumBonus: 0
       softCapCurve: 1
       valueFormat: 2

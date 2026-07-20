@@ -13,9 +13,11 @@ MonoBehaviour:
   m_Name: Player_CharacterStatsConfig
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCharacterStatsConfig
   maxLevel: 100
+  levelOneExperienceRequirement: 100
+  experienceRequirementIncreasePerLevel: 25
   levelOneStats:
     maxHp: 100
-    attackPower: 10
+    attackPower: 2
     defense: 0
     damageBonus: 0
     critRate: 0.1
@@ -39,7 +41,7 @@ MonoBehaviour:
   growthPerLevel:
     maxHpPerLevel: 10
     attackPowerPerLevel: 2
-    defensePerLevel: 1
+    defensePerLevel: 2
     damageBonusPerLevel: 0
     elementDamageBonusPerLevel:
       physical: 0

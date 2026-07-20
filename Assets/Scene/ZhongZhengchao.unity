@@ -1069,6 +1069,7 @@ MonoBehaviour:
   requireInkCost: 1
   debugLog: 1
   config: {fileID: 11400000, guid: bba5128e535c36e40a514a8e82d5e048, type: 2}
+  allowInfusionWithoutVisibleTarget: 0
   drawDebug: 1
 --- !u!114 &248848588
 MonoBehaviour:
@@ -2638,8 +2639,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a11f3e3355b61564dbf2032541a0d38e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyWhitebox
-  maxHp: 10000
-  currentHp: 10000
+  maxHp: 100000
+  currentHp: 100000
   resetHealthOnAwake: 1
   outOfCombatHoldTime: 3
   fullHealDuration: 3
@@ -3960,8 +3961,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a11f3e3355b61564dbf2032541a0d38e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyWhitebox
-  maxHp: 1000
-  currentHp: 1000
+  maxHp: 100000
+  currentHp: 100000
   resetHealthOnAwake: 1
   outOfCombatHoldTime: 3
   fullHealDuration: 3
@@ -5722,7 +5723,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 520485569}
   m_HandleRect: {fileID: 520485567}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -5851,9 +5852,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlacementCommitter
   gridPlacementSystem: {fileID: 1638622794}
-  rebakeNavMeshOnChanges: 1
-  walkableBuildingLayerName: Walkable Building
-  navMeshSurfaces: []
 --- !u!114 &1638622791
 MonoBehaviour:
   m_ObjectHideFlags: 0
