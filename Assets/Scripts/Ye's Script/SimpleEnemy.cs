@@ -78,6 +78,7 @@ public class SimpleEnemy : MonoBehaviour
     private float repathTimer;
     private float lostTimer;
     private Coroutine knockbackRoutine;
+    private bool combatActiveReported;
 
     private void Awake()
     {
@@ -184,6 +185,22 @@ public class SimpleEnemy : MonoBehaviour
         Log("Died.");
     }
 
+    private void OnEnable()
+    {
+        if (state == EnemyState.Attack)
+            NotifyCombatActive(true);
+    }
+
+    private void OnDisable()
+    {
+        NotifyCombatActive(false, "disabled");
+    }
+
+    private void OnDestroy()
+    {
+        NotifyCombatActive(false, "destroyed");
+    }
+
     private void ApplyInitialState()
     {
         if (startMode == StartMode.Patrol && startNode != null)
@@ -226,7 +243,7 @@ public class SimpleEnemy : MonoBehaviour
 
         StopLookRoutine();
         state = EnemyState.Attack;
-        NotifyCombatActive(true);
+        NotifyCombatActive(true, "detected-or-damaged");
         agent.speed = chaseSpeed;
         agent.stoppingDistance = attackRange * 0.85f;
         attackTimer = 0f;
@@ -241,7 +258,7 @@ public class SimpleEnemy : MonoBehaviour
 
     private void UpdateAttack()
     {
-        if (PlayerModeStateController.IsDialogueMode)
+        if (!GameModeManager.Instance.CurrentCapabilities.canBeDetectedByEnemy)
         {
             LosePlayerAndReturnHome();
             return;
@@ -296,7 +313,7 @@ public class SimpleEnemy : MonoBehaviour
     private void LosePlayerAndReturnHome()
     {
         StopLookRoutine();
-        NotifyCombatActive(false);
+        NotifyCombatActive(false, "lost-target");
         lookRoutine = StartCoroutine(LookAroundThenReturnHome());
     }
 
@@ -408,7 +425,7 @@ public class SimpleEnemy : MonoBehaviour
 
     private bool CanDetectPlayer()
     {
-        if (PlayerModeStateController.IsDialogueMode)
+        if (!GameModeManager.Instance.CurrentCapabilities.canBeDetectedByEnemy)
             return false;
 
         if (player == null)
@@ -613,10 +630,28 @@ public class SimpleEnemy : MonoBehaviour
         knockbackRoutine = null;
     }
 
-    private void NotifyCombatActive(bool isActive)
+    private void NotifyCombatActive(bool isActive, string reason = null)
     {
+        if (combatActiveReported == isActive)
+            return;
+
+        combatActiveReported = isActive;
+
         if (health != null)
             health.SetCombatActive(isActive);
+
+        Object source = health != null ? health : this;
+        GameObject sourceObject = health != null ? health.gameObject : gameObject;
+
+        EventCenter.Instance.EventTrigger(
+            E_EventType.E_Enemy_CombatChanged,
+            new EnemyCombatChangedInfo
+            {
+                source = source,
+                enemyObject = sourceObject,
+                isActive = isActive,
+                reason = reason
+            });
     }
 
     private void Log(string message)

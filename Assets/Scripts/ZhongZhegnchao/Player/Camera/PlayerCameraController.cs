@@ -182,7 +182,9 @@ public class PlayerCameraController : MonoBehaviour
     {
         skipLookThisFrame = false;
 
-        if (!cameraInputEnabled || !lockCursor)
+        if (!cameraInputEnabled ||
+            !GameModeManager.Instance.CurrentCapabilities.canLook ||
+            !lockCursor)
         {
             return;
         }
@@ -201,6 +203,7 @@ public class PlayerCameraController : MonoBehaviour
     private bool CanRotateCamera()
     {
         return cameraInputEnabled &&
+               GameModeManager.Instance.CurrentCapabilities.canLook &&
                !skipLookThisFrame &&
                (!lockCursor || !IsReleaseCursorHeld()) &&
                Cursor.lockState == CursorLockMode.Locked;
@@ -225,6 +228,7 @@ public class PlayerCameraController : MonoBehaviour
         }
 
         if (cameraInputEnabled &&
+            GameModeManager.Instance.CurrentCapabilities.canLook &&
             Cursor.lockState == CursorLockMode.Locked &&
             !InteractionRollBoxUI.BlocksCameraZoom)
         {

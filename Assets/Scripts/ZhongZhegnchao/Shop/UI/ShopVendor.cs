@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(ReactableObject))]
@@ -10,65 +10,32 @@ public class ShopVendor : MonoBehaviour
 
     [Header("UI")]
     [SerializeField]
-    private E_UILayer panelLayer =
-        E_UILayer.Top;
+    private E_UILayer panelLayer = E_UILayer.Top;
 
     [SerializeField]
-    private bool useSynchronousLoading =
-        true;
+    private bool useSynchronousLoading = true;
 
     [Header("Interaction Display")]
     [SerializeField]
-    private bool automaticallySetOptionName =
-        true;
+    private bool automaticallySetOptionName = true;
 
     [SerializeField]
-    private string optionPrefix =
-        "Open Shop";
-
-    [Header("Gameplay")]
-    [SerializeField]
-    private bool disablePlayerControl =
-        true;
-
-    [SerializeField]
-    private bool pauseGame =
-        true;
-
-    [Header("Cursor")]
-    [SerializeField]
-    private bool unlockCursor =
-        true;
+    private string optionPrefix = "Open Shop";
 
     [Header("Debug")]
     [SerializeField]
     private bool debugLog;
 
     private ReactableObject reactableObject;
-
-    private ActionPlayerController
-        playerController;
-
     private bool shopIsOpen;
-
-    private float previousTimeScale = 1f;
-
-    private CursorLockMode
-        previousCursorLockMode;
-
-    private bool previousCursorVisible;
 
     private void Awake()
     {
-        reactableObject =
-            GetComponent<ReactableObject>();
+        reactableObject = GetComponent<ReactableObject>();
 
         if (reactableObject != null)
         {
-            reactableObject.OnInteractEvent
-                .AddListener(
-                    HandleInteract
-                );
+            reactableObject.OnInteractEvent.AddListener(HandleInteract);
         }
 
         RefreshOptionName();
@@ -78,10 +45,7 @@ public class ShopVendor : MonoBehaviour
     {
         if (reactableObject != null)
         {
-            reactableObject.OnInteractEvent
-                .RemoveListener(
-                    HandleInteract
-                );
+            reactableObject.OnInteractEvent.RemoveListener(HandleInteract);
         }
 
         if (shopIsOpen)
@@ -90,137 +54,54 @@ public class ShopVendor : MonoBehaviour
         }
     }
 
-    private void HandleInteract(
-        GameObject interactor
-    )
+    private void HandleInteract(GameObject interactor)
     {
         if (shopIsOpen)
             return;
 
         if (shopData == null)
         {
-            Debug.LogWarning(
-                "[ShopVendor] ShopData is missing.",
-                this
-            );
-
+            Debug.LogWarning("[ShopVendor] ShopData is missing.", this);
             return;
         }
 
-        ResolvePlayerController(
-            interactor
-        );
+        if (!GameModeManager.Instance.CurrentCapabilities.canOpenMenu)
+        {
+            return;
+        }
 
-        UIMgr.Instance.ShowPanel<
-            StorePanel>(
+        if (!GameModeManager.Instance.RequestMode(GameModeState.Menu, this))
+        {
+            return;
+        }
+
+        shopIsOpen = true;
+
+        if (reactableObject != null)
+        {
+            reactableObject.SetInteractable(false);
+        }
+
+        UIMgr.Instance.ShowPanel<StorePanel>(
             panelLayer,
             panel =>
             {
                 if (panel == null)
                 {
-                    Debug.LogError(
-                        "[ShopVendor] " +
-                        "StorePanel failed to load.",
-                        this
-                    );
-
+                    Debug.LogError("[ShopVendor] StorePanel failed to load.", this);
+                    RestoreGameplayState();
                     return;
                 }
 
-                ApplyGameplayState();
-
-                panel.Bind(
-                    shopData,
-                    interactor,
-                    HandleStorePanelClosed
-                );
+                panel.Bind(shopData, interactor, HandleStorePanelClosed);
 
                 if (debugLog)
                 {
-                    Debug.Log(
-                        "[ShopVendor] " +
-                        $"Opened shop: " +
-                        $"{shopData.DisplayName}",
-                        this
-                    );
+                    Debug.Log($"[ShopVendor] Opened shop: {shopData.DisplayName}", this);
                 }
             },
             useSynchronousLoading
         );
-    }
-
-    private void ResolvePlayerController(
-        GameObject interactor
-    )
-    {
-        playerController = null;
-
-        if (interactor == null)
-            return;
-
-        playerController =
-            interactor.GetComponent<
-                ActionPlayerController>();
-
-        if (playerController == null)
-        {
-            playerController =
-                interactor.GetComponentInParent<
-                    ActionPlayerController>();
-        }
-
-        if (playerController == null)
-        {
-            playerController =
-                interactor.GetComponentInChildren<
-                    ActionPlayerController>(true);
-        }
-    }
-
-    private void ApplyGameplayState()
-    {
-        if (shopIsOpen)
-            return;
-
-        shopIsOpen = true;
-
-        previousTimeScale =
-            Time.timeScale;
-
-        previousCursorLockMode =
-            Cursor.lockState;
-
-        previousCursorVisible =
-            Cursor.visible;
-
-        if (disablePlayerControl &&
-            playerController != null)
-        {
-            playerController
-                .SetGameplayControlEnabled(
-                    false
-                );
-        }
-
-        if (pauseGame)
-        {
-            Time.timeScale = 0f;
-        }
-
-        if (unlockCursor)
-        {
-            Cursor.lockState =
-                CursorLockMode.None;
-
-            Cursor.visible = true;
-        }
-
-        if (reactableObject != null)
-        {
-            reactableObject.SetInteractable(
-                false
-            );
-        }
     }
 
     private void HandleStorePanelClosed()
@@ -229,10 +110,7 @@ public class ShopVendor : MonoBehaviour
 
         if (debugLog)
         {
-            Debug.Log(
-                "[ShopVendor] Store panel closed.",
-                this
-            );
+            Debug.Log("[ShopVendor] Store panel closed.", this);
         }
     }
 
@@ -243,38 +121,12 @@ public class ShopVendor : MonoBehaviour
 
         shopIsOpen = false;
 
-        if (pauseGame)
-        {
-            Time.timeScale =
-                previousTimeScale;
-        }
-
-        if (disablePlayerControl &&
-            playerController != null)
-        {
-            playerController
-                .SetGameplayControlEnabled(
-                    true
-                );
-        }
-
-        if (unlockCursor)
-        {
-            Cursor.lockState =
-                previousCursorLockMode;
-
-            Cursor.visible =
-                previousCursorVisible;
-        }
+        GameModeManager.Instance.ExitMode(GameModeState.Menu);
 
         if (reactableObject != null)
         {
-            reactableObject.SetInteractable(
-                true
-            );
+            reactableObject.SetInteractable(true);
         }
-
-        playerController = null;
     }
 
     private void RefreshOptionName()
@@ -286,10 +138,7 @@ public class ShopVendor : MonoBehaviour
             return;
         }
 
-        reactableObject.SetOptionName(
-            $"{optionPrefix} " +
-            $"{shopData.DisplayName}"
-        );
+        reactableObject.SetOptionName($"{optionPrefix} {shopData.DisplayName}");
     }
 
 #if UNITY_EDITOR
@@ -297,9 +146,7 @@ public class ShopVendor : MonoBehaviour
     {
         if (!Application.isPlaying)
         {
-            reactableObject =
-                GetComponent<ReactableObject>();
-
+            reactableObject = GetComponent<ReactableObject>();
             RefreshOptionName();
         }
     }

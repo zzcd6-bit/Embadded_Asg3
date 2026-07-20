@@ -17,11 +17,13 @@ public class BambooBugBarrierDamageReceiver : MonoBehaviour, IDamageable, IGameS
 
     [Header("Element")]
     [SerializeField] private ElementType requiredElement = ElementType.Fire;
-    [SerializeField] private bool acceptFireInfusedAttacker = true;
+    [SerializeField] private bool acceptFireInfusedAttacker;
 
     [Header("Feedback")]
-    [SerializeField] private string normalHitMessage = "普通攻击无法破坏这层伪装。";
-    [SerializeField] private string openedMessage = "竹虫的伪装已经解除，前方道路已开放。";
+    [SerializeField] private string normalHitMessage = "Ordinary attacks cannot break this disguise.";
+    [SerializeField] private string openedMessage = "The bamboo grub's disguise is broken. The path ahead is open.";
+    [SerializeField] private float feedbackDisplayDuration = 4f;
+    [SerializeField] private bool suppressDuplicateFeedbackWhileVisible = true;
     [SerializeField] private bool showDialogueSystemAlerts = true;
     [SerializeField] private bool logHits = true;
 
@@ -32,6 +34,8 @@ public class BambooBugBarrierDamageReceiver : MonoBehaviour, IDamageable, IGameS
     private bool isOpened;
     private Vector3 shakeStartLocalPosition;
     private float shakeTimer;
+    private string visibleFeedbackMessage;
+    private float visibleFeedbackUntil;
 
     private void Awake()
     {
@@ -260,6 +264,11 @@ public class BambooBugBarrierDamageReceiver : MonoBehaviour, IDamageable, IGameS
 
     private void PlayNormalHitFeedback()
     {
+        if (isOpened)
+        {
+            return;
+        }
+
         shakeTimer = 0.18f;
         ShowFeedback(normalHitMessage);
         onNormalHit?.Invoke();
@@ -272,9 +281,19 @@ public class BambooBugBarrierDamageReceiver : MonoBehaviour, IDamageable, IGameS
             return;
         }
 
+        if (suppressDuplicateFeedbackWhileVisible &&
+            string.Equals(visibleFeedbackMessage, message) &&
+            Time.time < visibleFeedbackUntil)
+        {
+            return;
+        }
+
+        visibleFeedbackMessage = message;
+        visibleFeedbackUntil = Time.time + Mathf.Max(0f, feedbackDisplayDuration);
+
         if (showDialogueSystemAlerts && DialogueManager.instance != null)
         {
-            DialogueManager.ShowAlert(message);
+            DialogueManager.ShowAlert(message, feedbackDisplayDuration);
         }
 
         if (logHits)

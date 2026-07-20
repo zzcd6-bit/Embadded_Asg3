@@ -1533,9 +1533,11 @@ MonoBehaviour:
   requireQuestActive: 1
   saveImmediatelyOnOpen: 1
   requiredElement: 2
-  acceptFireInfusedAttacker: 1
+  acceptFireInfusedAttacker: 0
   normalHitMessage: "\u666E\u901A\u653B\u51FB\u65E0\u6CD5\u7834\u574F\u8FD9\u5C42\u4F2A\u88C5\u3002"
   openedMessage: "\u7AF9\u866B\u7684\u4F2A\u88C5\u5DF2\u7ECF\u89E3\u9664\uFF0C\u524D\u65B9\u9053\u8DEF\u5DF2\u5F00\u653E\u3002"
+  feedbackDisplayDuration: 4
+  suppressDuplicateFeedbackWhileVisible: 1
   showDialogueSystemAlerts: 1
   logHits: 1
   onNormalHit:
@@ -8079,8 +8081,9 @@ MonoBehaviour:
   scrollRect: {fileID: 1308948469}
   viewport: {fileID: 381842593}
   content: {fileID: 2019189574}
-  optionScrollbar: {fileID: 0}
+  optionScrollbar: {fileID: 1560706578}
   sliderHandle: {fileID: 0}
+  minimumOptionsToShowSlider: 2
   useHalfScreenHeightAsSliderBaseY: 1
   sliderBaseYOffset: -960
   sliderLength: 260

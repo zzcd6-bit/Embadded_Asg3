@@ -56,6 +56,7 @@ public class InteractionRollBoxUI : MonoBehaviour
     [Header("Option Slider")]
     [SerializeField] private Scrollbar optionScrollbar;
     [SerializeField] private RectTransform sliderHandle;
+    [SerializeField, Min(1)] private int minimumOptionsToShowSlider = 2;
     [SerializeField] private bool useHalfScreenHeightAsSliderBaseY = true;
     [SerializeField] private float sliderBaseYOffset;
     [SerializeField, Min(1f)] private float sliderLength = 260f;
@@ -70,9 +71,16 @@ public class InteractionRollBoxUI : MonoBehaviour
 
     public event Action<int> OptionClicked;
     public event Action<int> OptionHovered;
+    public event Action<int> OptionExited;
     public event Action<int> OptionSliderSelected;
 
     public static bool BlocksCameraZoom => visibleRollBoxCount > 0;
+
+    private void Awake()
+    {
+        EnsureSliderReferences();
+        RefreshSliderVisibility();
+    }
 
     public void SetOptions(IReadOnlyList<InteractionDisplayData> options, int selectedIndex)
     {
@@ -91,7 +99,7 @@ public class InteractionRollBoxUI : MonoBehaviour
             }
 
             InteractionDisplayData data = options[i];
-            optionViews[i].Bind(i, data.OptionName, HandleOptionClicked, HandleOptionHovered);
+            optionViews[i].Bind(i, data.OptionName, HandleOptionClicked, HandleOptionHovered, HandleOptionExited);
             optionViews[i].SetSelected(i == selectedIndex);
         }
 
@@ -205,6 +213,11 @@ public class InteractionRollBoxUI : MonoBehaviour
         OptionHovered?.Invoke(index);
     }
 
+    private void HandleOptionExited(int index)
+    {
+        OptionExited?.Invoke(index);
+    }
+
     private void SelectBySliderLocalY(float localY)
     {
         float baseY = GetSliderBaseY();
@@ -225,12 +238,19 @@ public class InteractionRollBoxUI : MonoBehaviour
 
     private void RefreshSliderVisibility()
     {
+        bool shouldShowSlider = activeOptionCount >= minimumOptionsToShowSlider;
+
+        if (scrollRect != null)
+        {
+            scrollRect.vertical = shouldShowSlider;
+        }
+
         if (optionScrollbar == null)
         {
             return;
         }
 
-        optionScrollbar.gameObject.SetActive(activeOptionCount > 1);
+        optionScrollbar.gameObject.SetActive(shouldShowSlider);
     }
 
     private void RefreshSliderPosition()

@@ -4,6 +4,10 @@ using UnityEngine;
 
 public enum E_EventType
 {
+    #region Game Mode
+    E_GameMode_Changed,
+    #endregion
+
     #region Scene Events
     E_SceneLoadChange,
     #endregion
@@ -73,6 +77,7 @@ public enum E_EventType
     E_Enemy_Spawned,
     E_Enemy_Dead,
     E_Enemy_Damaged,
+    E_Enemy_CombatChanged,
     #endregion
 
     #region Quest

@@ -95,6 +95,10 @@ public class PlayerCombatInputHandler : MonoBehaviour
 
     private void OnAttackPressed()
     {
+        if (!GameModeManager.Instance.CurrentCapabilities.canAttack)
+        {
+            return;
+        }
 
         if (animationController != null && !animationController.CanStartCombatAction())
         {

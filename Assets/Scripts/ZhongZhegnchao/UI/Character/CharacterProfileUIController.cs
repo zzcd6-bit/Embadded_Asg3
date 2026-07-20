@@ -1,38 +1,21 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.InputSystem;
 
 [DisallowMultipleComponent]
-public class CharacterProfileUIController :
-    MonoBehaviour
+public class CharacterProfileUIController : MonoBehaviour
 {
     [Header("References")]
     [SerializeField]
-    private PlayerCharacterStatsController
-        statsController;
+    private PlayerCharacterStatsController statsController;
 
     [SerializeField]
     private ActionPlayerController playerController;
-
-    [Header("Behaviour")]
-    [SerializeField]
-    private bool pauseGameWhenOpen = true;
 
     private EventCenter eventCenter;
     private InputMgr inputMgr;
 
     private bool isOpen;
-    public bool IsOpen
-    {
-        get { return isOpen; }
-    }
-
-    private bool previousGameplayControlEnabled;
-
-    private bool previousCursorVisible;
-    private CursorLockMode previousCursorLockMode;
-
-    private float previousTimeScale;
-    private float previousFixedDeltaTime;
+    public bool IsOpen => isOpen;
 
     private void Awake()
     {
@@ -41,11 +24,8 @@ public class CharacterProfileUIController :
 
     private void OnEnable()
     {
-        inputMgr =
-            InputMgr.Instance;
-
-        eventCenter =
-            EventCenter.Instance;
+        inputMgr = InputMgr.Instance;
+        eventCenter = EventCenter.Instance;
 
         inputMgr.ChangeKeyboardInfo(
             E_EventType.E_Input_CharacterPanel,
@@ -105,30 +85,22 @@ public class CharacterProfileUIController :
     {
         if (statsController == null)
         {
-            statsController =
-                GetComponent<
-                    PlayerCharacterStatsController>();
+            statsController = GetComponent<PlayerCharacterStatsController>();
         }
 
         if (statsController == null)
         {
-            statsController =
-                GetComponentInChildren<
-                    PlayerCharacterStatsController>(true);
+            statsController = GetComponentInChildren<PlayerCharacterStatsController>(true);
         }
 
         if (playerController == null)
         {
-            playerController =
-                GetComponent<
-                    ActionPlayerController>();
+            playerController = GetComponent<ActionPlayerController>();
         }
 
         if (playerController == null)
         {
-            playerController =
-                GetComponentInParent<
-                    ActionPlayerController>();
+            playerController = GetComponentInParent<ActionPlayerController>();
         }
     }
 
@@ -150,91 +122,40 @@ public class CharacterProfileUIController :
         if (statsController == null)
         {
             Debug.LogWarning(
-                "[CharacterProfileUIController] " +
-                "StatsController not found.",
+                "[CharacterProfileUIController] StatsController not found.",
                 this
             );
 
             return;
         }
 
-        if (!statsController.IsInitialized &&
-            !statsController.Init())
+        if (!statsController.IsInitialized && !statsController.Init())
         {
             return;
         }
 
-        if (playerController != null &&
-            !playerController.GameplayControlEnabled)
+        if (!GameModeManager.Instance.CurrentCapabilities.canOpenMenu)
+        {
+            return;
+        }
+
+        if (!GameModeManager.Instance.RequestMode(GameModeState.Menu, this))
         {
             return;
         }
 
         isOpen = true;
 
-        previousCursorVisible =
-            Cursor.visible;
-
-        previousCursorLockMode =
-            Cursor.lockState;
-
-        previousTimeScale =
-            Time.timeScale;
-
-        previousFixedDeltaTime =
-            Time.fixedDeltaTime;
-
-        if (playerController != null)
-        {
-            previousGameplayControlEnabled =
-                playerController
-                    .GameplayControlEnabled;
-
-            playerController
-                .SetGameplayControlEnabled(false);
-        }
-
-        EventCenter.Instance.EventTrigger<bool>(
-            E_EventType.E_Player_ControlEnable,
-            false
-        );
-
-        EventCenter.Instance.EventTrigger<bool>(
-            E_EventType.E_Player_CombatEnable,
-            false
-        );
-
-        EventCenter.Instance.EventTrigger<bool>(
-            E_EventType.E_Camera_InputEnable,
-            false
-        );
-
-        Cursor.visible = true;
-        Cursor.lockState =
-            CursorLockMode.None;
-
-        if (pauseGameWhenOpen)
-        {
-            Time.timeScale = 0f;
-        }
-
-        UIMgr.Instance.ShowPanel<
-            CharacterProfilePanel
-        >(
+        UIMgr.Instance.ShowPanel<CharacterProfilePanel>(
             E_UILayer.System,
             panel =>
             {
-                panel.Bind(
-                    statsController,
-                    CloseCharacterPanel
-                );
+                panel.Bind(statsController, CloseCharacterPanel);
             },
             true
         );
 
-        CharacterProfilePanel panel =
-            UIMgr.Instance.GetPanel<
-                CharacterProfilePanel>();
+        CharacterProfilePanel panel = UIMgr.Instance.GetPanel<CharacterProfilePanel>();
 
         if (panel == null)
         {
@@ -249,48 +170,8 @@ public class CharacterProfileUIController :
 
         isOpen = false;
 
-        UIMgr.Instance.HidePanel<
-            CharacterProfilePanel>();
+        UIMgr.Instance.HidePanel<CharacterProfilePanel>();
 
-        if (pauseGameWhenOpen)
-        {
-            Time.timeScale =
-                previousTimeScale;
-
-            Time.fixedDeltaTime =
-                previousFixedDeltaTime;
-        }
-
-        Cursor.visible =
-            previousCursorVisible;
-
-        Cursor.lockState =
-            previousCursorLockMode;
-
-        if (playerController != null)
-        {
-            playerController
-                .SetGameplayControlEnabled(
-                    previousGameplayControlEnabled
-                );
-        }
-
-        if (previousGameplayControlEnabled)
-        {
-            EventCenter.Instance.EventTrigger<bool>(
-                E_EventType.E_Player_ControlEnable,
-                true
-            );
-
-            EventCenter.Instance.EventTrigger<bool>(
-                E_EventType.E_Player_CombatEnable,
-                true
-            );
-
-            EventCenter.Instance.EventTrigger<bool>(
-                E_EventType.E_Camera_InputEnable,
-                true
-            );
-        }
+        GameModeManager.Instance.ExitMode(GameModeState.Menu);
     }
 }

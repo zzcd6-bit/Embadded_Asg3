@@ -13,6 +13,7 @@ public class PlayerBarsHud : MonoBehaviour
     [Header("Behaviour")]
     [SerializeField] private bool autoFindResourceController = true;
     [SerializeField] private float smoothSpeed = 12f;
+    [SerializeField] private CanvasGroup visibilityGroup;
 
     private float displayedMana = 1f;
     private float displayedHealth = 1f;
@@ -21,23 +22,33 @@ public class PlayerBarsHud : MonoBehaviour
 
     private void Awake()
     {
+        EnsureVisibilityGroup();
         ResolveResourceController();
         RefreshTargets();
         displayedMana = targetMana;
         displayedHealth = targetHealth;
         ApplyMasks();
+        ApplyVisibility(GameModeManager.Instance.CurrentCapabilities.showPlayerBars);
     }
 
     private void OnEnable()
     {
+        EnsureVisibilityGroup();
         ResolveResourceController();
         Subscribe();
+        EventCenter.Instance.AddEventListener<GameModeChangedInfo>(
+            E_EventType.E_GameMode_Changed,
+            OnGameModeChanged);
         RefreshTargets();
         ApplyMasks();
+        ApplyVisibility(GameModeManager.Instance.CurrentCapabilities.showPlayerBars);
     }
 
     private void OnDisable()
     {
+        EventCenter.Instance.RemoveEventListener<GameModeChangedInfo>(
+            E_EventType.E_GameMode_Changed,
+            OnGameModeChanged);
         Unsubscribe();
     }
 
@@ -144,6 +155,40 @@ public class PlayerBarsHud : MonoBehaviour
     {
         ApplyMask(manaFillMask, displayedMana);
         ApplyMask(healthFillMask, displayedHealth);
+    }
+
+    private void OnGameModeChanged(GameModeChangedInfo info)
+    {
+        if (info == null)
+        {
+            return;
+        }
+
+        ApplyVisibility(info.newCapabilities.showPlayerBars);
+    }
+
+    private void EnsureVisibilityGroup()
+    {
+        if (visibilityGroup != null)
+        {
+            return;
+        }
+
+        visibilityGroup = GetComponent<CanvasGroup>();
+
+        if (visibilityGroup == null)
+        {
+            visibilityGroup = gameObject.AddComponent<CanvasGroup>();
+        }
+    }
+
+    private void ApplyVisibility(bool visible)
+    {
+        EnsureVisibilityGroup();
+
+        visibilityGroup.alpha = visible ? 1f : 0f;
+        visibilityGroup.interactable = visible;
+        visibilityGroup.blocksRaycasts = visible;
     }
 
     private static void ApplyMask(RectTransform mask, float value)

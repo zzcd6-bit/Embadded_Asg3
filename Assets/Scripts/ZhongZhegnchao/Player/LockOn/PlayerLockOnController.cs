@@ -1,4 +1,4 @@
-using System;
+锘縰sing System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -18,7 +18,7 @@ public class PlayerLockOnController : MonoBehaviour
     [Header("Attack Facing")]
     [SerializeField] private float attackFaceLockTime = 0.18f;
 
-    [Header("死亡目标处理")]
+    [Header("姝讳骸鐩爣澶勭悊")]
     public PlayerLockOnCameraTargetGroup lockOnCameraTargetGroup;
 
     private EnemyTargetable currentTarget;
@@ -180,6 +180,16 @@ public class PlayerLockOnController : MonoBehaviour
 
     private void Update()
     {
+        if (!GameModeManager.Instance.CurrentCapabilities.canLockOn)
+        {
+            if (IsLocked)
+            {
+                UnlockTarget();
+            }
+
+            return;
+        }
+
         if (!IsLocked)
             return;
 
@@ -191,6 +201,11 @@ public class PlayerLockOnController : MonoBehaviour
 
     private void ToggleLockOn()
     {
+        if (!GameModeManager.Instance.CurrentCapabilities.canLockOn)
+        {
+            return;
+        }
+
         if (IsLocked)
         {
             UnlockTarget();
@@ -239,6 +254,9 @@ public class PlayerLockOnController : MonoBehaviour
 
     public bool FaceCurrentTargetForAttack()
     {
+        if (!GameModeManager.Instance.CurrentCapabilities.canAttack)
+            return false;
+
         if (!IsLocked)
             return false;
 

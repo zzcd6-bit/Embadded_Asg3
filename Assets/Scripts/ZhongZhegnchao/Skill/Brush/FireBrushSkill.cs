@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class FireBrushSkill : BrushSkillBase
@@ -19,7 +19,7 @@ public class FireBrushSkill : BrushSkillBase
     public BrushSkillConfig config;
 
     [Header("Temporary Bypass")]
-    // 临时 bypass：原逻辑只有 visibleTargets.Count > 0 才给玩家火附魔，调试剧情门时可打开。
+    // 涓存椂 bypass锛氬師閫昏緫鍙湁 visibleTargets.Count > 0 鎵嶇粰鐜╁鐏檮榄旓紝璋冭瘯鍓ф儏闂ㄦ椂鍙墦寮€銆?
     public bool allowInfusionWithoutVisibleTarget = false;
 
     [Header("Debug")]
@@ -484,7 +484,7 @@ public class FireBrushSkill : BrushSkillBase
 
         if (infusion == null)
         {
-            infusion = FindObjectOfType<PlayerElementInfusion>();
+            infusion = FindAnyObjectByType<PlayerElementInfusion>();
         }
 
         if (infusion == null)

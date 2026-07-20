@@ -1,8 +1,8 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 public class ActionPlayerController : MonoBehaviour
 {
-    [Header("¶¯×÷ÅäÖÃ Addressables Key")]
+    [Header("åŠ¨ä½œé…ç½® Addressables Key")]
     [SerializeField] private string playerActionSetKey = "Player_ActionSet";
 
     [Header("Lock On")]
@@ -12,7 +12,7 @@ public class ActionPlayerController : MonoBehaviour
     [SerializeField] private PlayerActionConfigSet playerActionSet;
 
 #if UNITY_EDITOR
-    [Header("Editor ±¾µØ²âÊÔÅäÖÃ")]
+    [Header("Editor æœ¬åœ°æµ‹è¯•é…ç½®")]
     [SerializeField] private bool useEditorLocalActionSet = true;
 
     [SerializeField] private PlayerActionConfigSet editorLocalActionSet;
@@ -207,7 +207,7 @@ public class ActionPlayerController : MonoBehaviour
         if (enemyLayerMask == 0)
         {
             Debug.LogWarning(
-                "[PlayerController] Ã»ÓĞÉèÖÃ enemyLayer£¬²¢ÇÒÏîÄ¿ÖĞÕÒ²»µ½ÃûÎª Enemy µÄ Layer¡£LockOn ¿ÉÄÜÕÒ²»µ½µĞÈË¡£"
+                "[PlayerController] æ²¡æœ‰è®¾ç½® enemyLayerï¼Œå¹¶ä¸”é¡¹ç›®ä¸­æ‰¾ä¸åˆ°åä¸º Enemy çš„ Layerã€‚LockOn å¯èƒ½æ‰¾ä¸åˆ°æ•Œäººã€‚"
             );
         }
 
@@ -216,13 +216,24 @@ public class ActionPlayerController : MonoBehaviour
 
     private void LoadActionConfigSet()
     {
-        if (playerActionSet == null)
+        PlayerActionConfigSet actionSet = playerActionSet;
+
+#if UNITY_EDITOR
+        if (useEditorLocalActionSet)
         {
-            Debug.LogError("[PlayerController] playerActionSet is null. Please assign Player_ActionSet in Inspector.", this);
+            actionSet = GetEditorLocalActionSet() ?? actionSet;
+        }
+#endif
+
+        if (actionSet == null)
+        {
+            Debug.LogError(
+                $"[PlayerController] playerActionSet is null. Please assign {playerActionSetKey} in Inspector.",
+                this);
             return;
         }
 
-        InitCombat(playerActionSet);
+        InitCombat(actionSet);
     }
 
 #if UNITY_EDITOR
@@ -246,7 +257,7 @@ public class ActionPlayerController : MonoBehaviour
         if (asset == null)
         {
             Debug.LogWarning(
-                "[PlayerController] ÕÒ²»µ½ Editor ±¾µØ ActionSet£¬Â·¾¶: " +
+                "[PlayerController] æ‰¾ä¸åˆ° Editor æœ¬åœ° ActionSetï¼Œè·¯å¾„: " +
                 editorLocalActionSetPath
             );
         }
@@ -259,7 +270,7 @@ public class ActionPlayerController : MonoBehaviour
     {
         if (actionSet == null)
         {
-            Debug.LogError("[PlayerController] PlayerActionConfigSet ¼ÓÔØ³É¹¦µ«½á¹ûÎª¿Õ¡£");
+            Debug.LogError("[PlayerController] PlayerActionConfigSet åŠ è½½æˆåŠŸä½†ç»“æœä¸ºç©ºã€‚");
             return;
         }
 
@@ -268,7 +279,7 @@ public class ActionPlayerController : MonoBehaviour
 
     private void OnActionConfigSetLoadFailed(string error)
     {
-        Debug.LogError("[PlayerController] PlayerActionConfigSet ¼ÓÔØÊ§°Ü£º" + error);
+        Debug.LogError("[PlayerController] PlayerActionConfigSet åŠ è½½å¤±è´¥ï¼š" + error);
     }
 
     private void InitCombat(PlayerActionConfigSet actionSet)

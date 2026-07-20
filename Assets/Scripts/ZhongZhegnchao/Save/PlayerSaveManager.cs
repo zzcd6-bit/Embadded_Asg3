@@ -419,8 +419,9 @@ public class PlayerSaveManager : MonoBehaviour
     private void RefreshSaveModules()
     {
         saveModules =
-            FindObjectsOfType<
-                MonoBehaviour>(true);
+            FindObjectsByType<
+                MonoBehaviour>(
+                    FindObjectsInactive.Include);
     }
 
     private void EnsureDefaultSaveModules()

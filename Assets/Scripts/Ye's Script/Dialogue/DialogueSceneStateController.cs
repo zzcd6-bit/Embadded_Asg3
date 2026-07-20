@@ -21,7 +21,9 @@ public class DialogueSceneStateController : MonoBehaviour
     [Header("Dialogue Selection")]
     [SerializeField] private KeyCode submitResponseKey = KeyCode.E;
     [SerializeField] private KeyCode previousResponseKey = KeyCode.W;
+    [SerializeField] private KeyCode alternatePreviousResponseKey = KeyCode.UpArrow;
     [SerializeField] private KeyCode nextResponseKey = KeyCode.S;
+    [SerializeField] private KeyCode alternateNextResponseKey = KeyCode.DownArrow;
     [SerializeField] private KeyCode pointerModeKey = KeyCode.LeftAlt;
     [SerializeField] private KeyCode alternatePointerModeKey = KeyCode.RightAlt;
     [SerializeField] private float scrollThreshold = 0.1f;
@@ -37,6 +39,7 @@ public class DialogueSceneStateController : MonoBehaviour
     private readonly List<DialogueSystemReactable> disabledReactables = new();
     private readonly List<Selectable> dialogueSelectables = new();
     private PlayerModeStateController playerModeStateController;
+    private DialogueUIVisualBinder dialogueUIVisualBinder;
     private bool subscribed;
     private bool dialoguePointerMode;
 
@@ -67,10 +70,7 @@ public class DialogueSceneStateController : MonoBehaviour
     {
         Unsubscribe();
         RestoreDialogueReactables();
-        if (playerModeStateController != null)
-        {
-            playerModeStateController.ExitDialogueState();
-        }
+        GameModeManager.Instance.ExitMode(GameModeState.Dialogue);
     }
 
     private void Update()
@@ -136,6 +136,12 @@ public class DialogueSceneStateController : MonoBehaviour
             dialogueUiObject.SetActive(true);
         }
 
+        dialogueUIVisualBinder = dialogueUiObject.GetComponent<DialogueUIVisualBinder>();
+        if (dialogueUIVisualBinder == null)
+        {
+            dialogueUIVisualBinder = dialogueUiObject.AddComponent<DialogueUIVisualBinder>();
+        }
+
         DialogueManager.instance.UseDialogueUI(dialogueUiObject);
     }
 
@@ -155,10 +161,7 @@ public class DialogueSceneStateController : MonoBehaviour
     private void HandleConversationStarted(Transform actor)
     {
         ResolvePlayerModeStateController();
-        if (playerModeStateController != null)
-        {
-            playerModeStateController.EnterDialogueState();
-        }
+        GameModeManager.Instance.RequestMode(GameModeState.Dialogue, this);
 
         DisableDialogueReactables();
         dialoguePointerMode = false;
@@ -168,10 +171,7 @@ public class DialogueSceneStateController : MonoBehaviour
     private void HandleConversationEnded(Transform actor)
     {
         RestoreDialogueReactables();
-        if (playerModeStateController != null)
-        {
-            playerModeStateController.ExitDialogueState();
-        }
+        GameModeManager.Instance.ExitMode(GameModeState.Dialogue);
 
         dialoguePointerMode = false;
         ApplyNormalCursorState();
@@ -240,27 +240,47 @@ public class DialogueSceneStateController : MonoBehaviour
             ApplyDialogueCursorState(dialoguePointerMode);
         }
 
+        bool responseMenuActive = IsResponseMenuActive();
+
+        if (dialoguePointerMode && responseMenuActive)
+        {
+            ClearDialogueSelection();
+            return;
+        }
+
         if (focusFirstSelectable)
         {
             EnsureDialogueSelection();
         }
 
-        if (IsSentenceSkipInputDown() && TrySkipCurrentSentence())
+        bool submitKeyDown = Input.GetKeyDown(submitResponseKey);
+
+        if (submitKeyDown && responseMenuActive)
+        {
+            SubmitDialogueSelection();
+            return;
+        }
+
+        if (IsSentenceSkipInputDown() && TryContinueCurrentSentence())
         {
             return;
         }
 
         float scroll = Input.mouseScrollDelta.y;
-        if (scroll > scrollThreshold || Input.GetKeyDown(previousResponseKey))
+        if (scroll > scrollThreshold ||
+            Input.GetKeyDown(previousResponseKey) ||
+            Input.GetKeyDown(alternatePreviousResponseKey))
         {
             MoveDialogueSelection(-1);
         }
-        else if (scroll < -scrollThreshold || Input.GetKeyDown(nextResponseKey))
+        else if (scroll < -scrollThreshold ||
+                 Input.GetKeyDown(nextResponseKey) ||
+                 Input.GetKeyDown(alternateNextResponseKey))
         {
             MoveDialogueSelection(1);
         }
 
-        if (Input.GetKeyDown(submitResponseKey))
+        if (submitKeyDown)
         {
             SubmitDialogueSelection();
         }
@@ -284,6 +304,15 @@ public class DialogueSceneStateController : MonoBehaviour
         if (selectable != null)
         {
             eventSystem.SetSelectedGameObject(selectable.gameObject);
+        }
+    }
+
+    private void ClearDialogueSelection()
+    {
+        EventSystem eventSystem = EventSystem.current;
+        if (eventSystem != null && IsUsableDialogueSelectable(eventSystem.currentSelectedGameObject))
+        {
+            eventSystem.SetSelectedGameObject(null);
         }
     }
 
@@ -374,6 +403,16 @@ public class DialogueSceneStateController : MonoBehaviour
         return true;
     }
 
+    private bool TryContinueCurrentSentence()
+    {
+        if (dialogueUIVisualBinder != null)
+        {
+            return dialogueUIVisualBinder.RequestContinueFromUser();
+        }
+
+        return TrySkipCurrentSentence();
+    }
+
     private bool CanSkipCurrentSentence()
     {
         ConversationState state = DialogueManager.currentConversationState;
@@ -437,13 +476,15 @@ public class DialogueSceneStateController : MonoBehaviour
             return;
         }
 
+        bool responseMenuActive = HasActiveResponseButtons();
         Selectable[] selectables = dialogueUiObject.GetComponentsInChildren<Selectable>(false);
         for (int i = 0; i < selectables.Length; i++)
         {
             Selectable selectable = selectables[i];
             if (selectable != null &&
                 selectable.IsActive() &&
-                selectable.IsInteractable())
+                selectable.IsInteractable() &&
+                (!responseMenuActive || IsResponseSelectable(selectable)))
             {
                 dialogueSelectables.Add(selectable);
             }
@@ -466,6 +507,35 @@ public class DialogueSceneStateController : MonoBehaviour
         return selectable != null &&
                selectable.IsActive() &&
                selectable.IsInteractable();
+    }
+
+    private bool HasActiveResponseButtons()
+    {
+        if (dialogueUiObject == null)
+        {
+            return false;
+        }
+
+        Selectable[] selectables = dialogueUiObject.GetComponentsInChildren<Selectable>(false);
+        for (int i = 0; i < selectables.Length; i++)
+        {
+            if (selectables[i] != null &&
+                selectables[i].IsActive() &&
+                selectables[i].IsInteractable() &&
+                IsResponseSelectable(selectables[i]))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool IsResponseSelectable(Selectable selectable)
+    {
+        return selectable != null &&
+               (selectable.GetComponent<UnityUIResponseButton>() != null ||
+                selectable.GetComponent<StandardUIResponseButton>() != null);
     }
 
     private void ApplyDialogueCursorState(bool pointerMode)

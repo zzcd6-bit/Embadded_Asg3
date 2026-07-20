@@ -8,10 +8,15 @@ public class PlayerInventoryController : MonoBehaviour
     [Serializable]
     private class StartingItem
     {
-        public ItemData itemData;
+        [SerializeField]
+        private ItemData itemData;
 
+        [SerializeField]
         [Min(1)]
-        public int quantity = 1;
+        private int quantity = 1;
+
+        public ItemData ItemData => itemData;
+        public int Quantity => quantity;
     }
 
     [Header("Database")]
@@ -64,14 +69,14 @@ public class PlayerInventoryController : MonoBehaviour
                 startingItems[i];
 
             if (startingItem == null ||
-                startingItem.itemData == null)
+                startingItem.ItemData == null)
             {
                 continue;
             }
 
             AddItemInternal(
-                startingItem.itemData,
-                startingItem.quantity
+                startingItem.ItemData,
+                startingItem.Quantity
             );
         }
 
