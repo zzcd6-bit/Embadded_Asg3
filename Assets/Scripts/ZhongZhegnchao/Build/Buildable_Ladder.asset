@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1b703aa75fd4ad49b637b2361209252, type: 3}
+  m_Name: Buildable_Ladder
+  m_EditorClassIdentifier: Assembly-CSharp::BuildableItemData
+  itemId: Buildable_Ladder
+  displayName: Ladder
+  icon: {fileID: 0}
+  description: 
+  buildingPrefab: {fileID: 5438540854471489051, guid: 5573776f474b053478c976030dccdd92, type: 3}
+  size: {x: 5, y: 2}
+  surfaceRule: 1
+  anchorDepth: 1
+  maxAnchorHeightDelta: 0
+  placementYOffset: -0.5
+  cost: 0

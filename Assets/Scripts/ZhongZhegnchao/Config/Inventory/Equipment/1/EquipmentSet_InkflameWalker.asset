@@ -18,4 +18,4 @@ MonoBehaviour:
     set, the wearer will gain enhanced fire power and fire resistance."
   element: 2
   elementDamageBonus: 0.15
-  elementResistanceBonus: 0.15
+  elementResistanceBonus: 0.2

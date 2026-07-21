@@ -26,9 +26,9 @@ MonoBehaviour:
   defenseBonus: 12
   resistanceElement: 2
   elementResistanceBonus: 0.12
-  damageBonus: 0
+  damageBonus: 0.3
   damageElement: 2
-  elementDamageBonus: 0.1
+  elementDamageBonus: 0.2
   baseAttackPower: 0
   attackPowerPerLevel: 0
   criticalRateBonus: 0.04

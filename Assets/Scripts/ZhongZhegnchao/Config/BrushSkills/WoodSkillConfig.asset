@@ -23,7 +23,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   inkCost: 1
-  useSkillCooldown: 0
+  useSkillCooldown: 1
   skillCooldown: 3
   baseDamage: 1
   knockback: 0

@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33807a190cee8134cb7e40890d8dd66f, type: 3}
   m_Name: PlayerInkPouchConfig
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInkPouchConfig
-  maxInk: 100
-  startInk: 100
+  maxInk: 20
+  startInk: 20
   restoreInkOnEnemyKill: 2

@@ -344,8 +344,8 @@ public class BrushSkillConfigEditor : Editor
     {
         serializedObject.Update();
 
-        DrawTitle("��������");
-        EditorGUILayout.PropertyField(skillType, new GUIContent("��������"));
+        DrawTitle("画笔技能配置");
+        EditorGUILayout.PropertyField(skillType, new GUIContent("技能类型"));
 
         DrawCommonSettings();
 
@@ -384,181 +384,181 @@ public class BrushSkillConfigEditor : Editor
 
     private void DrawCommonSettings()
     {
-        DrawTitle("ͨ�ü������");
+        DrawTitle("通用技能设置");
         EditorGUILayout.PropertyField(
     targetLayer,
-    new GUIContent("Ŀ�� Layer")
+    new GUIContent("目标 Layer")
 );
 
         EditorGUILayout.PropertyField(
             rayDistance,
-            new GUIContent("���� / ��������")
+            new GUIContent("射线 / 检测距离")
         );
 
         EditorGUILayout.PropertyField(
             fallbackDistance,
-            new GUIContent("Ĭ���ͷž���")
+            new GUIContent("默认释放距离")
         );
 
-        DrawTitle("����Ԫ�ؽ���");
+        DrawTitle("场景元素交互");
 
         EditorGUILayout.PropertyField(
             enableSceneElementInteraction,
-            new GUIContent("���ó���Ԫ�ؽ���")
+            new GUIContent("启用场景元素交互")
         );
 
         if (enableSceneElementInteraction.boolValue)
         {
             EditorGUILayout.PropertyField(
                 sceneElementLayer,
-                new GUIContent("����Ԫ�� Layer")
+                new GUIContent("场景元素 Layer")
             );
         }
 
-        DrawTitle("ī������");
-        EditorGUILayout.PropertyField(inkCost, new GUIContent("ī������"));
+        DrawTitle("墨量消耗");
+        EditorGUILayout.PropertyField(inkCost, new GUIContent("墨量消耗"));
 
-        DrawTitle("ͨ���˺�����");
-        EditorGUILayout.PropertyField(baseDamage, new GUIContent("�����˺�"));
-        EditorGUILayout.PropertyField(knockback, new GUIContent("��������"));
-        EditorGUILayout.PropertyField(element, new GUIContent("Ԫ������"));
-        EditorGUILayout.PropertyField(canApplyElementStatus, new GUIContent("�ɸ���Ԫ��״̬"));
-        EditorGUILayout.PropertyField(skillMultiplier, new GUIContent("���ܱ���"));
-        EditorGUILayout.PropertyField(damageBonus, new GUIContent("�˺��ӳ�"));
-        EditorGUILayout.PropertyField(reactionMultiplier, new GUIContent("��Ӧ����"));
-        EditorGUILayout.PropertyField(canCrit, new GUIContent("�Ƿ�ɱ���"));
+        DrawTitle("通用伤害设置");
+        EditorGUILayout.PropertyField(baseDamage, new GUIContent("基础伤害"));
+        EditorGUILayout.PropertyField(knockback, new GUIContent("击退力度"));
+        EditorGUILayout.PropertyField(element, new GUIContent("元素类型"));
+        EditorGUILayout.PropertyField(canApplyElementStatus, new GUIContent("可附加元素状态"));
+        EditorGUILayout.PropertyField(skillMultiplier, new GUIContent("技能倍率"));
+        EditorGUILayout.PropertyField(damageBonus, new GUIContent("伤害加成"));
+        EditorGUILayout.PropertyField(reactionMultiplier, new GUIContent("反应倍率"));
+        EditorGUILayout.PropertyField(canCrit, new GUIContent("是否可暴击"));
     }
 
     private void DrawCooldownSettings()
     {
-        DrawTitle("������ȴ");
+        DrawTitle("技能冷却");
 
         EditorGUILayout.PropertyField(
             useSkillCooldown,
-            new GUIContent("���ü��� CD")
+            new GUIContent("启用技能 CD")
         );
 
         if (useSkillCooldown.boolValue)
         {
             EditorGUILayout.PropertyField(
                 skillCooldown,
-                new GUIContent("CD ʱ��")
+                new GUIContent("CD 时间")
             );
         }
     }
 
     private void DrawSlashSettings()
     {
-        DrawTitle("Slash ר������");
-        EditorGUILayout.PropertyField(slashSphereRadius, new GUIContent("���뾶"));
-        EditorGUILayout.PropertyField(slashSampleCount, new GUIContent("��������"));
+        DrawTitle("Slash 专属设置");
+        EditorGUILayout.PropertyField(slashSphereRadius, new GUIContent("检测半径"));
+        EditorGUILayout.PropertyField(slashSampleCount, new GUIContent("采样数量"));
     }
 
     private void DrawFireSettings()
     {
         DrawCooldownSettings();
 
-        DrawTitle("Fire ��Χ�˺�");
-        EditorGUILayout.PropertyField(fireDamageRadius, new GUIContent("���淶Χ�뾶"));
+        DrawTitle("Fire 范围伤害");
+        EditorGUILayout.PropertyField(fireDamageRadius, new GUIContent("火焰范围半径"));
 
-        DrawTitle("Burning ȼ��״̬");
-        EditorGUILayout.PropertyField(applyBurning, new GUIContent("�Ƿ񸽼�ȼ��"));
-        EditorGUILayout.PropertyField(burningDuration, new GUIContent("ȼ�ճ���ʱ��"));
-        EditorGUILayout.PropertyField(burningTickInterval, new GUIContent("ȼ�ռ��"));
-        EditorGUILayout.PropertyField(burningTickDamage, new GUIContent("ȼ��ÿ���˺�"));
+        DrawTitle("Burning 燃烧状态");
+        EditorGUILayout.PropertyField(applyBurning, new GUIContent("是否附加燃烧"));
+        EditorGUILayout.PropertyField(burningDuration, new GUIContent("燃烧持续时间"));
+        EditorGUILayout.PropertyField(burningTickInterval, new GUIContent("燃烧间隔"));
+        EditorGUILayout.PropertyField(burningTickDamage, new GUIContent("燃烧每跳伤害"));
 
-        DrawTitle("��һ�ħ");
-        EditorGUILayout.PropertyField(applyInfusionToPlayer, new GUIContent("�Ƿ����һ�ħ"));
-        EditorGUILayout.PropertyField(infusionDuration, new GUIContent("��ħ����ʱ��"));
-        EditorGUILayout.PropertyField(infusionDamageMultiplier, new GUIContent("��ħ�˺�����"));
-        EditorGUILayout.PropertyField(infusionApplyBurningOnHit, new GUIContent("��ħ�����Ƿ񸽼�ȼ��"));
-        EditorGUILayout.PropertyField(infusionBurningDuration, new GUIContent("��ħȼ�ճ���ʱ��"));
-        EditorGUILayout.PropertyField(infusionBurningTickInterval, new GUIContent("��ħȼ�ռ��"));
-        EditorGUILayout.PropertyField(infusionBurningTickDamage, new GUIContent("��ħȼ���˺�"));
+        DrawTitle("玩家火元素附魔");
+        EditorGUILayout.PropertyField(applyInfusionToPlayer, new GUIContent("是否给予火元素附魔"));
+        EditorGUILayout.PropertyField(infusionDuration, new GUIContent("附魔持续时间"));
+        EditorGUILayout.PropertyField(infusionDamageMultiplier, new GUIContent("附魔伤害倍率"));
+        EditorGUILayout.PropertyField(infusionApplyBurningOnHit, new GUIContent("附魔攻击是否附加燃烧"));
+        EditorGUILayout.PropertyField(infusionBurningDuration, new GUIContent("附魔燃烧持续时间"));
+        EditorGUILayout.PropertyField(infusionBurningTickInterval, new GUIContent("附魔燃烧间隔"));
+        EditorGUILayout.PropertyField(infusionBurningTickDamage, new GUIContent("附魔燃烧每跳伤害"));
     }
 
     private void DrawWaterSettings()
     {
         DrawCooldownSettings();
 
-        DrawTitle("Water �⻷����");
-        EditorGUILayout.PropertyField(waterAuraDuration, new GUIContent("ˮ�⻷����ʱ��"));
+        DrawTitle("Water 光环设置");
+        EditorGUILayout.PropertyField(waterAuraDuration, new GUIContent("水光环持续时间"));
 
-        DrawTitle("Water ˮ������");
-        EditorGUILayout.PropertyField(waterUsePool, new GUIContent("ʹ�ö����"));
+        DrawTitle("Water 水弹设置");
+        EditorGUILayout.PropertyField(waterUsePool, new GUIContent("使用对象池"));
 
         if (waterUsePool.boolValue)
         {
-            EditorGUILayout.PropertyField(waterProjectilePoolName, new GUIContent("ˮ�������� / Resources ·��"));
+            EditorGUILayout.PropertyField(waterProjectilePoolName, new GUIContent("水弹对象池名称 / Resources 路径"));
         }
         else
         {
-            EditorGUILayout.PropertyField(waterProjectilePrefab, new GUIContent("ˮ�� Prefab"));
+            EditorGUILayout.PropertyField(waterProjectilePrefab, new GUIContent("水弹 Prefab"));
         }
 
-        EditorGUILayout.PropertyField(waterShootInterval, new GUIContent("������"));
-        EditorGUILayout.PropertyField(waterSearchRange, new GUIContent("���з�Χ"));
+        EditorGUILayout.PropertyField(waterShootInterval, new GUIContent("发射间隔"));
+        EditorGUILayout.PropertyField(waterSearchRange, new GUIContent("索敌范围"));
 
-        DrawTitle("Water ��Ļ����");
-        EditorGUILayout.PropertyField(waterUseBarrage, new GUIContent("ʹ�õ�Ļ����"));
+        DrawTitle("Water 弹幕设置");
+        EditorGUILayout.PropertyField(waterUseBarrage, new GUIContent("使用弹幕发射"));
 
         if (waterUseBarrage.boolValue)
         {
-            EditorGUILayout.PropertyField(waterProjectileCountPerBurst, new GUIContent("ÿ��ˮ������"));
-            EditorGUILayout.PropertyField(waterBarrageAngle, new GUIContent("��Ļչ���Ƕ�"));
-            EditorGUILayout.PropertyField(waterBarrageSpawnRadius, new GUIContent("������ɢ�뾶"));
-            EditorGUILayout.PropertyField(waterBarrageVerticalStep, new GUIContent("���´�λ����"));
-            EditorGUILayout.PropertyField(waterDistributeTargets, new GUIContent("�Ƿ��ɢ�������Ŀ��"));
+            EditorGUILayout.PropertyField(waterProjectileCountPerBurst, new GUIContent("每波水弹数量"));
+            EditorGUILayout.PropertyField(waterBarrageAngle, new GUIContent("弹幕展开角度"));
+            EditorGUILayout.PropertyField(waterBarrageSpawnRadius, new GUIContent("生成扩散半径"));
+            EditorGUILayout.PropertyField(waterBarrageVerticalStep, new GUIContent("上下错位间隔"));
+            EditorGUILayout.PropertyField(waterDistributeTargets, new GUIContent("是否分散攻击多个目标"));
         }
 
-        DrawTitle("Water ˮ����ײ");
-        EditorGUILayout.PropertyField(waterProjectileHitLayer, new GUIContent("ˮ�������� Layer"));
-        EditorGUILayout.PropertyField(waterIgnoreAttackerCollision, new GUIContent("�����ͷ�����ײ"));
-        EditorGUILayout.PropertyField(waterDestroyOnNonHitLayerCollision, new GUIContent("������Ŀ�� Layer �Ƿ���ʧ"));
+        DrawTitle("Water 水弹碰撞");
+        EditorGUILayout.PropertyField(waterProjectileHitLayer, new GUIContent("水弹命中 Layer"));
+        EditorGUILayout.PropertyField(waterIgnoreAttackerCollision, new GUIContent("忽略释放者碰撞"));
+        EditorGUILayout.PropertyField(waterDestroyOnNonHitLayerCollision, new GUIContent("碰到非目标 Layer 是否消失"));
 
-        DrawTitle("Water ˮ���˺�");
-        EditorGUILayout.PropertyField(waterProjectileDamage, new GUIContent("ˮ���˺�"));
-        EditorGUILayout.PropertyField(waterProjectileKnockback, new GUIContent("ˮ������"));
-        EditorGUILayout.PropertyField(wetDuration, new GUIContent("Wet ʪ�����ʱ��"));
+        DrawTitle("Water 水弹伤害");
+        EditorGUILayout.PropertyField(waterProjectileDamage, new GUIContent("水弹伤害"));
+        EditorGUILayout.PropertyField(waterProjectileKnockback, new GUIContent("水弹击退"));
+        EditorGUILayout.PropertyField(wetDuration, new GUIContent("Wet 潮湿持续时间"));
 
-        DrawTitle("Water ˮ������");
-        EditorGUILayout.PropertyField(waterUseArcHoming, new GUIContent("ʹ�û���׷��"));
-        EditorGUILayout.PropertyField(waterProjectileSpeed, new GUIContent("ˮ���ٶ�"));
-        EditorGUILayout.PropertyField(waterProjectileLifeTime, new GUIContent("ˮ����������"));
-        EditorGUILayout.PropertyField(waterArcHeight, new GUIContent("���߸߶�"));
-        EditorGUILayout.PropertyField(waterRotateSpeed, new GUIContent("��ת�ٶ�"));
-        EditorGUILayout.PropertyField(waterReachDistance, new GUIContent("���о���"));
-        EditorGUILayout.PropertyField(waterTargetOffset, new GUIContent("Ŀ��ƫ��"));
+        DrawTitle("Water 水弹飞行");
+        EditorGUILayout.PropertyField(waterUseArcHoming, new GUIContent("使用弧线追踪"));
+        EditorGUILayout.PropertyField(waterProjectileSpeed, new GUIContent("水弹速度"));
+        EditorGUILayout.PropertyField(waterProjectileLifeTime, new GUIContent("水弹生命周期"));
+        EditorGUILayout.PropertyField(waterArcHeight, new GUIContent("弧线高度"));
+        EditorGUILayout.PropertyField(waterRotateSpeed, new GUIContent("旋转速度"));
+        EditorGUILayout.PropertyField(waterReachDistance, new GUIContent("命中距离"));
+        EditorGUILayout.PropertyField(waterTargetOffset, new GUIContent("目标偏移"));
 
-        DrawTitle("Water ��ը��Ч");
+        DrawTitle("Water 爆炸音效");
         EditorGUILayout.PropertyField(
             waterExplosionSoundName,
-            new GUIContent("��ը��Ч����")
+            new GUIContent("爆炸音效名称")
         );
         EditorGUILayout.PropertyField(
             waterExplosionSoundSync,
-            new GUIContent("ͬ��������Ч")
+            new GUIContent("同步播放音效")
         );
         EditorGUILayout.HelpBox(
-            "��д Resources/Audio �µ����·��������Ҫ��չ�������磺Skills/WaterExplosion",
+            "填写 Resources/Audio 下的相对路径，不需要扩展名。例如：Skills/WaterExplosion",
             MessageType.Info
         );
 
-        DrawTitle("Water ��Ļ�����");
-        EditorGUILayout.PropertyField(waterUseRandomBarrage, new GUIContent("ʹ�������Ļ"));
+        DrawTitle("Water 随机弹幕");
+        EditorGUILayout.PropertyField(waterUseRandomBarrage, new GUIContent("使用随机弹幕"));
 
         if (waterUseRandomBarrage.boolValue)
         {
-            EditorGUILayout.PropertyField(waterBurstDelayMin, new GUIContent("��С�����ӳ�"));
-            EditorGUILayout.PropertyField(waterBurstDelayMax, new GUIContent("������ӳ�"));
-            EditorGUILayout.PropertyField(waterRandomSpawnRadius, new GUIContent("������ɰ뾶"));
-            EditorGUILayout.PropertyField(waterRandomTargetOffsetRadius, new GUIContent("���Ŀ��ƫ�ư뾶"));
-            EditorGUILayout.PropertyField(waterArcSideOffsetMin, new GUIContent("��С������ƫ��"));
-            EditorGUILayout.PropertyField(waterArcSideOffsetMax, new GUIContent("��������ƫ��"));
-            EditorGUILayout.PropertyField(waterArcHeightRandomMin, new GUIContent("��С���߸߶����"));
-            EditorGUILayout.PropertyField(waterArcHeightRandomMax, new GUIContent("����߸߶����"));
-            EditorGUILayout.PropertyField(waterSpeedRandomMin, new GUIContent("��С�ٶ����"));
-            EditorGUILayout.PropertyField(waterSpeedRandomMax, new GUIContent("����ٶ����"));
+            EditorGUILayout.PropertyField(waterBurstDelayMin, new GUIContent("最小发射延迟"));
+            EditorGUILayout.PropertyField(waterBurstDelayMax, new GUIContent("最大发射延迟"));
+            EditorGUILayout.PropertyField(waterRandomSpawnRadius, new GUIContent("随机生成半径"));
+            EditorGUILayout.PropertyField(waterRandomTargetOffsetRadius, new GUIContent("随机目标偏移半径"));
+            EditorGUILayout.PropertyField(waterArcSideOffsetMin, new GUIContent("最小弧线侧向偏移"));
+            EditorGUILayout.PropertyField(waterArcSideOffsetMax, new GUIContent("最大弧线侧向偏移"));
+            EditorGUILayout.PropertyField(waterArcHeightRandomMin, new GUIContent("最小随机弧线高度"));
+            EditorGUILayout.PropertyField(waterArcHeightRandomMax, new GUIContent("最大随机弧线高度"));
+            EditorGUILayout.PropertyField(waterSpeedRandomMin, new GUIContent("最小随机速度"));
+            EditorGUILayout.PropertyField(waterSpeedRandomMax, new GUIContent("最大随机速度"));
         }
     }
 
@@ -566,164 +566,164 @@ public class BrushSkillConfigEditor : Editor
     {
         DrawCooldownSettings();
 
-        DrawTitle("Wood ��������");
-        EditorGUILayout.PropertyField(woodEffectDuration, new GUIContent("���ܳ���ʱ��"));
+        DrawTitle("Wood 效果设置");
+        EditorGUILayout.PropertyField(woodEffectDuration, new GUIContent("技能持续时间"));
 
-        DrawTitle("Wood ��Ѫ����");
-        EditorGUILayout.PropertyField(woodHealAmountPerTick, new GUIContent("ÿ����Ѫ��"));
-        EditorGUILayout.PropertyField(woodHealTickInterval, new GUIContent("��Ѫ���"));
+        DrawTitle("Wood 回血设置");
+        EditorGUILayout.PropertyField(woodHealAmountPerTick, new GUIContent("每跳回血量"));
+        EditorGUILayout.PropertyField(woodHealTickInterval, new GUIContent("回血间隔"));
 
-        DrawTitle("Wood ���� VFX ����");
-        EditorGUILayout.PropertyField(woodHealVfxUsePool, new GUIContent("ʹ�ö����"));
+        DrawTitle("Wood 治疗 VFX 设置");
+        EditorGUILayout.PropertyField(woodHealVfxUsePool, new GUIContent("使用对象池"));
 
         if (woodHealVfxUsePool.boolValue)
         {
-            EditorGUILayout.PropertyField(woodHealVfxPoolName, new GUIContent("���� VFX ������ / Resources ·��"));
+            EditorGUILayout.PropertyField(woodHealVfxPoolName, new GUIContent("治疗 VFX 对象池名称 / Resources 路径"));
         }
         else
         {
-            EditorGUILayout.PropertyField(woodHealVfxPrefab, new GUIContent("���� VFX Prefab"));
+            EditorGUILayout.PropertyField(woodHealVfxPrefab, new GUIContent("治疗 VFX Prefab"));
         }
 
-        EditorGUILayout.PropertyField(woodHealVfxLocalOffset, new GUIContent("���� VFX ����ƫ��"));
-        EditorGUILayout.PropertyField(woodHealVfxParentToPlayer, new GUIContent("���� VFX �Ƿ���� Player"));
-        EditorGUILayout.PropertyField(woodHealVfxRecycleDelay, new GUIContent("���� VFX �����ӳ�"));
+        EditorGUILayout.PropertyField(woodHealVfxLocalOffset, new GUIContent("治疗 VFX 本地偏移"));
+        EditorGUILayout.PropertyField(woodHealVfxParentToPlayer, new GUIContent("治疗 VFX 是否跟随 Player"));
+        EditorGUILayout.PropertyField(woodHealVfxRecycleDelay, new GUIContent("治疗 VFX 回收延迟"));
 
-        DrawTitle("Wood ���� VFX ����");
-        EditorGUILayout.PropertyField(woodShieldVfxUsePool, new GUIContent("ʹ�ö����"));
+        DrawTitle("Wood 护盾 VFX 设置");
+        EditorGUILayout.PropertyField(woodShieldVfxUsePool, new GUIContent("使用对象池"));
 
         if (woodShieldVfxUsePool.boolValue)
         {
-            EditorGUILayout.PropertyField(woodShieldVfxPoolName, new GUIContent("���� VFX ������ / Resources ·��"));
+            EditorGUILayout.PropertyField(woodShieldVfxPoolName, new GUIContent("护盾 VFX 对象池名称 / Resources 路径"));
         }
         else
         {
-            EditorGUILayout.PropertyField(woodShieldVfxPrefab, new GUIContent("���� VFX Prefab"));
+            EditorGUILayout.PropertyField(woodShieldVfxPrefab, new GUIContent("护盾 VFX Prefab"));
         }
 
-        EditorGUILayout.PropertyField(woodShieldVfxLocalOffset, new GUIContent("���� VFX ����ƫ��"));
-        EditorGUILayout.PropertyField(woodShieldVfxParentToPlayer, new GUIContent("���� VFX �Ƿ���� Player λ��"));
-        EditorGUILayout.PropertyField(woodShieldVfxForceLoop, new GUIContent("���� VFX ǿ��ѭ��"));
+        EditorGUILayout.PropertyField(woodShieldVfxLocalOffset, new GUIContent("护盾 VFX 本地偏移"));
+        EditorGUILayout.PropertyField(woodShieldVfxParentToPlayer, new GUIContent("护盾 VFX 是否跟随 Player"));
+        EditorGUILayout.PropertyField(woodShieldVfxForceLoop, new GUIContent("护盾 VFX 强制循环"));
 
-        DrawTitle("Wood ��������");
-        EditorGUILayout.PropertyField(woodGrantShield, new GUIContent("�Ƿ���軤��"));
+        DrawTitle("Wood 护盾设置");
+        EditorGUILayout.PropertyField(woodGrantShield, new GUIContent("是否给予护盾"));
 
         if (woodGrantShield.boolValue)
         {
-            EditorGUILayout.PropertyField(woodShieldAmount, new GUIContent("����ֵ"));
-            EditorGUILayout.PropertyField(woodShieldDuration, new GUIContent("���ܳ���ʱ��"));
-            EditorGUILayout.PropertyField(woodRefreshShieldWhenReapply, new GUIContent("�ظ��ͷ��Ƿ�ˢ�»���"));
+            EditorGUILayout.PropertyField(woodShieldAmount, new GUIContent("护盾值"));
+            EditorGUILayout.PropertyField(woodShieldDuration, new GUIContent("护盾持续时间"));
+            EditorGUILayout.PropertyField(woodRefreshShieldWhenReapply, new GUIContent("重复释放是否刷新护盾"));
         }
     }
     private void DrawBridgeSettings()
     {
-        DrawTitle("Bridge ר������");
-        EditorGUILayout.PropertyField(bridgeTriggerLayer, new GUIContent("�Ŵ����� Layer"));
-        EditorGUILayout.PropertyField(bridgeCastRadius, new GUIContent("���뾶"));
-        EditorGUILayout.PropertyField(bridgeActiveDuration, new GUIContent("�ų���ʱ��"));
+        DrawTitle("Bridge 专属设置");
+        EditorGUILayout.PropertyField(bridgeTriggerLayer, new GUIContent("桥触发 Layer"));
+        EditorGUILayout.PropertyField(bridgeCastRadius, new GUIContent("检测半径"));
+        EditorGUILayout.PropertyField(bridgeActiveDuration, new GUIContent("桥持续时间"));
     }
 
     private void DrawWindSettings()
     {
         DrawCooldownSettings();
 
-        DrawTitle("Wind �糡����");
+        DrawTitle("Wind 风场设置");
 
         EditorGUILayout.PropertyField(
             windFieldPoolName,
-            new GUIContent("�糡�����·��")
+            new GUIContent("风场对象池路径")
         );
 
         EditorGUILayout.PropertyField(
             windSpawnDistance,
-            new GUIContent("��ͷǰ���ɾ���")
+            new GUIContent("镜头前生成距离")
         );
 
         EditorGUILayout.PropertyField(
             windSpawnYOffset,
-            new GUIContent("���� Y ƫ��")
+            new GUIContent("生成 Y 偏移")
         );
 
         EditorGUILayout.PropertyField(
             windFieldDuration,
-            new GUIContent("�糡����ʱ��")
+            new GUIContent("风场持续时间")
         );
 
-        DrawTitle("Wind ������Ч");
+        DrawTitle("Wind 循环音效");
 
         EditorGUILayout.PropertyField(
             windLoopSoundName,
-            new GUIContent("ѭ����Ч����")
+            new GUIContent("循环音效名称")
         );
 
         EditorGUILayout.PropertyField(
             windLoopSoundSync,
-            new GUIContent("ͬ��������Ч")
+            new GUIContent("同步播放音效")
         );
 
         EditorGUILayout.HelpBox(
-            "��д Resources/Audio �µ����·��������Ҫ��չ�������磺Skills/WindLoop������Ч���ڷ糡�����ڼ�ѭ�����š�",
+            "填写 Resources/Audio 下的相对路径，不需要扩展名。例如：Skills/WindLoop。音效会在风场存在期间循环播放。",
             MessageType.Info
         );
 
-        DrawTitle("Wind ��ק");
+        DrawTitle("Wind 拉拽");
 
         EditorGUILayout.PropertyField(
             windPullRadius,
-            new GUIContent("��ק��Χ")
+            new GUIContent("拉拽范围")
         );
 
         EditorGUILayout.PropertyField(
             windPullSpeed,
-            new GUIContent("��ק�ٶ�")
+            new GUIContent("拉拽速度")
         );
 
         EditorGUILayout.PropertyField(
             windCenterRadius,
-            new GUIContent("�糡�����ж��뾶")
+            new GUIContent("风场中心判定半径")
         );
 
-        DrawTitle("Wind ���ĳ����˺�");
+        DrawTitle("Wind 中心持续伤害");
 
         EditorGUILayout.PropertyField(
             windCenterTickInterval,
-            new GUIContent("�����˺����")
+            new GUIContent("持续伤害间隔")
         );
 
-        DrawTitle("Wind ��ɢ��ɫ");
+        DrawTitle("Wind 扩散染色");
 
         EditorGUILayout.PropertyField(
             windFireColor,
-            new GUIContent("Fire Ⱦɫ")
+            new GUIContent("Fire 染色")
         );
 
         EditorGUILayout.PropertyField(
             windWaterColor,
-            new GUIContent("Water Ⱦɫ")
+            new GUIContent("Water 染色")
         );
 
-        DrawTitle("Wind Fire ��ɢ");
+        DrawTitle("Wind Fire 扩散");
 
         EditorGUILayout.PropertyField(
             windSpreadFireDuration,
-            new GUIContent("Fire ״̬����ʱ��")
+            new GUIContent("Fire 状态持续时间")
         );
 
         EditorGUILayout.PropertyField(
             windSpreadFireTickInterval,
-            new GUIContent("ȼ�ռ��")
+            new GUIContent("燃烧间隔")
         );
 
         EditorGUILayout.PropertyField(
             windSpreadFireTickDamage,
-            new GUIContent("ȼ��ÿ���˺�")
+            new GUIContent("燃烧每跳伤害")
         );
 
-        DrawTitle("Wind Water ��ɢ");
+        DrawTitle("Wind Water 扩散");
 
         EditorGUILayout.PropertyField(
             windSpreadWetDuration,
-            new GUIContent("Wet ״̬����ʱ��")
+            new GUIContent("Wet 状态持续时间")
         );
     }
 

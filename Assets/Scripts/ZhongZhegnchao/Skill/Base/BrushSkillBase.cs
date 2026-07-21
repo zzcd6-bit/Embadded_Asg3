@@ -26,6 +26,11 @@ public abstract class BrushSkillBase : MonoBehaviour
 
     protected abstract BrushSkillType SkillType { get; }
 
+    public BrushSkillType PublicSkillType
+    {
+        get { return SkillType; }
+    }
+
     public float CooldownRemaining
     {
         get

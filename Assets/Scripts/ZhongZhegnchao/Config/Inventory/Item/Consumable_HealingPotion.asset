@@ -20,7 +20,7 @@ MonoBehaviour:
   canDiscard: 1
   maxStack: 99
   effectType: 2
-  amount: 50
+  amount: 150
   element: 1
   percentageValue: 0
   duration: 30

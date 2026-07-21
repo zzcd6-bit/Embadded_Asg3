@@ -23,9 +23,9 @@ MonoBehaviour:
   slotType: 1
   equipmentSet: {fileID: 11400000, guid: e0961225a34d70548898c016b2a3cb95, type: 2}
   maxHpBonus: 40
-  defenseBonus: 12
+  defenseBonus: 34
   resistanceElement: 2
-  elementResistanceBonus: 0.12
+  elementResistanceBonus: 0.34
   damageBonus: 0
   damageElement: 1
   elementDamageBonus: 0

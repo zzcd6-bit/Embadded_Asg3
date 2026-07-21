@@ -23,13 +23,13 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 65536
   inkCost: 3
-  useSkillCooldown: 0
-  skillCooldown: 10
-  baseDamage: 3
+  useSkillCooldown: 1
+  skillCooldown: 3
+  baseDamage: 2
   knockback: 0
   element: 5
   canApplyElementStatus: 1
-  skillMultiplier: 1.2
+  skillMultiplier: 0.25
   damageBonus: 0
   reactionMultiplier: 1
   canCrit: 0
@@ -63,6 +63,8 @@ MonoBehaviour:
   waterRotateSpeed: 12
   waterReachDistance: 0.45
   waterTargetOffset: {x: 0, y: 1, z: 0}
+  waterExplosionSoundName: Skills/WaterExplosion
+  waterExplosionSoundSync: 1
   waterProjectileHitLayer:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -113,6 +115,8 @@ MonoBehaviour:
   windSpawnDistance: 13
   windSpawnYOffset: 1
   windFieldDuration: 10
+  windLoopSoundName: Skills/WindLoop
+  windLoopSoundSync: 1
   windPullRadius: 8
   windPullSpeed: 3
   windCenterRadius: 0.8

@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03b98bfee72b72e489e7159dda782745, type: 3}
+  m_Name: gale_vortex_coat
+  m_EditorClassIdentifier: Assembly-CSharp::EquipmentData
+  itemId: gale_vortex_coat
+  displayName: gale vortex coat
+  description: 'A long coat reinforced with wind-aligned ink seals.
+
+    It provides
+    strong protection while allowing the wearer to control surrounding air currents.'
+  icon: {fileID: 313108265, guid: 3c62d584e209b6f40b73ac96ef41d097, type: 3}
+  quality: 4
+  canDiscard: 1
+  maxStack: 99
+  slotType: 1
+  equipmentSet: {fileID: 11400000, guid: 8eed9ea844e184f41a4c6dc3f00b79f8, type: 2}
+  maxHpBonus: 30
+  defenseBonus: 34
+  resistanceElement: 7
+  elementResistanceBonus: 0.34
+  damageBonus: 0
+  damageElement: 1
+  elementDamageBonus: 0
+  baseAttackPower: 0
+  attackPowerPerLevel: 0
+  criticalRateBonus: 0
+  criticalDamageBonus: 0
+  weaponMaxLevel: 20
+  levelOneExperienceRequirement: 100
+  experienceIncreasePerLevel: 25

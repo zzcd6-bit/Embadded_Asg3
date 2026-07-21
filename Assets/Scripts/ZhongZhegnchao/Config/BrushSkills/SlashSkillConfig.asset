@@ -23,13 +23,13 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   inkCost: 1
-  useSkillCooldown: 0
+  useSkillCooldown: 1
   skillCooldown: 3
-  baseDamage: 1
+  baseDamage: 12
   knockback: 0
   element: 1
   canApplyElementStatus: 0
-  skillMultiplier: 1
+  skillMultiplier: 1.1
   damageBonus: 0
   reactionMultiplier: 1
   canCrit: 1
@@ -63,6 +63,8 @@ MonoBehaviour:
   waterRotateSpeed: 12
   waterReachDistance: 0.45
   waterTargetOffset: {x: 0, y: 1, z: 0}
+  waterExplosionSoundName: Skills/WaterExplosion
+  waterExplosionSoundSync: 1
   waterProjectileHitLayer:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -109,3 +111,19 @@ MonoBehaviour:
     m_Bits: 0
   bridgeCastRadius: 0.6
   bridgeActiveDuration: 8
+  windFieldPoolName: Prefabs/WindFieldVFX
+  windSpawnDistance: 8
+  windSpawnYOffset: 0
+  windFieldDuration: 6
+  windLoopSoundName: Skills/WindLoop
+  windLoopSoundSync: 1
+  windPullRadius: 8
+  windPullSpeed: 10
+  windCenterRadius: 0.8
+  windCenterTickInterval: 0.5
+  windFireColor: {r: 1, g: 0.2, b: 0.05, a: 1}
+  windWaterColor: {r: 0.1, g: 0.55, b: 1, a: 1}
+  windSpreadFireDuration: 5
+  windSpreadFireTickInterval: 1
+  windSpreadFireTickDamage: 1
+  windSpreadWetDuration: 5

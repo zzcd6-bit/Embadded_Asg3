@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 [DisallowMultipleComponent]
@@ -25,10 +26,23 @@ public class TeleportPoint : MonoBehaviour, IReactable, IReactableStateNotifier
     [SerializeField] private bool fullRestoreInk;
     [SerializeField] private int restoreInkAmount = 20;
 
+    [Header("Activate On Interaction")]
+    [SerializeField] private GameObject objectToActivateOnInteract;
+    [SerializeField] private bool activateOnRegister = true;
+    [SerializeField] private bool activateOnRest = true;
+    [SerializeField] private bool activateOnlyOnce = true;
+
+    [Header("Save")]
+    [SerializeField] private bool savePlayerOnRegister = true;
+    [SerializeField] private bool savePlayerOnRest = true;
+    [SerializeField] private bool savePlayerOnTeleportArrival = true;
+    [SerializeField] private bool saveAfterTeleportNextFrame = true;
+
     [Header("References")]
     [SerializeField] private TeleportPointRegistry registry;
     [SerializeField] private PlayerTeleportService teleportService;
     [SerializeField] private PlayerResourceController resourceController;
+    [SerializeField] private PlayerSaveManager saveManager;
 
     public event Action<IReactable> StateChanged;
 
@@ -36,6 +50,8 @@ public class TeleportPoint : MonoBehaviour, IReactable, IReactableStateNotifier
     public string DisplayName => displayName;
     public bool IsDefaultRespawnPoint => isDefaultRespawnPoint;
     public Transform SpawnTransform => spawnTransform != null ? spawnTransform : transform;
+
+    private bool hasActivatedObject;
 
     public string OptionName
     {
@@ -52,6 +68,7 @@ public class TeleportPoint : MonoBehaviour, IReactable, IReactableStateNotifier
     private void Reset()
     {
         spawnTransform = transform;
+
         if (string.IsNullOrWhiteSpace(pointId))
         {
             pointId = gameObject.name;
@@ -81,6 +98,11 @@ public class TeleportPoint : MonoBehaviour, IReactable, IReactableStateNotifier
         if (isDefaultRespawnPoint && registry != null)
         {
             registry.RegisterPoint(this, true);
+
+            if (savePlayerOnRegister)
+            {
+                SavePlayer();
+            }
         }
     }
 
@@ -102,10 +124,31 @@ public class TeleportPoint : MonoBehaviour, IReactable, IReactableStateNotifier
         {
             registry?.RegisterPoint(this, setRespawnOnRegister);
             StateChanged?.Invoke(this);
+
+            if (activateOnRegister)
+            {
+                ActivateInteractionObject();
+            }
+
+            if (savePlayerOnRegister)
+            {
+                SavePlayer();
+            }
+
             return;
         }
 
         ApplyRegisteredInteractionReward();
+
+        if (activateOnRest)
+        {
+            ActivateInteractionObject();
+        }
+
+        if (savePlayerOnRest)
+        {
+            SavePlayer();
+        }
     }
 
     public bool TeleportPlayerHere(bool setAsRespawnPoint = true)
@@ -125,6 +168,18 @@ public class TeleportPoint : MonoBehaviour, IReactable, IReactableStateNotifier
         if (resourceController != null)
         {
             resourceController.Revive(true, true);
+        }
+
+        if (savePlayerOnTeleportArrival)
+        {
+            if (saveAfterTeleportNextFrame)
+            {
+                StartCoroutine(SavePlayerNextFrame());
+            }
+            else
+            {
+                SavePlayer();
+            }
         }
 
         return true;
@@ -162,6 +217,18 @@ public class TeleportPoint : MonoBehaviour, IReactable, IReactableStateNotifier
     public void RefreshInteractionState()
     {
         StateChanged?.Invoke(this);
+    }
+
+    private void ActivateInteractionObject()
+    {
+        if (objectToActivateOnInteract == null)
+            return;
+
+        if (activateOnlyOnce && hasActivatedObject)
+            return;
+
+        objectToActivateOnInteract.SetActive(true);
+        hasActivatedObject = true;
     }
 
     private void ApplyRegisteredInteractionReward()
@@ -211,6 +278,29 @@ public class TeleportPoint : MonoBehaviour, IReactable, IReactableStateNotifier
         return registry != null && registry.IsRegistered(point);
     }
 
+    private IEnumerator SavePlayerNextFrame()
+    {
+        yield return null;
+        SavePlayer();
+    }
+
+    private void SavePlayer()
+    {
+        ResolveSaveManager();
+
+        if (saveManager == null)
+        {
+            Debug.LogWarning(
+                "[TeleportPoint] PlayerSaveManager not found. Player data was not saved.",
+                this
+            );
+
+            return;
+        }
+
+        saveManager.SavePlayer();
+    }
+
     private void ResolveReferences()
     {
         if (registry == null)
@@ -241,6 +331,21 @@ public class TeleportPoint : MonoBehaviour, IReactable, IReactableStateNotifier
         if (resourceController == null)
         {
             resourceController = FindAnyObjectByType<PlayerResourceController>();
+        }
+
+        ResolveSaveManager();
+    }
+
+    private void ResolveSaveManager()
+    {
+        if (saveManager == null)
+        {
+            saveManager = PlayerSaveManager.Instance;
+        }
+
+        if (saveManager == null)
+        {
+            saveManager = FindAnyObjectByType<PlayerSaveManager>();
         }
     }
 }

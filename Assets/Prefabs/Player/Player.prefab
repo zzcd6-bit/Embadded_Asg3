@@ -340,7 +340,7 @@ Transform:
   m_GameObject: {fileID: 5192622941783547617}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 1.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -374,6 +374,14 @@ GameObject:
   - component: {fileID: 1487623045026094292}
   - component: {fileID: 3373756282233720418}
   - component: {fileID: 368124383558167270}
+  - component: {fileID: 4572078259919559825}
+  - component: {fileID: 7855080943975318072}
+  - component: {fileID: 470373643925987331}
+  - component: {fileID: 4487596118243649046}
+  - component: {fileID: 1530745038168951836}
+  - component: {fileID: 479625408195894032}
+  - component: {fileID: 7492192921905286475}
+  - component: {fileID: 6558639689924666471}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -486,6 +494,15 @@ MonoBehaviour:
       _Names: []
     _Clip: {fileID: 7400000, guid: 566a6f5da45535b4db9c6ec91349b001, type: 2}
     _NormalizedStartTime: NaN
+  death:
+    _FadeDuration: 0.25
+    _Speed: 1
+    _Events:
+      _NormalizedTimes: []
+      _Callbacks: []
+      _Names: []
+    _Clip: {fileID: 7400000, guid: b0de5dbad47bd734380c38c47d357d3e, type: 2}
+    _NormalizedStartTime: NaN
   references:
     version: 2
     RefIds: []
@@ -540,23 +557,52 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93a7c3df945442141b9a6a1697a478e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CharacterCombatStats
-  attackPower: 10
-  defense: 0
-  damageBonus: 0
-  critRate: 0.1
-  critDamage: 1.5
-  physicalDamageBonus: 0
-  fireDamageBonus: 0
-  waterDamageBonus: 0
-  iceDamageBonus: 0
-  thunderDamageBonus: 0
-  earthDamageBonus: 0
-  physicalResistance: 0
-  fireResistance: 0
-  waterResistance: 0
-  iceResistance: 0
-  thunderResistance: 0
-  earthResistance: 0
+  baseStats:
+    maxHp: 100
+    attackPower: 10
+    defense: 0
+    damageBonus: 0
+    critRate: 0.1
+    critDamage: 1.5
+    elementDamageBonus:
+      physical: 0
+      fire: 0
+      water: 0
+      ice: 0
+      thunder: 0
+      earth: 0
+      wind: 0
+    elementResistance:
+      physical: 0
+      fire: 0
+      water: 0
+      ice: 0
+      thunder: 0
+      earth: 0
+      wind: 0
+  equipmentModifiers:
+    maxHp: 0
+    attackPower: 0
+    defense: 0
+    damageBonus: 0
+    critRate: 0
+    critDamage: 0
+    elementDamageBonus:
+      physical: 0
+      fire: 0
+      water: 0
+      ice: 0
+      thunder: 0
+      earth: 0
+      wind: 0
+    elementResistance:
+      physical: 0
+      fire: 0
+      water: 0
+      ice: 0
+      thunder: 0
+      earth: 0
+      wind: 0
 --- !u!114 &7669014016826536082
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -587,9 +633,14 @@ MonoBehaviour:
   damageReceiver: {fileID: 5932185986845760001}
   skillInventory: {fileID: 7669014016826536082}
   inkPouchController: {fileID: 0}
+  characterStatsController: {fileID: 0}
   playerRoot: {fileID: 7856182803000044564}
   characterController: {fileID: 8043345172028202198}
   playerRigidbody: {fileID: 0}
+  inventoryController: {fileID: 0}
+  equipmentController: {fileID: 0}
+  currencyController: {fileID: 0}
+  skillTreeController: {fileID: 0}
   debugLog: 1
 --- !u!114 &5932185986845760001
 MonoBehaviour:
@@ -785,9 +836,162 @@ MonoBehaviour:
   actionPlayerController: {fileID: 7349654309238769771}
   legacyPlayerController: {fileID: 0}
   autoRespawn: 1
-  respawnDelay: 1.5
+  respawnDelay: 4
   fullHealOnRespawn: 1
   fullRestoreInkOnRespawn: 1
+--- !u!114 &4572078259919559825
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8711962937741669046}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cb6d626bc7986e428cdc486bf14792a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerCharacterStatsController
+  config: {fileID: 11400000, guid: 7eda24b07b11b9241a5a92cc53bfe9f4, type: 2}
+  currentLevel: 1
+  currentExperience: 0
+  combatStats: {fileID: 8289351068557653306}
+  damageReceiver: {fileID: 5932185986845760001}
+  inkPouchController: {fileID: 7860042217002967190}
+  debugLog: 1
+--- !u!114 &7855080943975318072
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8711962937741669046}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1dd1a899596d33445bd19011b735eb84, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterProfileUIController
+  statsController: {fileID: 4572078259919559825}
+  playerController: {fileID: 7349654309238769771}
+  pauseGameWhenOpen: 1
+--- !u!114 &470373643925987331
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8711962937741669046}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85488ab63390f4247b95ad578f2423de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerLevelUpUIFeedback
+  statsController: {fileID: 4572078259919559825}
+  debugLog: 1
+--- !u!114 &4487596118243649046
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8711962937741669046}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d66e3e1ad4fb3444978a937e2b31462, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerInventoryController
+  itemDatabase: {fileID: 0}
+  startingItems:
+  - itemData: {fileID: 11400000, guid: 79f022e62d0eb7d4eafc7e355c915c21, type: 2}
+    quantity: 1
+  - itemData: {fileID: 11400000, guid: cc8128e88a43c094990f51d0550a9274, type: 2}
+    quantity: 1
+  - itemData: {fileID: 11400000, guid: 91c5fe3c44415ad4297b75564fbe5cb3, type: 2}
+    quantity: 1
+  - itemData: {fileID: 11400000, guid: c3088be20057f9149966bea1dfa64d0a, type: 2}
+    quantity: 1
+  - itemData: {fileID: 11400000, guid: 14b766f4cd5851143978e9e3124a9813, type: 2}
+    quantity: 1
+  - itemData: {fileID: 11400000, guid: 3d572a27ff3f8d44883e1eeaf5406e30, type: 2}
+    quantity: 10
+  - itemData: {fileID: 11400000, guid: 0886dab5e32f78243ba7d5fb58a0fbaf, type: 2}
+    quantity: 1
+  - itemData: {fileID: 11400000, guid: b51ce47f9953ffb47bd142b4f2f35bdf, type: 2}
+    quantity: 1
+  - itemData: {fileID: 11400000, guid: cb9c0f9d1e37ff3488c72a17f7782f37, type: 2}
+    quantity: 1
+  - itemData: {fileID: 11400000, guid: 0a9df7181885ef64c9ec3d685602e090, type: 2}
+    quantity: 1
+  - itemData: {fileID: 11400000, guid: 4a24e5c686efa2540932831780bbd5cc, type: 2}
+    quantity: 1
+  - itemData: {fileID: 11400000, guid: fc53c984c313b9b449e7e86c803c54a4, type: 2}
+    quantity: 10
+  debugLog: 0
+--- !u!114 &1530745038168951836
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8711962937741669046}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec185da09f6358949bc7e98c3f9cde3a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerEquipmentController
+  inventoryController: {fileID: 4487596118243649046}
+  statsController: {fileID: 4572078259919559825}
+--- !u!114 &479625408195894032
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8711962937741669046}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3e8ab9e24cc87045835ed9233e40220, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerItemUseController
+  inventoryController: {fileID: 4487596118243649046}
+  equipmentController: {fileID: 1530745038168951836}
+  statsController: {fileID: 4572078259919559825}
+  damageReceiver: {fileID: 5932185986845760001}
+  inkController: {fileID: 7860042217002967190}
+--- !u!114 &7492192921905286475
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8711962937741669046}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b7484fd91308834796ed1515b2b0fec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerCurrencyController
+  startingCoins: 100
+  maximumCoins: 999999
+  currentCoins: 0
+  debugLog: 1
+  debugAmount: 100
+--- !u!114 &6558639689924666471
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8711962937741669046}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5dbfb068e59bbc4cba773806aaf84cd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerSkillTreeController
+  config: {fileID: 11400000, guid: f18abc2215850c74d9a918857e8e7164, type: 2}
+  characterStatsController: {fileID: 4572078259919559825}
+  skillInventory: {fileID: 7669014016826536082}
+  runtimeLevels: []
+  canResetSkills: 0
+  debugLog: 0
 --- !u!1 &9168769259887215454
 GameObject:
   m_ObjectHideFlags: 0

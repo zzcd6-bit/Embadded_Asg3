@@ -22,7 +22,7 @@ MonoBehaviour:
   maxStack: 99
   slotType: 0
   equipmentSet: {fileID: 11400000, guid: e0961225a34d70548898c016b2a3cb95, type: 2}
-  maxHpBonus: 40
+  maxHpBonus: 120
   defenseBonus: 0
   resistanceElement: 1
   elementResistanceBonus: 0
@@ -32,7 +32,7 @@ MonoBehaviour:
   baseAttackPower: 0
   attackPowerPerLevel: 0
   criticalRateBonus: 0.04
-  criticalDamageBonus: 0.1
+  criticalDamageBonus: 0.3
   weaponMaxLevel: 20
   levelOneExperienceRequirement: 100
   experienceIncreasePerLevel: 25

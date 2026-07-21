@@ -41,6 +41,40 @@ public class CharacterElementStatSet
         }
     }
 
+    public void Add(ElementType element, float value)
+    {
+        switch (element)
+        {
+            case ElementType.Physical:
+                physical += value;
+                break;
+
+            case ElementType.Fire:
+                fire += value;
+                break;
+
+            case ElementType.Water:
+                water += value;
+                break;
+
+            case ElementType.Ice:
+                ice += value;
+                break;
+
+            case ElementType.Thunder:
+                thunder += value;
+                break;
+
+            case ElementType.Earth:
+                earth += value;
+                break;
+
+            case ElementType.Wind:
+                wind += value;
+                break;
+        }
+    }
+
     public void AddScaled(
         CharacterElementStatSet other,
         float multiplier

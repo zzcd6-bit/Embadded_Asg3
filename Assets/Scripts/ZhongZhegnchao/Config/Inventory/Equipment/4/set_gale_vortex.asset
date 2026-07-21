@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfc7374935803794aa565c81a8418744, type: 3}
+  m_Name: set_gale_vortex
+  m_EditorClassIdentifier: Assembly-CSharp::EquipmentSetData
+  setId: set_gale_vortex
+  displayName: Gale Vortex Set
+  description: 'A wind-element set designed to control the battlefield.
+
+    It
+    improves wind field range, pulling force, and elemental spread, making it ideal
+    for grouping enemies together.'
+  element: 7
+  elementDamageBonus: 0.15
+  elementResistanceBonus: 0.2
